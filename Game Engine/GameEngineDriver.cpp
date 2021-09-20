@@ -3,11 +3,6 @@
 using namespace std;
 int main()
 {
-
-    // string *command = new string();
-    // cout << "Please enter a command: ";
-    // cin >> *command;
-    // cout << *command << endl;
-    State *state = new State();
+    playGame();
     return 0;
 }
