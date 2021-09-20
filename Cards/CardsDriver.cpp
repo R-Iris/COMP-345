@@ -18,7 +18,7 @@ int main() {
     cout << "Enter how many cards you wish to have in your deck. The integer must be between 15 and 25: ";
     cin >> numberDeck;
     while ((numberDeck < 15) || numberDeck > 25) {
-        cout << "Please enter an integer between 15 and 25." << '\n';
+        cout << "Please enter an integer between 15 and 25: ";
         cin >> numberDeck;
     }
     deck.setSize(ptrDeck);
@@ -27,8 +27,8 @@ int main() {
     cin >> numberHand;
     while ((numberHand < 5) || numberHand > 7)
     {
-        cout << "Please enter an integer between 5 and 7." << '\n';
-        cin >> numberDeck;
+        cout << "Please enter an integer between 5 and 7: ";
+        cin >> numberHand;
     }
     hand.setSize(ptrHand);
 

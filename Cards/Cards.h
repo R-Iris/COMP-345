@@ -16,14 +16,36 @@ class Deck {
         int* sizeDeck;
         string cards[5];
 };
-/*
+
 class Card {
     public:
         Card();
         string toString();
         void play();
 };
-*/
+
+// --- children of the class Card ---
+class Bomb : public Card {
+
+};
+
+class Reinforcement : public Card {
+
+};
+
+class Blockade : public Card {
+
+};
+
+class Airlift : public Card {
+
+};
+
+class Diplomacy : public Card {
+
+};
+// -------------------------------
+
 class Hand {
     public:
         Hand();
