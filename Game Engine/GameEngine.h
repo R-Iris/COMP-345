@@ -2,9 +2,6 @@
 #include <string>
 using std::string;
 
-void playGame();
-void end();
-
 // Keeps track of the current state of the game, takes in input from command and checks if it's valid
 class State
 {
@@ -19,7 +16,7 @@ public:
 private:
     /*friend*/ bool *transition;
     string *currentState;
-    string states[];
+    string states[8];
 };
 
 // Transition between startup and play, as well as winning and playing again
@@ -38,3 +35,6 @@ public:
 
 private:
 };
+
+void playGame();
+void end(State game);
