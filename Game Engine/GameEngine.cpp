@@ -119,7 +119,7 @@ void playGame()
 {
     State *game = new State();
     string command = "";
-    while (game->getState != "end")
+    while (game->getState() != "end")
     {
         while (game->isValid)
         {
@@ -128,14 +128,15 @@ void playGame()
         }
         game->changeState(command);
     }
-    end(*game);
+    end(game);
 }
 
 // Ends game and calls del()
-void end(State &game)
+void end(State *game)
 {
     delete game;
-    *game = NULL;
+    game = NULL;
+
     cout << "Thank you for playing!";
     //game.del();
     exit(0);

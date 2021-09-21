@@ -37,4 +37,4 @@ private:
 };
 
 void playGame();
-void end(State &game);
+void end(State *game);
