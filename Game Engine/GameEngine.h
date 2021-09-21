@@ -6,34 +6,17 @@ using std::string;
 class State
 {
 public:
-    bool isValid;
     State();
     void showState();
     string getState();
+    bool isValid(string command);
     bool changeState(string nextState);
     void del();
 
 private:
-    /*friend*/ bool transition;
-    string currentState;
     string states[8];
-};
-
-// Transition between startup and play, as well as winning and playing again
-class Transition
-{
-public:
-    Transition(string issuedCommand);
-};
-
-class Command
-{
-public:
-    Command();
-    Command(string issedCommand);
-    //void issueCommand();
-
-private:
+    string currentState;
+    int currentStatePosition;
 };
 
 void playGame();
