@@ -3,20 +3,6 @@
 
 using std::string;
 
-class Deck {
-    public:
-        Deck();
-        void shuffle();
-        //Card getCard();
-        void setSize(int* sizeDeck);
-        int getSize();
-        void draw();
-
-    private:
-        int* sizeDeck;
-        string cards[5];
-};
-
 class Card {
     public:
         Card();
@@ -24,35 +10,54 @@ class Card {
         void play();
 };
 
-// --- children of the class Card ---
+// --- children of the class Card, each with their respective constructors ---
 class Bomb : public Card {
-
+    public:
+        Bomb();
 };
 
 class Reinforcement : public Card {
-
+    public:
+        Reinforcement();
 };
 
 class Blockade : public Card {
-
+    public:
+        Blockade();
 };
 
 class Airlift : public Card {
-
+    public:
+        Airlift();
 };
 
 class Diplomacy : public Card {
-
+    public:
+        Diplomacy();
 };
 // -------------------------------
+
+class Deck {
+    public:
+        Deck();
+        void shuffle();
+        Card getCard();
+        void setSize(int sizeDeck);
+        int getSize();
+        void draw();
+
+    private:
+        int sizeDeck;
+        Card* cards[];
+};
 
 class Hand {
     public:
         Hand();
         void print() const;
-        void setSize(int* sizeHand);
+        void setSize(int sizeHand);
         int getSize();
     
     private:
-        int* sizeHand;
+        int sizeHand;
 };
