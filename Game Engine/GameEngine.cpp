@@ -2,32 +2,32 @@
 #include <iostream>
 using namespace std;
 
-string State::currentState;
+string currentState;
 int currentStatePosition;
-string State::states[] = {"start", "map loaded", "map validated", "players added", "assign reinforcements", "issue orders", "execute orders", "win"};
-bool State::transition;
-bool State::isValid;
+string states[] = {"start", "map loaded", "map validated", "players added", "assign reinforcements", "issue orders", "execute orders", "win"};
+bool transition;
+bool isValid;
 
 // Default constructor for state, sets the current state
 State::State()
 {
-    currentState = &states[0];
+    currentState = states[0];
     currentStatePosition = 0;
     transition = false;
     isValid = true;
     showState();
-};
+}
 
 // Prints out the current state
 void State::showState()
 {
     cout << "State: " << currentState << endl;
-};
+}
 
 string State::getState()
 {
-    return this->currentState;
-};
+    return currentState;
+}
 
 bool State::changeState(string issuedCommand)
 {
@@ -37,11 +37,11 @@ bool State::changeState(string issuedCommand)
         currentState = states[1];
         showState();
     }
-    else if (currentState == states[1] issuedCommand == "loadmap")
+    else if (currentState == states[1] && issuedCommand == "loadmap")
     {
         showState();
     }
-    else if (currentState == states[1] issuedCommand == "validatemap")
+    else if (currentState == states[1] && issuedCommand == "validatemap")
     {
         currentStatePosition = 2;
         currentState = states[2];
@@ -112,7 +112,7 @@ bool State::changeState(string issuedCommand)
         isValid = false;
     }
     return isValid;
-};
+}
 
 // Launches states of game
 void playGame()
@@ -128,18 +128,18 @@ void playGame()
         }
         game->changeState(command);
     }
-    end(game);
-};
+    end(*game);
+}
 
 // Ends game and calls del()
-void end(State game)
+void end(State &game)
 {
     delete game;
-    game = NULL;
+    *game = NULL;
     cout << "Thank you for playing!";
     //game.del();
     exit(0);
-};
+}
 
 // deletes all pointers and sets them to null.
 // void del()

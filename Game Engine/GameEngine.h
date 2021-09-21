@@ -6,16 +6,16 @@ using std::string;
 class State
 {
 public:
-    bool *isValid;
+    bool isValid;
     State();
     void showState();
     string getState();
-    bool changeState(string &nextState);
+    bool changeState(string nextState);
     void del();
 
 private:
-    /*friend*/ bool *transition;
-    string *currentState;
+    /*friend*/ bool transition;
+    string currentState;
     string states[8];
 };
 
@@ -23,18 +23,18 @@ private:
 class Transition
 {
 public:
-    Transition(string &issuedCommand);
+    Transition(string issuedCommand);
 };
 
 class Command
 {
 public:
     Command();
-    Command(string &issedCommand);
+    Command(string issedCommand);
     //void issueCommand();
 
 private:
 };
 
 void playGame();
-void end(State game);
+void end(State &game);
