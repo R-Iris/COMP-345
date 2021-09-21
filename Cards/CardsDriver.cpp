@@ -4,17 +4,14 @@
 using namespace std;
 
 int main() {
-    int numberDeck{};
+    //int numberDeck{};
     int numberHand{};
-
-    int* ptrDeck{&numberDeck}; // pointer to numberDeck
-    int* ptrHand{&numberHand}; // pointer to numberHand
 
     cout << "This file is just for testing at the moment." << '\n';
 
     Deck deck; // create an object deck
     Hand hand; // create an object hand
-
+    /*
     cout << "Enter how many cards you wish to have in your deck. The integer must be between 15 and 25: ";
     cin >> numberDeck;
     while ((numberDeck < 15) || numberDeck > 25) {
@@ -22,19 +19,19 @@ int main() {
         cin >> numberDeck;
     }
     deck.setSize(ptrDeck);
-
-    cout << "Enter how many cards you wish to have in your hand. The integer must be between 5 and 7: ";
+    */
+    cout << "Enter how many cards you wish to have in your hand. The integer must be between 2 and 3: ";
     cin >> numberHand;
-    while ((numberHand < 5) || numberHand > 7)
+    while ((numberHand < 2) || numberHand > 3)
     {
-        cout << "Please enter an integer between 5 and 7: ";
+        cout << "Please enter an integer between 2 and 3: ";
         cin >> numberHand;
     }
-    hand.setSize(ptrHand);
+    hand.setSize(numberHand);
 
+    cout << "# of cards your hand can hold: " << hand.getSize() << '\n';
 
-    cout << "# of cards in the deck: " << deck.getSize() << '\n';
-    cout << "# of cards in your hand: " << hand.getSize() << '\n';
+    deck.draw();
 
     return 0;
 }
