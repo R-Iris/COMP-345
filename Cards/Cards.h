@@ -6,7 +6,6 @@ using std::string;
 class Card {
     public:
         Card();
-        string toString();
         void play();
 };
 
@@ -40,24 +39,27 @@ class Diplomacy : public Card {
 class Deck {
     public:
         Deck();
-        void shuffle();
         Card getCard();
         void setSize(int sizeDeck);
         int getSize();
-        void draw();
+        Card* draw();
 
     private:
-        int sizeDeck;
+        int sizeDeck{};
+        string names[5];
         Card* cards[];
 };
 
 class Hand {
     public:
         Hand();
+        void handDrawn(Card* ptrCard);
         void print() const;
         void setSize(int sizeHand);
         int getSize();
     
     private:
-        int sizeHand;
+        int sizeHand{};
+        int cardIndex{};
+        Card* cardsInHand[5];
 };

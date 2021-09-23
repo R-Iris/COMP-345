@@ -19,7 +19,6 @@ int main() {
         cin >> numberDeck;
     }
     deck.setSize(ptrDeck);
-    */
     cout << "Enter how many cards you wish to have in your hand. The integer must be between 2 and 3: ";
     cin >> numberHand;
     while ((numberHand < 2) || numberHand > 3)
@@ -28,10 +27,14 @@ int main() {
         cin >> numberHand;
     }
     hand.setSize(numberHand);
-
+    */
     cout << "# of cards your hand can hold: " << hand.getSize() << '\n';
 
-    deck.draw();
+    //string card1 = deck.draw();
+    hand.handDrawn(deck.draw());
+
+    //string card2 = deck.draw();
+    hand.handDrawn(deck.draw());
 
     return 0;
 }

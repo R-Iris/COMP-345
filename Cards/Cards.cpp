@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
 #include "Cards.h"
 
 using namespace std;
@@ -11,9 +12,6 @@ Card::Card() {
     return;
 
     // Since the default deck has 5 cards, and we have 5 different types of cards, we'll create 1 card of each type
-}
-
-string Card::toString() {
 }
 
 void Card::play() {
@@ -41,19 +39,23 @@ Diplomacy::Diplomacy() {
 
 // Default constructor
 Deck::Deck() {
+    srand(time(NULL)); // regenerates the seed for the rand() call below
+    sizeDeck = 5;
     cout << "\nCreating a generic deck..." << '\n';
+    names[0] = {"Bomb"};
+    names[1] = {"Reinforcement"};
+    names[2] = {"Blockade"}; 
+    names[3] = {"Airlift"}; 
+    names[4] = {"Diplomacy"};
     cards[0] = {new Bomb()};
     cards[1] = {new Reinforcement()};
     cards[2] = {new Blockade()};
     cards[3] = {new Airlift()};
     cards[4] = {new Diplomacy()};
 
-    cout << "The generated deck has " << 5 << " cards." << '\n' ;
+    cout << "The generated deck has " << sizeDeck << " cards." << '\n' ;
 }
 /*
-void Deck::shuffle() {
-
-}
 
 Card Deck::getCard() {
 
@@ -67,26 +69,52 @@ int Deck::getSize() {
     return sizeDeck;
 }
 
-void Deck::draw() {
-    srand(time(NULL)); // regenerates the seed for the rand() call below
-    int index = rand() % 5; // index in the range of 0 and 4
+Card* Deck::draw() {
+    int index{rand() % sizeDeck}; // index in the range of 0 and 4
     //int* ptrIndex{&index};
     cout << "\nYou picked the " << index + 1 << " nth card from the deck." << '\n';
     Card* cardDrawn = cards[index];
+    Card* cardTemp = cards[index];
+    string cardName = names[index];
+
+    //--------------------- THIS PORTION IS JUST FOR TESTING ---------------------------------------
 
     // removing the card from the deck array by copying everything from cards[index + 1] to the end of the array, one element to the left
-    for (int i = index + 1; i < 5; i++) {
-        cards[i - 1] = cards[i];
+    for (int i = index + 1; i < sizeDeck; i++) {
+        cards[i - 1] = cards[i]; // the issue is that the end of the array won't be automatically set to null
+        names[i - 1] = names[i];
     }
 
-    /* ----
-    HERE GOES CODE TO ADD TO THE HAND
-    --- */
+    sizeDeck--; // to get rid of the previous issue, we shorten the size of the array by 1
+    cout << "The deck has " << sizeDeck << " cards in it." << '\n';
+
+    cout << "The cards left in the deck are..." << '\n';
+    for (int j = 0; j < sizeDeck; j ++) {
+        cout << names[j] << '\n';
+    }
+    //----------------------------------------------------------------------------------------------
+
+    return cardTemp;
 }
 
 Hand::Hand() {
+    sizeHand = 3;
     cout << "\nCreating the player's hand..." << '\n';
 }
+
+void Hand::handDrawn(Card* ptrCard) {
+    cardsInHand[cardIndex] = ptrCard;
+    cardIndex++;
+
+    cout << "\nYou have " << cardIndex << " cards in your hand." << '\n';
+    cout << "You have a the following cards in your hand: " << '\n';
+
+    for (int i = 0; i <= cardIndex; i++) {
+        cout << cardsInHand[i] << '\n';
+    }
+
+}
+
 /*
 void Hand::print() const{
 
