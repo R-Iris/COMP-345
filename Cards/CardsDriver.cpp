@@ -30,8 +30,11 @@ int main() {
     */
     cout << "# of cards your hand can hold: " << hand.getSize() << '\n';
 
-    hand.hand(deck.draw());
-    hand.hand(deck.draw());
+    //string card1 = deck.draw();
+    hand.handDrawn(deck.draw());
+
+    //string card2 = deck.draw();
+    hand.handDrawn(deck.draw());
 
     return 0;
 }

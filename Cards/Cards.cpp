@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
 #include "Cards.h"
 
 using namespace std;
@@ -41,6 +42,11 @@ Deck::Deck() {
     srand(time(NULL)); // regenerates the seed for the rand() call below
     sizeDeck = 5;
     cout << "\nCreating a generic deck..." << '\n';
+    names[0] = {"Bomb"};
+    names[1] = {"Reinforcement"};
+    names[2] = {"Blockade"}; 
+    names[3] = {"Airlift"}; 
+    names[4] = {"Diplomacy"};
     cards[0] = {new Bomb()};
     cards[1] = {new Reinforcement()};
     cards[2] = {new Blockade()};
@@ -68,9 +74,10 @@ Card* Deck::draw() {
     //int* ptrIndex{&index};
     cout << "\nYou picked the " << index + 1 << " nth card from the deck." << '\n';
     Card* cardDrawn = cards[index];
+    Card* cardTemp = cards[index];
+    string cardName = names[index];
 
     //--------------------- THIS PORTION IS JUST FOR TESTING ---------------------------------------
-    string names[sizeDeck] = {"Bomb", "Reinforcement", "Blockade", "Airlift", "Diplomacy"};
 
     // removing the card from the deck array by copying everything from cards[index + 1] to the end of the array, one element to the left
     for (int i = index + 1; i < sizeDeck; i++) {
@@ -79,6 +86,7 @@ Card* Deck::draw() {
     }
 
     sizeDeck--; // to get rid of the previous issue, we shorten the size of the array by 1
+    cout << "The deck has " << sizeDeck << " cards in it." << '\n';
 
     cout << "The cards left in the deck are..." << '\n';
     for (int j = 0; j < sizeDeck; j ++) {
@@ -86,7 +94,7 @@ Card* Deck::draw() {
     }
     //----------------------------------------------------------------------------------------------
 
-    return cardDrawn;
+    return cardTemp;
 }
 
 Hand::Hand() {
@@ -94,12 +102,17 @@ Hand::Hand() {
     cout << "\nCreating the player's hand..." << '\n';
 }
 
-void Hand::hand(Card* ptrCard) {
-    int cardIndex{};
+void Hand::handDrawn(Card* ptrCard) {
     cardsInHand[cardIndex] = ptrCard;
     cardIndex++;
 
-    cout << "You have " << cardIndex << " cards in your hand." << '\n';
+    cout << "\nYou have " << cardIndex << " cards in your hand." << '\n';
+    cout << "You have a the following cards in your hand: " << '\n';
+
+    for (int i = 0; i <= cardIndex; i++) {
+        cout << cardsInHand[i] << '\n';
+    }
+
 }
 
 /*

@@ -45,19 +45,21 @@ class Deck {
         Card* draw();
 
     private:
-        int sizeDeck;
+        int sizeDeck{};
+        string names[5];
         Card* cards[];
 };
 
 class Hand {
     public:
         Hand();
-        void hand(Card* ptrCard);
+        void handDrawn(Card* ptrCard);
         void print() const;
         void setSize(int sizeHand);
         int getSize();
     
     private:
-        int sizeHand;
-        Card* cardsInHand[];
+        int sizeHand{};
+        int cardIndex{};
+        Card* cardsInHand[5];
 };
