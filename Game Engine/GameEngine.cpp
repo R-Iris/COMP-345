@@ -1,8 +1,5 @@
 #include "GameEngine.h"
-#include <iostream>
-using namespace std;
 
-// Default constructor for state, sets the current state
 State::State()
 {
     // Populating states array with proper state names
@@ -20,7 +17,42 @@ State::State()
     showState();
 }
 
-// Prints out the current state
+State::State(State &state) : currentState(state.currentState), currentStatePosition(state.currentStatePosition)
+{
+    // Populating states array with proper state names
+    states[0] = state.states[0];
+    states[1] = state.states[1];
+    states[2] = state.states[2];
+    states[3] = state.states[3];
+    states[4] = state.states[4];
+    states[5] = state.states[5];
+    states[6] = state.states[6];
+    states[7] = state.states[7];
+
+    showState();
+}
+State &State::operator=(const State &state)
+{
+    states[0] = state.states[0];
+    states[1] = state.states[1];
+    states[2] = state.states[2];
+    states[3] = state.states[3];
+    states[4] = state.states[4];
+    states[5] = state.states[5];
+    states[6] = state.states[6];
+    states[7] = state.states[7];
+
+    currentState = state.currentState;
+    currentStatePosition = state.currentStatePosition;
+
+    return *this;
+}
+ostream &operator<<(ostream &out, const State &state)
+{
+    out << "Current State: " << state.currentState << endl;
+    return out;
+}
+
 void State::showState()
 {
     cout << "Game State: " << currentState << endl;
@@ -167,10 +199,11 @@ bool State::changeState(string issuedCommand)
     }
 }
 
-// Launches states of game
 void playGame()
 {
     State *game = new State();
+    // State *copygame = new State(*game); // Copied game using copy constructor
+    // cout << *game; // Test insertion operator
     string command = "";
     while (game->getState() != "win" || command != "end")
     {
@@ -182,16 +215,30 @@ void playGame()
             cin >> command;
         }
         game->changeState(command);
+        // cout << "copygame State: " << *copygame << endl; // Test copied state object
     }
     end(game);
+    // Test copy constructor
+    // while (copygame->getState() != "win" || command != "end")
+    // {
+    //     cout << "Please enter command: ";
+    //     cin >> command;
+    //     while (!copygame->isValid(command))
+    //     {
+    //         cout << "Command invalid, please try again: ";
+    //         cin >> command;
+    //     }
+    //     copygame->changeState(command);
+    //     cout << "\"game\" State: " << *game << endl;
+    // }
+    // end(copygame);
 }
 
-// Ends game and calls del()
 void end(State *game)
 {
-    delete game;
-    game = NULL;
+    delete game; // Comment out to test copy constructor
+    game = NULL; // Comment out to test copy constructor
 
-    cout << "Thank you for playing!";
-    exit(0);
+    cout << "Thank you for playing!" << endl;
+    exit(0); // Comment out to test copy constructor
 }
