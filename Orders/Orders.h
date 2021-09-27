@@ -1,87 +1,157 @@
-
 #pragma once
-#include <bits/stdc++.h>
+#include <vector>
+#include <string>
 
 using namespace std;
 
-class Orders {
+//Fake classes
+class Territory{
 public:
+    vector<Territory> neighbours;
+    bool isNeighbour(Territory* t);
+};
+
+class Player{
+private:
+    vector<Territory> territories;
+public:
+    Player();
+    Player(vector<Territory> territories);
+    //void attack(Territory t);
+    bool ownsTerritory(Territory *t);
+};
+//End of Fake classes
+
+class Orders{
+
+public:
+    //Default constructor
     Orders();
 
-    virtual bool validate();
+    //Copy constructor
 
-    virtual void execute();
-
+    //toString function containing the description of the order
     virtual string toString();
+
+    //Virtual validate method
+    //virtual bool validate();
+
+    //Virtual execute method;
+    //virtual void execute();
+
 };
 
 class Deploy : public Orders{
 public:
+    //Default constructor
     Deploy();
-    bool validate() override;
+    //Parametrized Constructor.
 
-    void execute() override;
+    //Copy constructor
 
-    string toString() override;
+    //toString function containing description of the Deploy Order
+    string toString();
+
+    //Validate method
+    bool validate(Player p, Territory* t);
+
+    //Execute method
+    void execute(Player p,Territory* t);
+
 };
 
-class Advance: public Orders{
+class Advance : public Orders{
 public:
+    //Default constructor
     Advance();
-    bool validate() override;
+    //Parametrized Constructor.
 
-    void execute() override;
+    //Copy constructor
 
-    string toString() override;
+    //toString function containing description of the Advance Order
+    string toString();
+
+    //Validate method
+    bool validate(Player p,Territory* source, Territory* target);
+
+    //Execute method
+    void execute(Player p,Territory* source, Territory* target);
+
 };
 
-class Bomb: public Orders{
+class Bomb : public Orders{
 public:
+    //Default constructor
     Bomb();
-    bool validate() override;
+    //Parametrized Constructor.
 
-    string toString() override;
+    //Copy constructor
+
+    //toString function containing description of the Bomb Order
+    string toString();
+
+    //Validate method
+    bool validate(Player p,Territory* target);
+
+    //Execute method
+    void execute(Player p,Territory* target);
+
 };
 
-class Blockade: public Orders{
+class Blockade : public Orders{
 public:
+    //Default constructor
     Blockade();
-    bool validate() override;
+    //Parametrized Constructor.
 
-    void execute() override;
+    //Copy constructor
 
-    string toString() override;
+    //toString function containing description of the Blockade Order
+    string toString();
+
+    //Validate method
+    bool validate(Player p, Territory* target);
+
+    //Execute method
+    void execute(Player p, Territory* target);
+
 };
 
-class Airlift: public Orders{
+class Airlift : public Orders{
 public:
+    //Default constructor
     Airlift();
-    bool validate() override;
+    //Parametrized Constructor.
 
-    void execute() override;
+    //Copy constructor
 
-    string toString() override;
+    //toString function containing description of the Airlift Order
+    string toString();
+
+    //Validate method
+    bool validate(Player p, Territory *source, Territory *target);
+
+    //Execute method
+    void execute(Player p, Territory* source, Territory* target);
+
 };
 
-class Negotiate: public Orders{
+class Negotiate : public Orders{
 public:
+    //Default constructor
     Negotiate();
-    bool validate() override;
+    //Parametrized Constructor.
 
-    void execute() override;
+    //Copy constructor
 
-    string toString() override;
+    //toString function containing description of the Negotiate Order
+    string toString();
+
+    //Validate method
+    bool validate(Player p1, Player p2);
+
+    //Execute method
+    void execute(Player p1,Player p2);
+
 };
 
-class OrdersList{
-private:
-    list<Orders>* list1;
-public:
-    OrdersList();
-    void remove();
-    void move();
-
-    void insert(Orders &o);
-
-    void print();
-};
