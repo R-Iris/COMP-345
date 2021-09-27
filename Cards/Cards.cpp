@@ -2,15 +2,13 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string>
+#include <vector>
 #include "Cards.h"
 
 using namespace std;
 
-
 // Default constructor
-Card::Card() {
-    return;
-
+Card::Card() : name("No name") {
     // Since the default deck has 5 cards, and we have 5 different types of cards, we'll create 1 card of each type
 }
 
@@ -18,49 +16,47 @@ void Card::play() {
 }
 
 Bomb::Bomb() {
+    name = "Bomb";
     cout << "A card of type bomb has been generated." << '\n';
 }
 
 Reinforcement::Reinforcement() {
+    name = "Reinforcement";
     cout << "A card of type reinforcement has been generated." << '\n';
 }
 
 Blockade::Blockade() {
+    name = "Blockade";
     cout << "A card of type blockade has been generated." << '\n';
 }
 
 Airlift::Airlift() {
+    name = "Airlift";
     cout << "A card of type airlift has been generated." << '\n';
 }
 
 Diplomacy::Diplomacy() {
+    name = "Diplomacy";
     cout << "A card of type diplomacy has been generated." << '\n';
 }
 
 // Default constructor
 Deck::Deck() {
-    srand(time(NULL)); // regenerates the seed for the rand() call below
-    sizeDeck = 5;
     cout << "\nCreating a generic deck..." << '\n';
-    names[0] = {"Bomb"};
-    names[1] = {"Reinforcement"};
-    names[2] = {"Blockade"}; 
-    names[3] = {"Airlift"}; 
-    names[4] = {"Diplomacy"};
-    cards[0] = {new Bomb()};
-    cards[1] = {new Reinforcement()};
-    cards[2] = {new Blockade()};
-    cards[3] = {new Airlift()};
-    cards[4] = {new Diplomacy()};
+    names.push_back("Bomb");
+    names.push_back("Reinforcement");
+    names.push_back("Blockade");
+    names.push_back("Airlift");
+    names.push_back("Diplomacy");
+    cards.push_back(new Bomb());
+    cards.push_back(new Reinforcement());
+    cards.push_back(new Blockade());
+    cards.push_back(new Airlift());
+    cards.push_back(new Diplomacy());
 
-    cout << "The generated deck has " << sizeDeck << " cards." << '\n' ;
+    cout << "The generated deck has " << cards.size() << " cards." << '\n' ;
 }
-/*
 
-Card Deck::getCard() {
-
-}
-*/
 void Deck::setSize(int number) {
     sizeDeck = number; // sets the number of cards in the deck
 }
@@ -70,31 +66,23 @@ int Deck::getSize() {
 }
 
 Card* Deck::draw() {
-    int index{rand() % sizeDeck}; // index in the range of 0 and 4
-    //int* ptrIndex{&index};
+    int index{rand() % (int)cards.size()}; // index in the range of 0 and 4
     cout << "\nYou picked the " << index + 1 << " nth card from the deck." << '\n';
     Card* cardDrawn = cards[index];
-    Card* cardTemp = cards[index];
-    string cardName = names[index];
+    //string cardName = names[index];
 
     //--------------------- THIS PORTION IS JUST FOR TESTING ---------------------------------------
 
-    // removing the card from the deck array by copying everything from cards[index + 1] to the end of the array, one element to the left
-    for (int i = index + 1; i < sizeDeck; i++) {
-        cards[i - 1] = cards[i]; // the issue is that the end of the array won't be automatically set to null
-        names[i - 1] = names[i];
-    }
+    cards.erase(cards.begin() + index);
+    names.erase(names.begin() + index);
 
-    sizeDeck--; // to get rid of the previous issue, we shorten the size of the array by 1
-    cout << "The deck has " << sizeDeck << " cards in it." << '\n';
+    cout << "The deck has " << cards.size() << " cards in it." << '\n';
 
     cout << "The cards left in the deck are..." << '\n';
-    for (int j = 0; j < sizeDeck; j ++) {
-        cout << names[j] << '\n';
-    }
+    for (string element : names) cout << element << '\n';
     //----------------------------------------------------------------------------------------------
 
-    return cardTemp;
+    return cardDrawn;
 }
 
 Hand::Hand() {
@@ -103,16 +91,14 @@ Hand::Hand() {
 }
 
 void Hand::handDrawn(Card* ptrCard) {
-    cardsInHand[cardIndex] = ptrCard;
-    cardIndex++;
+    cardsInHand.push_back(ptrCard);
 
-    cout << "\nYou have " << cardIndex << " cards in your hand." << '\n';
-    cout << "You have a the following cards in your hand: " << '\n';
+    cout << "\nYou have " << cardsInHand.size() << " cards in your hand." << '\n';
+    cout << "You have the following cards in your hand: " << '\n';
 
-    for (int i = 0; i <= cardIndex; i++) {
-        cout << cardsInHand[i] << '\n';
+    for (vector<Card*>::iterator i = cardsInHand.begin(); i != cardsInHand.end(); ++i) {
+        cout << (*i)->name << '\n';
     }
-
 }
 
 /*

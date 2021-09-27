@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
+#include <vector>
 
-using std::string;
+using namespace std;
 
 class Card {
     public:
         Card();
         void play();
+        string name;
 };
 
 // --- children of the class Card, each with their respective constructors ---
@@ -39,27 +41,26 @@ class Diplomacy : public Card {
 class Deck {
     public:
         Deck();
-        Card getCard();
         void setSize(int sizeDeck);
         int getSize();
         Card* draw();
 
     private:
         int sizeDeck{};
-        string names[5];
-        Card* cards[];
+        vector<string> names;
+        vector<Card*> cards;
 };
 
 class Hand {
     public:
         Hand();
         void handDrawn(Card* ptrCard);
-        void print() const;
+        void print();
         void setSize(int sizeHand);
         int getSize();
     
     private:
         int sizeHand{};
         int cardIndex{};
-        Card* cardsInHand[5];
+        vector<Card*> cardsInHand;
 };

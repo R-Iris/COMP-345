@@ -5,7 +5,8 @@ using namespace std;
 
 int main() {
     //int numberDeck{};
-    int numberHand{};
+    //int numberHand{};
+    srand((int)time(NULL)); // regenerates the seed for the rand() call
 
     cout << "This file is just for testing at the moment." << '\n';
 
@@ -30,11 +31,10 @@ int main() {
     */
     cout << "# of cards your hand can hold: " << hand.getSize() << '\n';
 
-    //string card1 = deck.draw();
+    hand.handDrawn(deck.draw());
+    hand.handDrawn(deck.draw());
     hand.handDrawn(deck.draw());
 
-    //string card2 = deck.draw();
-    hand.handDrawn(deck.draw());
 
     return 0;
 }
