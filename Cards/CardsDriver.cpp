@@ -10,9 +10,9 @@ int main() {
 
 	cout << "This file is just for testing at the moment." << '\n';
 
-	Deck deck; // create an object deck
-	Hand hand; // create an object hand
 	Card card; // create an object card
+	Deck* deck = new Deck();
+	Hand* hand = new Hand();
 	/*
 	cout << "Enter how many cards you wish to have in your deck. The integer must be between 15 and 25: ";
 	cin >> numberDeck;
@@ -30,26 +30,25 @@ int main() {
 	}
 	hand.setSize(numberHand);
 	*/
-	cout << "# of cards your hand can hold: " << hand.getSize() << '\n';
+	cout << "# of cards your hand can hold: " << hand->getSize() << '\n';
 
-	vector<Card*> cardsInHand;
+	Card* cardDrawn1 = deck->draw(); //fine
+	hand->addHand(cardDrawn1); //adds the drawn card to the hand
 
-	Card* cardDrawn1 = deck.draw();
-	cardsInHand = hand.addHand(cardDrawn1);
+	Card* cardDrawn2 = deck->draw();
+	hand->addHand(cardDrawn2);
 
-	Card* cardDrawn2 = deck.draw();
-	cardsInHand = hand.addHand(cardDrawn2);
+	Card* cardDrawn3 = deck->draw();
+	hand->addHand(cardDrawn3);
 
-	Card* cardDrawn3 = deck.draw();
-	cardsInHand = hand.addHand(cardDrawn3);
+	cout << "What card do you want to play?" << '\n';
+	int index{};
+	cin >> index;
+	card.play(hand, index, deck);
 
-	Card* cardPlayed1 = card.play(cardsInHand, 1);
-	deck.addCard(cardPlayed1);
-	hand.removeHand(cardPlayed1);
-
-	Card* cardPlayed2 = card.play(cardsInHand, 0);
-	deck.addCard(cardPlayed2);
-	hand.removeHand(cardPlayed2);
+	cout << "What card do you want to play?" << '\n';
+	cin >> index;
+	card.play(hand, index, deck);
 
 	return 0;
 }

@@ -12,6 +12,19 @@ Card::Card() : name("No name") {
 	return;
 }
 
+void Card::play(Hand* hand, int index, Deck* deck) {
+	if (!validateIndex(hand->getHand(), index)) {
+		cout << "\nYour hand only contains " << hand->getHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
+		exit(1);
+	}
+
+	Card* playedCard = hand->getCardInHand(index);
+	cout << "\nThe " << playedCard->name << " card has been played." << '\n';
+
+	hand->removeHand(index); // removes card played from the hand
+	deck->addCard(playedCard); // adds the card played to the deck
+}
+
 ostream& operator<< (ostream& out, const vector<Card*> cards) {
 	out << "[ ";
 	for (int i = 0; i < cards.size(); i++) {
@@ -21,17 +34,6 @@ ostream& operator<< (ostream& out, const vector<Card*> cards) {
 	out << " ]\n";
 
 	return out;
-}
-
-Card* Card::play(vector<Card*> vector, int index) {
-	if (!validateIndex(vector, index)) {
-		cout << "\nYour hand only contains " << vector.size() << " cards. The index you entered is invalid. Terminating program." << '\n';
-		exit(1);
-	}
-
-	cout << "\nThe " << vector[index]->name << " card has been played." << '\n';
-
-	return vector[index];
 }
 
 bool Card::validateIndex(vector<Card*> vector, int index) {
@@ -110,14 +112,11 @@ Hand::Hand() : sizeHand(3) {
 	cout << "\nCreating the player's hand..." << '\n';
 }
 
-
-vector<Card*> Hand::addHand(Card* ptrCard) {
+void Hand::addHand(Card* ptrCard) {
 	cardsInHand.push_back(ptrCard);
-
 	cout << "\nYou have " << cardsInHand.size() << " card(s) in your hand." << '\n';
-	cout << "You have the following card(s) in your hand: " << cardsInHand;
 
-	return cardsInHand;
+	cout << "You have the following card(s) in your hand: " << cardsInHand;
 }
 
 void Hand::setSize(int number) {
@@ -128,13 +127,25 @@ int Hand::getSize() {
 	return sizeHand;
 }
 
-void Hand::removeHand(Card* card) {
-	for (vector<Card*>::iterator i = cardsInHand.begin(); i != cardsInHand.end(); i++) {
-		if (card->name == (*i)->name) {
-			cardsInHand.erase(i);
-			break;
-		}
-	}
+Card* Hand::getCardInHand(int index) {
+	return cardsInHand.at(index);
+}
+
+vector<Card*> Hand::getHand() {
+	return cardsInHand;
+}
+
+void Hand::removeHand(int index) {
+	cardsInHand.erase(cardsInHand.begin() + index);
 
 	cout << "You have the following card(s) in your hand: " << cardsInHand;
+}
+
+bool Hand::handFull() {
+	if (cardsInHand.size() >= sizeHand) {
+		cout << "Your hand is full." << '\n';
+		return true;
+	}
+
+	return false;
 }
