@@ -6,17 +6,21 @@ using namespace std;
 
 //Fake classes
 class Territory{
+private:
+    string name;
 public:
-    vector<Territory> neighbours;
+    Territory(string name);
+    vector<Territory*> neighbours;
     bool isNeighbour(Territory* t);
 };
 
 class Player{
 private:
-    vector<Territory> territories;
+    string name;
+    vector<Territory*> territories;
 public:
     Player();
-    Player(vector<Territory> territories);
+    Player(string name, vector<Territory*> territories);
     //void attack(Territory t);
     bool ownsTerritory(Territory *t);
 };
@@ -29,6 +33,10 @@ public:
     Orders();
 
     //Copy constructor
+    //Orders(const Orders& orders);
+
+    //Assignment operator
+    //Orders& operator = (const Orders& orders);
 
     //toString function containing the description of the order
     virtual string toString();
@@ -154,4 +162,5 @@ public:
     void execute(Player p1,Player p2);
 
 };
+
 
