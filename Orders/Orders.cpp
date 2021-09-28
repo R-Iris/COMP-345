@@ -14,6 +14,10 @@ string Orders::toString() {
     return {};
 }
 
+//Orders::Orders(const Orders &orders) = default;
+
+//Orders& Orders::operator=(const Orders &orders) = default;
+
 
 Deploy::Deploy() = default;
 string Deploy:: toString(){
@@ -24,6 +28,7 @@ bool Deploy::validate(Player p,Territory* t) {
         cout << "Deploy order is valid" << endl;
         return true;
     }
+    cout << "Deploy order is invalid since player p does not own target territory" <<endl;
     return false;
 }
 void Deploy::execute(Player p, Territory* t) {
@@ -75,10 +80,10 @@ string Bomb::toString(){
     return "Bomb order has been called\n";
 }
 bool Bomb::validate(Player p,Territory* target) {
-    //Checking if one of the neighbours of target is owned by p
+    //Checking if one of the neighbours of target is owned by p or if the target itself is owned by p
     auto it = target->neighbours.begin();
     for(;it!=target->neighbours.end();it++){
-        if(p.ownsTerritory(it.base())){
+        if(p.ownsTerritory(*it) || p.ownsTerritory(target)){
             return true;
         }
     }
@@ -163,19 +168,33 @@ void Negotiate::execute(Player p1,Player p2) {
 //Fake methods to test if everything works later
 
 Player::Player() = default;
-
-Player::Player(vector<Territory> territories) {
+Player::Player(string name,vector<Territory*> territories) {
+    this->name = name;
     this->territories = territories;
 }
 
+bool Player::ownsTerritory(Territory *t) {
+    auto it = territories.begin();
+    for(;it!=territories.end();it++){
+        if(t == *it) return true;
+    }
+    return false;
+}
+
+Territory::Territory(string name) {
+    this->name = name;
+}
 bool Territory::isNeighbour(Territory *t) {
-    auto it = this->neighbours.begin();
-    for(;it!= this->neighbours.end();it++){
-        if(t == it.base()){
-            return true;
-        }
+    auto it = neighbours.begin();
+    for(;it!=neighbours.end();it++){
+        if(t == * it) return true;
     }
     return false;
 }
 
 //End of fake methods
+
+
+//Start of OrdersList class implementation
+
+//End of OrdersList class implementation
