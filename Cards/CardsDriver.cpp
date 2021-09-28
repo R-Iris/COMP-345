@@ -4,37 +4,39 @@
 using namespace std;
 
 int main() {
-    //int numberDeck{};
-    //int numberHand{};
-    srand((int)time(NULL)); // regenerates the seed for the rand() call
+	//int numberDeck{};
+	//int numberHand{};
+	srand((int)time(NULL)); // regenerates the seed for the rand() call
 
-    cout << "This file is just for testing at the moment." << '\n';
+	cout << "This file is just for testing at the moment." << '\n';
 
-    Deck deck; // create an object deck
-    Hand hand; // create an object hand
-    /*
-    cout << "Enter how many cards you wish to have in your deck. The integer must be between 15 and 25: ";
-    cin >> numberDeck;
-    while ((numberDeck < 15) || numberDeck > 25) {
-        cout << "Please enter an integer between 15 and 25: ";
-        cin >> numberDeck;
-    }
-    deck.setSize(ptrDeck);
-    cout << "Enter how many cards you wish to have in your hand. The integer must be between 2 and 3: ";
-    cin >> numberHand;
-    while ((numberHand < 2) || numberHand > 3)
-    {
-        cout << "Please enter an integer between 2 and 3: ";
-        cin >> numberHand;
-    }
-    hand.setSize(numberHand);
-    */
-    cout << "# of cards your hand can hold: " << hand.getSize() << '\n';
+	Deck deck; // create an object deck
+	Hand hand; // create an object hand
+	Card card; // create an object card
+	/*
+	cout << "Enter how many cards you wish to have in your deck. The integer must be between 15 and 25: ";
+	cin >> numberDeck;
+	while ((numberDeck < 15) || numberDeck > 25) {
+		cout << "Please enter an integer between 15 and 25: ";
+		cin >> numberDeck;
+	}
+	deck.setSize(ptrDeck);
+	cout << "Enter how many cards you wish to have in your hand. The integer must be between 2 and 3: ";
+	cin >> numberHand;
+	while ((numberHand < 2) || numberHand > 3)
+	{
+		cout << "Please enter an integer between 2 and 3: ";
+		cin >> numberHand;
+	}
+	hand.setSize(numberHand);
+	*/
+	cout << "# of cards your hand can hold: " << hand.getSize() << '\n';
 
-    hand.handDrawn(deck.draw());
-    hand.handDrawn(deck.draw());
-    hand.handDrawn(deck.draw());
+	vector<Card*> vector{ hand.handDrawn(deck.draw()) };
+	vector = hand.handDrawn(deck.draw());
+	vector = hand.handDrawn(deck.draw());
+	card.play(vector, 2);
+	card.play(vector, 1);
 
-
-    return 0;
+	return 0;
 }

@@ -1,66 +1,65 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <type_traits>
 
 using namespace std;
 
 class Card {
-    public:
-        Card();
-        void play();
-        string name;
+public:
+	Card();
+	void play(vector<Card*> vector, int index);
+	string name;
 };
 
 // --- children of the class Card, each with their respective constructors ---
 class Bomb : public Card {
-    public:
-        Bomb();
+public:
+	Bomb();
 };
 
 class Reinforcement : public Card {
-    public:
-        Reinforcement();
+public:
+	Reinforcement();
 };
 
 class Blockade : public Card {
-    public:
-        Blockade();
+public:
+	Blockade();
 };
 
 class Airlift : public Card {
-    public:
-        Airlift();
+public:
+	Airlift();
 };
 
 class Diplomacy : public Card {
-    public:
-        Diplomacy();
+public:
+	Diplomacy();
 };
 // -------------------------------
 
 class Deck {
-    public:
-        Deck();
-        void setSize(int sizeDeck);
-        int getSize();
-        Card* draw();
+public:
+	Deck();
+	void setSize(int sizeDeck);
+	int getSize();
+	Card* draw();
 
-    private:
-        int sizeDeck{};
-        vector<string> names;
-        vector<Card*> cards;
+private:
+	int sizeDeck{};
+	vector<Card*> cards;
 };
 
 class Hand {
-    public:
-        Hand();
-        void handDrawn(Card* ptrCard);
-        void print();
-        void setSize(int sizeHand);
-        int getSize();
-    
-    private:
-        int sizeHand{};
-        int cardIndex{};
-        vector<Card*> cardsInHand;
+public:
+	Hand();
+	vector<Card*> handDrawn(Card* ptrCard);
+	void setSize(int sizeHand);
+	int getSize();
+
+private:
+	int sizeHand{};
+	int cardIndex{};
+	vector<Card*> cardsInHand;
 };
