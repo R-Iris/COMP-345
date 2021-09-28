@@ -8,8 +8,14 @@ using namespace std;
 class Card {
 public:
 	Card();
-	void play(vector<Card*> vector, int index);
+	Card* play(vector<Card*>, int);
+	bool validateIndex(vector<Card*>, int);
 	string name;
+
+private:
+	Card* card;
+
+	friend ostream& operator<< (ostream&, const vector<Card*>);
 };
 
 // --- children of the class Card, each with their respective constructors ---
@@ -45,6 +51,9 @@ public:
 	void setSize(int sizeDeck);
 	int getSize();
 	Card* draw();
+	void addCard(Card* card);
+
+	friend ostream& operator<< (ostream&, const vector<Card*>);
 
 private:
 	int sizeDeck{};
@@ -54,9 +63,12 @@ private:
 class Hand {
 public:
 	Hand();
-	vector<Card*> handDrawn(Card* ptrCard);
-	void setSize(int sizeHand);
+	string toString();
+	vector<Card*> handDrawn(Card*);
+	void setSize(int);
 	int getSize();
+
+	friend ostream& operator<< (ostream&, const vector<Card*>);
 
 private:
 	int sizeHand{};
