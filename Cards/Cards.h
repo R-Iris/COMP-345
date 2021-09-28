@@ -8,7 +8,7 @@ using namespace std;
 class Card {
 public:
 	Card();
-	Card* play(vector<Card*>, int);
+	void play(class Hand*, int, class Deck*);
 	bool validateIndex(vector<Card*>, int);
 	string name;
 
@@ -60,10 +60,13 @@ private:
 class Hand {
 public:
 	Hand();
-	vector<Card*> addHand(Card*);
+	void addHand(Card*);
+	Card* getCardInHand(int);
 	void setSize(int);
 	int getSize();
-	void removeHand(Card*);
+	vector<Card*> getHand();
+	void removeHand(int);
+	bool handFull();
 
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 

@@ -6,12 +6,6 @@ State::State() : stateName("none"), nextState(nullptr)
 {
 }
 
-State::~State()
-{
-    delete nextState;
-    nextState = nullptr;
-}
-
 State::State(string name, State *nextState) : stateName(name), nextState(nextState)
 {
 }
@@ -76,14 +70,8 @@ Transition::Transition()
 
 Transition::~Transition()
 {
-    // int size = states.size();
-    // for (int i = 0; i < size; i++)
-    // {
-    //     delete states.at(i);
-    //     states.at(i) = nullptr;
-    // }
-    // delete currentState;
-    // currentState = nullptr;
+    states.clear();
+    currentState = nullptr;
 }
 
 Transition::Transition(const Transition *transition) : states(transition->states), currentState(transition->currentState)
@@ -173,7 +161,6 @@ bool Transition::changeState(string command)
     }
     else if (currentState == states[6] && command == "win")
     {
-        // currentState = win; stops the program ( = copy constructor? )
         currentState = states[7];
         cout << currentState;
         return true;

@@ -15,8 +15,6 @@ public:
 
     // Default constructor
     State();
-    // Destructor
-    ~State();
     // Parametrized constructor
     State(string name, State *nextState);
     // Parametrized constructor
