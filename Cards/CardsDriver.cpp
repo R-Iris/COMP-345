@@ -32,11 +32,24 @@ int main() {
 	*/
 	cout << "# of cards your hand can hold: " << hand.getSize() << '\n';
 
-	vector<Card*> vector{ hand.handDrawn(deck.draw()) };
-	vector = hand.handDrawn(deck.draw());
-	vector = hand.handDrawn(deck.draw());
-	card.play(vector, 2);
-	card.play(vector, 1);
+	vector<Card*> cardsInHand;
+
+	Card* cardDrawn1 = deck.draw();
+	cardsInHand = hand.addHand(cardDrawn1);
+
+	Card* cardDrawn2 = deck.draw();
+	cardsInHand = hand.addHand(cardDrawn2);
+
+	Card* cardDrawn3 = deck.draw();
+	cardsInHand = hand.addHand(cardDrawn3);
+
+	Card* cardPlayed1 = card.play(cardsInHand, 1);
+	deck.addCard(cardPlayed1);
+	hand.removeHand(cardPlayed1);
+
+	Card* cardPlayed2 = card.play(cardsInHand, 0);
+	deck.addCard(cardPlayed2);
+	hand.removeHand(cardPlayed2);
 
 	return 0;
 }
