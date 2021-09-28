@@ -8,7 +8,7 @@
 using namespace std;
 
 // Default constructor
-Card::Card() : name("No name"), card(NULL) {
+Card::Card() : name("No name") {
 	return;
 }
 
@@ -30,12 +30,8 @@ Card* Card::play(vector<Card*> vector, int index) {
 	}
 
 	cout << "\nThe " << vector[index]->name << " card has been played." << '\n';
-	card = vector[index];
-	vector.erase(vector.begin() + index); // Removing the card from the hand
 
-	cout << "You have the following cards in your hand: " << vector;
-
-	return card;
+	return vector[index];
 }
 
 bool Card::validateIndex(vector<Card*> vector, int index) {
@@ -115,11 +111,11 @@ Hand::Hand() : sizeHand(3) {
 }
 
 
-vector<Card*> Hand::handDrawn(Card* ptrCard) {
+vector<Card*> Hand::addHand(Card* ptrCard) {
 	cardsInHand.push_back(ptrCard);
 
 	cout << "\nYou have " << cardsInHand.size() << " card(s) in your hand." << '\n';
-	cout << "The following cards are in your hand: " << cardsInHand;
+	cout << "You have the following card(s) in your hand: " << cardsInHand;
 
 	return cardsInHand;
 }
@@ -130,4 +126,15 @@ void Hand::setSize(int number) {
 
 int Hand::getSize() {
 	return sizeHand;
+}
+
+void Hand::removeHand(Card* card) {
+	for (vector<Card*>::iterator i = cardsInHand.begin(); i != cardsInHand.end(); i++) {
+		if (card->name == (*i)->name) {
+			cardsInHand.erase(i);
+			break;
+		}
+	}
+
+	cout << "You have the following card(s) in your hand: " << cardsInHand;
 }

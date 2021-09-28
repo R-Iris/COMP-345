@@ -12,9 +12,6 @@ public:
 	bool validateIndex(vector<Card*>, int);
 	string name;
 
-private:
-	Card* card;
-
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 };
 
@@ -63,15 +60,14 @@ private:
 class Hand {
 public:
 	Hand();
-	string toString();
-	vector<Card*> handDrawn(Card*);
+	vector<Card*> addHand(Card*);
 	void setSize(int);
 	int getSize();
+	void removeHand(Card*);
 
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
 private:
 	int sizeHand{};
-	int cardIndex{};
 	vector<Card*> cardsInHand;
 };
