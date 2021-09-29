@@ -18,24 +18,47 @@ string Orders::toString() {
 
 //Orders& Orders::operator=(const Orders &orders) = default;
 
+//------------------Deploy class--------------------
 
-Deploy::Deploy() = default;
-string Deploy:: toString(){
-    return "A deploy order has been called\n";
+Deploy::Deploy(int noOfArmies, Territory *target) {
+    this->noOfArmies = noOfArmies;
+    this->target = target;
 }
-bool Deploy::validate(Player p,Territory* t) {
-    if(p.ownsTerritory(t)) {
+
+void Deploy::setNoOfArmies(int army){
+    this->noOfArmies = army;
+}
+
+int Deploy::getNoOfArmies() const{
+    return this->noOfArmies;
+}
+
+void Deploy::setTarget(Territory* t){
+    this->target = t;
+}
+
+Territory* Deploy::getTarget(){
+    return this->target;
+}
+
+string Deploy:: toString(){
+    return "Placing some armies on one of the current player’s territories. \n";
+}
+
+bool Deploy::validate(Player p) {
+    if(p.ownsTerritory(getTarget()) && getNoOfArmies() > 0) {
         cout << "Deploy order is valid" << endl;
         return true;
     }
-    cout << "Deploy order is invalid since player p does not own target territory" <<endl;
+    cout << "Deploy order is invalid since player " + p.getName() + " does not own " + target->getName() + " territory" <<endl;
     return false;
 }
-void Deploy::execute(Player p, Territory* t) {
-    if(validate(p,t)){
+
+void Deploy::execute(Player p) {
+    if(validate(p)){
         cout << "Executing the deploy order" << endl;
         //Only printing the message, armies have not been moved
-        cout << "Player p has deployed some armies to territory t" << endl;
+        cout << "Player " + p.getName() +" has deployed " << getNoOfArmies() << " armies to territory " + target->getName()  << endl;
     }
     else{
         cout << "The deploy call was not executed" << endl;
@@ -43,30 +66,62 @@ void Deploy::execute(Player p, Territory* t) {
 }
 
 
-Advance::Advance() = default;
-string Advance::toString(){
-    return "An advance order has been called\n";
+//------------------------------Advance class---------------------
+
+Advance::Advance(int n, Territory *s, Territory *t) {
+    this->noOfArmies = n;
+    this->source = s;
+    this->target = t;
 }
-bool Advance::validate(Player p,Territory* source, Territory* target) {
+
+int Advance::getNoOfArmies() const {
+    return noOfArmies;
+}
+
+void Advance::setNoOfArmies(int n) {
+    this->noOfArmies = n;
+}
+
+Territory* Advance::getTarget() {
+    return target;
+}
+
+void Advance::setTarget(Territory *t) {
+    target = t;
+}
+
+Territory* Advance::getSource() {
+    return source;
+}
+void Advance::setSource(Territory *s) {
+    source = s;
+}
+
+string Advance::toString(){
+    return "Moving some armies from one of the current player’s territories (source) to an adjacent territory (target)\n";
+}
+
+bool Advance::validate(Player p) {
     //Checking if target is a neighbour of source
     if(source->isNeighbour(target) && p.ownsTerritory(source)){
         cout << "Advance order is valid" << endl;
         return true;
     }
-    cout << "Cannot advance to that territory since player p does not have any owned neighbour territories" << endl;
+    cout << "Cannot advance to that territory since Player " + p.getName() + "does not have any owned neighbour territories" << endl;
     return false;
 }
-void Advance::execute(Player p,Territory* source, Territory* target) {
-    if(validate(p,source,target)){
+void Advance::execute(Player p) {
+    if(validate(p)){
         if(p.ownsTerritory(target)){
             cout << "Executing advance order" << endl;
             //Only printing the message, armies have not been moved
-            cout << "Player p has moved some armies from source territory to target territory" <<endl;
+            cout << "Player " + p.getName() + " has moved " << getNoOfArmies() <<
+            " armies from " + source->getName() + " territory to " + target->getName() + " territory" << endl;
         }
         else{
             cout << "Executing advance order" << endl;
             //Only printing the message, not attacking the territory
-            cout << "Player p attacking target territory" << endl;
+            cout << "Player " + p.getName() + " attacking " + target->getName() + " territory" << endl;
         }
     }
     else{
@@ -74,12 +129,25 @@ void Advance::execute(Player p,Territory* source, Territory* target) {
     }
 }
 
+//------------------------------Bomb class---------------------
 
-Bomb::Bomb() = default;
-string Bomb::toString(){
-    return "Bomb order has been called\n";
+Bomb::Bomb(Territory *target) {
+    this->target = target;
 }
-bool Bomb::validate(Player p,Territory* target) {
+
+Territory* Bomb::getTarget() {
+    return target;
+}
+
+void Bomb::setTarget(Territory *t) {
+    target = t;
+}
+
+string Bomb::toString(){
+    return "Destroying half of the armies located on an opponent’s territory that is adjacent to one of the current "
+           "player’s territories. \n";
+}
+bool Bomb::validate(Player p) {
     //Checking if one of the neighbours of target is owned by p or if the target itself is owned by p
     auto it = target->neighbours.begin();
     for(;it!=target->neighbours.end();it++){
@@ -87,18 +155,18 @@ bool Bomb::validate(Player p,Territory* target) {
             return true;
         }
     }
-    cout << "Cannot bomb that territory since player p does not have any owned neighbour territories" << endl;
+    cout << "Cannot bomb that territory since player " + p.getName() +" does not have any owned neighbour territories" << endl;
     return false;
 }
-void Bomb::execute(Player p,Territory* target) {
-    if(validate(p,target)){
+void Bomb::execute(Player p) {
+    if(validate(p)){
         if(p.ownsTerritory(target)){
             cout << "Order not executed, since you cannot bomb your own territories" << endl;
         }
         else{
             cout << "Executing bomb order" << endl;
             //Only printing the message, not bombing the territory
-            cout << "Sucessfully bombed target territory" << endl;
+            cout << "Sucessfully bombed " + target->getName() + " territory" << endl;
         }
     }
     else{
@@ -106,23 +174,44 @@ void Bomb::execute(Player p,Territory* target) {
     }
 }
 
+//------------------------------Blockade class---------------------
 
-Blockade::Blockade() = default;
-string Blockade::toString(){
-    return "A blockade order has been called\n";
+Blockade::Blockade(int noOfArmies, Territory *target) {
+    this->noOfArmies = noOfArmies;
+    this->target = target;
 }
-bool Blockade::validate(Player p,Territory* target) {
+
+void Blockade::setTarget(Territory *t) {
+    target= t;
+}
+
+Territory* Blockade::getTarget() {
+    return target;
+}
+
+int Blockade::getNoOfArmies() const {
+    return noOfArmies;
+}
+
+void Blockade::setNoOfArmies(int n) {
+    noOfArmies = n;
+}
+
+string Blockade::toString(){
+    return "Tripling the number of armies on one of the current player’s territories and making it a neutral territory\n";
+}
+bool Blockade::validate(Player p) {
     if(p.ownsTerritory(target)){
         return true;
     }
-    cout << "You do not own target territory" << endl;
+    cout << "You do not own " + target->getName() + "territory" << endl;
     return false;
 }
-void Blockade::execute(Player p, Territory* target) {
-    if(validate(p,target)){
+void Blockade::execute(Player p) {
+    if(validate(p)){
         cout << "Executing blockade order" << endl;
         //Only printing the message, not tripling the armies
-        cout << "Successfully triples the number of armies in the target territory" << endl;
+        cout << "Successfully triples the number of armies in " + target->getName() + " territory" << endl;
     }
     else{
         cout << "The blockade order was not executed" << endl;
@@ -130,28 +219,59 @@ void Blockade::execute(Player p, Territory* target) {
 }
 
 
-Airlift::Airlift() = default;
-string Airlift::toString(){
-    return "An airlift order has been called\n";
+//------------------------------Airlift class---------------------
+
+Airlift::Airlift(int n, Territory *s, Territory *t) {
+    this->noOfArmies = n;
+    this->source = s;
+    this->target = t;
 }
-bool Airlift::validate(Player p, Territory* source, Territory* target) {
+
+int Airlift::getNoOfArmies() const {
+    return noOfArmies;
+}
+
+void Airlift::setNoOfArmies(int n) {
+    this->noOfArmies = n;
+}
+
+Territory* Airlift::getTarget() {
+    return target;
+}
+
+void Airlift::setTarget(Territory *t) {
+    target = t;
+}
+
+Territory* Airlift::getSource() {
+    return source;
+}
+void Airlift::setSource(Territory *s) {
+    source = s;
+}
+
+string Airlift::toString(){
+    return "Advancing some armies from one of the current player’s territories to any another territory.\n";
+}
+bool Airlift::validate(Player p) {
     if(p.ownsTerritory(source)){
         return true;
     }
-    cout << "You do not own source territory" << endl;
+    cout << "You do not own " + source->getName() + " territory" << endl;
     return false;
 }
-void Airlift::execute(Player p, Territory* source, Territory* target) {
-    if(validate(p,source,target)){
+void Airlift::execute(Player p) {
+    if(validate(p)){
         cout << "Executing Airlift order" << endl;
         //Only printing the message, no armies have been moved
-        cout << "Successfully moved some armies from source to target territory via airlift" << endl;
+        cout << "Successfully moved " << getNoOfArmies() << " armies from " + source->getName() +" to " + target->getName() + "territory via airlift" << endl;
     }
     else{
         cout << "Airlift order has not been executed";
     }
 }
 
+//--------------------------Negotiate class------------------
 
 Negotiate::Negotiate() = default;
 string Negotiate::toString(){
@@ -165,12 +285,28 @@ bool Negotiate::validate(Player p1,Player p2) {
 void Negotiate::execute(Player p1,Player p2) {
 }
 
-//Fake methods to test if everything works later
 
-Player::Player() = default;
+//--------Fake methods to test if everything works later---------------
+
 Player::Player(string name,vector<Territory*> territories) {
     this->name = name;
     this->territories = territories;
+}
+
+void Player::setName(string n){
+    this->name = n;
+}
+
+string Player::getName(){
+    return this->name;
+}
+
+vector<Territory*> Player::getTerritories(){
+    return this->territories;
+}
+
+void Player::setTerritories(vector<Territory*> v){
+    this->territories = v;
 }
 
 bool Player::ownsTerritory(Territory *t) {
@@ -181,8 +317,14 @@ bool Player::ownsTerritory(Territory *t) {
     return false;
 }
 
-Territory::Territory(string name) {
-    this->name = name;
+Territory::Territory(string n) {
+    this->name = n;
+}
+void Territory::setName(string n){
+    this->name = n;
+}
+string Territory::getName(){
+    return name;
 }
 bool Territory::isNeighbour(Territory *t) {
     auto it = neighbours.begin();
@@ -192,7 +334,7 @@ bool Territory::isNeighbour(Territory *t) {
     return false;
 }
 
-//End of fake methods
+//-------------------End of fake methods--------------------------
 
 
 //Start of OrdersList class implementation
