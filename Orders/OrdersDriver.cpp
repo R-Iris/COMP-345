@@ -1,3 +1,4 @@
+
 #include "Orders.h"
 #include <iostream>
 using namespace std;
@@ -24,24 +25,24 @@ int main(){
 
    cout << endl;
 
-   Deploy* d1 = new Deploy();
-   d1->execute(*p1,t6);
+   Deploy* d1 = new Deploy(1,t6);
+   d1->execute(*p1);
    cout << endl;
 
-   Advance* a1 = new Advance();
-   a1->execute(*p1,t2,t3);
+   Advance* a1 = new Advance(2,t2,t3);
+   a1->execute(*p1);
    cout << endl;
 
-   Bomb* b1 = new Bomb();
-   b1->execute(*p2,t3);
+   Bomb* b1 = new Bomb(t3);
+   b1->execute(*p2);
    cout << endl;
 
-   Blockade* bl1 = new Blockade();
-   bl1->execute(*p3,t5);
+   Blockade* bl1 = new Blockade(4,t5);
+   bl1->execute(*p3);
    cout << endl;
 
-   Airlift* ai1 = new Airlift();
-   ai1->execute(*p3,t5,t1);
+   Airlift* ai1 = new Airlift(3,t5,t1);
+   ai1->execute(*p3);
    cout << endl;
 
    /*
@@ -52,10 +53,3 @@ int main(){
 
    return 0;
 }
-
-/*
- * Questions:
- * 1.Can players and territories have name attributes
- * 2.Should an order class have private members
- * 3.How to validate negotiate order
- */
