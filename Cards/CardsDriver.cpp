@@ -10,9 +10,16 @@ int main() {
 
 	cout << "This file is just for testing at the moment." << '\n';
 
-	Deck deck; // create an object deck
-	Hand hand; // create an object hand
-	Card card; // create an object card
+	Card card; // Create an object card
+
+	Deck* deck = new Deck();
+	cout << *deck;
+
+	Deck copyDeck(*deck); // Copy constructor
+	Deck copyDeck2 = *deck; // Calls overloaded assignment
+
+	Hand* hand = new Hand();
+
 	/*
 	cout << "Enter how many cards you wish to have in your deck. The integer must be between 15 and 25: ";
 	cin >> numberDeck;
@@ -30,26 +37,49 @@ int main() {
 	}
 	hand.setSize(numberHand);
 	*/
-	cout << "# of cards your hand can hold: " << hand.getSize() << '\n';
+	cout << "# of cards your hand can hold: " << hand->getSize() << '\n';
 
-	vector<Card*> cardsInHand;
+	Card* cardDrawn1 = deck->draw(); //fine
+	hand->addHand(cardDrawn1); //adds the drawn card to the hand
+	cout << *deck << *hand;
 
-	Card* cardDrawn1 = deck.draw();
-	cardsInHand = hand.addHand(cardDrawn1);
+	Card* cardDrawn2 = deck->draw();
+	hand->addHand(cardDrawn2);
+	cout << *deck << *hand;
 
-	Card* cardDrawn2 = deck.draw();
-	cardsInHand = hand.addHand(cardDrawn2);
+	Card* cardDrawn3 = deck->draw();
+	hand->addHand(cardDrawn3);
+	cout << *deck << *hand;
 
-	Card* cardDrawn3 = deck.draw();
-	cardsInHand = hand.addHand(cardDrawn3);
+	Hand copyHand(*hand);
+	Hand copyHand2 = *hand;
 
-	Card* cardPlayed1 = card.play(cardsInHand, 1);
-	deck.addCard(cardPlayed1);
-	hand.removeHand(cardPlayed1);
+	cout << "What card do you want to play? Enter the index: ";
+	int index{};
+	cin >> index;
+	card.play(hand, index, deck);
+	cout << *deck << *hand;
 
-	Card* cardPlayed2 = card.play(cardsInHand, 0);
-	deck.addCard(cardPlayed2);
-	hand.removeHand(cardPlayed2);
+	cout << "What card do you want to play? Enter the index: ";
+	cin >> index;
+	card.play(hand, index, deck);
+	cout << *deck << *hand;
+
+	cout << "\n----------------------------------------------------------\n\n";
+	
+	cout << "Original deck: " << *deck << "Its memory address is : " << &deck << '\n';
+	cout << "Using the copy constructor: " << copyDeck << "Its memory address is: " << &copyDeck << '\n'; // Output of the copied deck
+	cout << "Using the assignment operator: " << copyDeck2 << "Its memory address is: " << &copyDeck2 << '\n'; // Output of the copied deck with assignment operator
+
+	cout << "\nOriginal hand: " << *hand << "Its memory address is: " << &hand << '\n';
+	cout << "Using the copy constructor: " << copyHand << "Its memory address is: " << &copyHand << '\n'; // Output of the copied hand
+	cout << "Using the assignment operator: " << copyHand2 << "Its memory address is: " << &copyHand2 << '\n'; // Output of the copied hand with assignment operator
+
+
+	delete deck;
+	delete hand;
+	deck = NULL;
+	hand = NULL;
 
 	return 0;
 }

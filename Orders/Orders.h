@@ -4,14 +4,18 @@
 
 using namespace std;
 
-//Fake classes
+//-------------Fake classes :To remove in other assignments------------
 class Territory{
 private:
     string name;
 public:
-    Territory(string name);
+    explicit Territory(string name);
     vector<Territory*> neighbours;
     bool isNeighbour(Territory* t);
+
+    void setName(string n);
+
+    string getName();
 };
 
 class Player{
@@ -19,12 +23,25 @@ private:
     string name;
     vector<Territory*> territories;
 public:
-    Player();
+    //Parameterised constructor
+
     Player(string name, vector<Territory*> territories);
+
+    //Copy constructor
+
+    //Getters and setters
+
+    void setTerritories(vector<Territory *> v);
+    vector<Territory *> getTerritories();
+    string getName();
+    void setName(string n);
+
     //void attack(Territory t);
+
     bool ownsTerritory(Territory *t);
 };
-//End of Fake classes
+
+//--------------End of Fake classes-------------------
 
 class Orders{
 
@@ -33,10 +50,10 @@ public:
     Orders();
 
     //Copy constructor
-    //Orders(const Orders& orders);
 
     //Assignment operator
-    //Orders& operator = (const Orders& orders);
+
+    //Stream insertion operator
 
     //toString function containing the description of the order
     virtual string toString();
@@ -49,100 +66,184 @@ public:
 
 };
 
+//---------Deploy class-------------------
 class Deploy : public Orders{
+private:
+    int noOfArmies;
+    Territory* target;
 public:
-    //Default constructor
-    Deploy();
     //Parametrized Constructor.
-
+    Deploy(int noOfArmies,Territory* target);
     //Copy constructor
+
+    //Assignment operator
+
+    //Stream insertion operator
+
+    //Setters and Getters
+    void setNoOfArmies(int noOfArmies);
+
+    int getNoOfArmies() const;
+
+    void setTarget(Territory *target);
+
+    Territory *getTarget();
 
     //toString function containing description of the Deploy Order
     string toString();
 
     //Validate method
-    bool validate(Player p, Territory* t);
+    bool validate(Player p);
 
     //Execute method
-    void execute(Player p,Territory* t);
-
+    void execute(Player p);
 };
 
-class Advance : public Orders{
-public:
-    //Default constructor
-    Advance();
-    //Parametrized Constructor.
 
+//------Advance class--------------------------
+class Advance : public Orders{
+private:
+    int noOfArmies;
+    Territory* source;
+    Territory* target;
+public:
+    //Parametrized Constructor.
+    Advance(int noOfArmies, Territory* source, Territory* target);
     //Copy constructor
 
-    //toString function containing description of the Advance Order
+    //Assignment operator
+
+    //Stream insertion operator
+
+    //Setters and Getters
+    void setNoOfArmies(int noOfArmies);
+
+    int getNoOfArmies() const;
+
+    void setSource(Territory* source);
+
+    Territory* getSource();
+
+    void setTarget(Territory *target);
+
+    Territory *getTarget();
+
+    //toString function containing description of the Deploy Order
     string toString();
 
     //Validate method
-    bool validate(Player p,Territory* source, Territory* target);
+    bool validate(Player p);
 
     //Execute method
-    void execute(Player p,Territory* source, Territory* target);
+    void execute(Player p);
 
 };
+
+//--------------Bomb class---------------------
 
 class Bomb : public Orders{
+private:
+    Territory* target;
 public:
-    //Default constructor
-    Bomb();
     //Parametrized Constructor.
-
+    explicit Bomb(Territory* target);
     //Copy constructor
 
-    //toString function containing description of the Bomb Order
+    //Assignment operator
+
+    //Stream insertion operator
+
+    //Setters and Getters
+    void setTarget(Territory *target);
+
+    Territory *getTarget();
+
+    //toString function containing description of the Deploy Order
     string toString();
 
     //Validate method
-    bool validate(Player p,Territory* target);
+    bool validate(Player p);
 
     //Execute method
-    void execute(Player p,Territory* target);
+    void execute(Player p);
 
 };
+
+//--------------Blockade class---------------------
 
 class Blockade : public Orders{
+private:
+    int noOfArmies;
+    Territory* target;
 public:
-    //Default constructor
-    Blockade();
     //Parametrized Constructor.
-
+    Blockade(int noOfArmies,Territory* target);
     //Copy constructor
 
-    //toString function containing description of the Blockade Order
+    //Assignment operator
+
+    //Stream insertion operator
+
+    //Setters and Getters
+    void setNoOfArmies(int noOfArmies);
+
+    int getNoOfArmies() const;
+
+    void setTarget(Territory *target);
+
+    Territory *getTarget();
+
+    //toString function containing description of the Deploy Order
     string toString();
 
     //Validate method
-    bool validate(Player p, Territory* target);
+    bool validate(Player p);
 
     //Execute method
-    void execute(Player p, Territory* target);
+    void execute(Player p);
 
 };
+
+//--------------Airlift class---------------------
 
 class Airlift : public Orders{
+private:
+    int noOfArmies;
+    Territory* source;
+    Territory* target;
 public:
-    //Default constructor
-    Airlift();
     //Parametrized Constructor.
-
+    Airlift(int noOfArmies, Territory* source, Territory* target);
     //Copy constructor
 
-    //toString function containing description of the Airlift Order
+    //Assignment operator
+
+    //Stream insertion operator
+
+    //Setters and Getters
+    void setNoOfArmies(int noOfArmies);
+
+    int getNoOfArmies() const;
+
+    void setSource(Territory* source);
+
+    Territory* getSource();
+
+    void setTarget(Territory *target);
+
+    Territory *getTarget();
+
+    //toString function containing description of the Deploy Order
     string toString();
 
     //Validate method
-    bool validate(Player p, Territory *source, Territory *target);
+    bool validate(Player p);
 
     //Execute method
-    void execute(Player p, Territory* source, Territory* target);
-
+    void execute(Player p);
 };
+
+//--------------Negotiate class---------------------
 
 class Negotiate : public Orders{
 public:
@@ -151,6 +252,10 @@ public:
     //Parametrized Constructor.
 
     //Copy constructor
+
+    //Assignment operator
+
+    //Stream insertion operator
 
     //toString function containing description of the Negotiate Order
     string toString();
@@ -162,5 +267,3 @@ public:
     void execute(Player p1,Player p2);
 
 };
-
-

@@ -9,7 +9,28 @@ using namespace std;
 
 // Default constructor
 Card::Card() : name("No name") {
-	return;
+}
+
+Card::Card(const Card* card) : name(card->name) {
+}
+
+Card& Card::operator= (const Card& card) {
+	this->name = card.name;
+
+	return *this;
+}
+
+void Card::play(Hand* hand, int index, Deck* deck) {
+	if (!validateIndex(hand->getHand(), index)) {
+		cout << "\nYour hand only contains " << hand->getHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
+		exit(1);
+	}
+
+	Card* playedCard = hand->getCardInHand(index);
+	cout << "\nThe " << playedCard->name << " card has been played." << '\n';
+
+	hand->removeHand(index); // removes card played from the hand
+	deck->addCard(playedCard); // adds the card played to the deck
 }
 
 ostream& operator<< (ostream& out, const vector<Card*> cards) {
@@ -23,15 +44,10 @@ ostream& operator<< (ostream& out, const vector<Card*> cards) {
 	return out;
 }
 
-Card* Card::play(vector<Card*> vector, int index) {
-	if (!validateIndex(vector, index)) {
-		cout << "\nYour hand only contains " << vector.size() << " cards. The index you entered is invalid. Terminating program." << '\n';
-		exit(1);
-	}
+ostream& operator<< (ostream& out, const Card& card) {
+	out << "The card's name is " << card.name;
 
-	cout << "\nThe " << vector[index]->name << " card has been played." << '\n';
-
-	return vector[index];
+	return out;
 }
 
 bool Card::validateIndex(vector<Card*> vector, int index) {
@@ -69,9 +85,19 @@ Deck::Deck() : sizeDeck(5) {
 	cards.push_back(new Blockade());
 	cards.push_back(new Airlift());
 	cards.push_back(new Diplomacy());
+}
 
-	cout << "The generated deck has " << cards.size() << " cards." << '\n';
-	cout << cards;
+Deck::Deck(const Deck& deck) : sizeDeck(deck.sizeDeck) {
+	for (int i = 0; i < deck.cards.size(); i++) {
+		cards.push_back(deck.cards[i]);
+	}
+}
+
+Deck& Deck::operator= (const Deck& deck) {
+	this->sizeDeck = deck.sizeDeck;
+	this->cards = deck.cards;
+
+	return *this;
 }
 
 void Deck::setSize(int number) {
@@ -87,14 +113,7 @@ Card* Deck::draw() {
 	cout << "\nYou picked the " << index + 1 << " nth card from the deck." << '\n';
 	Card* cardDrawn = cards[index];
 
-	//--------------------- THIS PORTION IS JUST FOR TESTING ---------------------------------------
-
 	cards.erase(cards.begin() + index);
-
-	cout << "The deck has " << cards.size() << " cards in it." << '\n';
-
-	cout << cards;
-	//----------------------------------------------------------------------------------------------
 
 	return cardDrawn;
 }
@@ -102,7 +121,12 @@ Card* Deck::draw() {
 void Deck::addCard(Card* card) {
 	cards.push_back(card);
 	cout << "\nThe " << card->name << " has been added to the deck." << '\n';
-	cout << "Cards in the deck: " << cards;
+}
+
+ostream& operator<< (ostream& out, const Deck& deck) {
+	out << "The deck of " << deck.cards.size() << " card(s) contains " << deck.cards;
+
+	return out;
 }
 
 // Default constructor
@@ -110,14 +134,21 @@ Hand::Hand() : sizeHand(3) {
 	cout << "\nCreating the player's hand..." << '\n';
 }
 
+Hand::Hand(const Hand& hand) : sizeHand(hand.sizeHand) {
+	for (int i = 0; i < hand.cardsInHand.size(); i++) {
+		cardsInHand.push_back(hand.cardsInHand[i]);
+	}
+}
 
-vector<Card*> Hand::addHand(Card* ptrCard) {
+Hand& Hand::operator= (const Hand& hand) {
+	this->sizeHand = hand.sizeHand;
+	this->cardsInHand = hand.cardsInHand;
+
+	return *this;
+}
+
+void Hand::addHand(Card* ptrCard) {
 	cardsInHand.push_back(ptrCard);
-
-	cout << "\nYou have " << cardsInHand.size() << " card(s) in your hand." << '\n';
-	cout << "You have the following card(s) in your hand: " << cardsInHand;
-
-	return cardsInHand;
 }
 
 void Hand::setSize(int number) {
@@ -128,13 +159,29 @@ int Hand::getSize() {
 	return sizeHand;
 }
 
-void Hand::removeHand(Card* card) {
-	for (vector<Card*>::iterator i = cardsInHand.begin(); i != cardsInHand.end(); i++) {
-		if (card->name == (*i)->name) {
-			cardsInHand.erase(i);
-			break;
-		}
+Card* Hand::getCardInHand(int index) {
+	return cardsInHand.at(index);
+}
+
+vector<Card*> Hand::getHand() {
+	return cardsInHand;
+}
+
+void Hand::removeHand(int index) {
+	cardsInHand.erase(cardsInHand.begin() + index);
+}
+
+bool Hand::handFull() {
+	if (cardsInHand.size() >= sizeHand) {
+		cout << "Your hand is full." << '\n';
+		return true;
 	}
 
-	cout << "You have the following card(s) in your hand: " << cardsInHand;
+	return false;
+}
+
+ostream& operator<< (ostream& out, const Hand& hand) {
+	out << "The hand of " << hand.cardsInHand.size() << " card(s) contains " << hand.cardsInHand;
+
+	return out;
 }

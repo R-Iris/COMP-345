@@ -8,11 +8,17 @@ using namespace std;
 class Card {
 public:
 	Card();
-	Card* play(vector<Card*>, int);
+	Card(const Card*);
+	Card& operator= (const Card&);
+	void play(class Hand*, int, class Deck*);
 	bool validateIndex(vector<Card*>, int);
 	string name;
 
+	//Output stream operator for vectors
 	friend ostream& operator<< (ostream&, const vector<Card*>);
+	
+	//Output stream operator for cards
+	friend ostream& operator<< (ostream&, const Card&);
 };
 
 // --- children of the class Card, each with their respective constructors ---
@@ -45,12 +51,18 @@ public:
 class Deck {
 public:
 	Deck();
+	Deck(const Deck&);
+	Deck& operator= (const Deck&);
 	void setSize(int sizeDeck);
 	int getSize();
 	Card* draw();
 	void addCard(Card* card);
 
+	//Output stream operator for vectors
 	friend ostream& operator<< (ostream&, const vector<Card*>);
+
+	//Output stream operator for a deck object
+	friend ostream& operator<< (ostream&, const Deck&);
 
 private:
 	int sizeDeck{};
@@ -60,12 +72,21 @@ private:
 class Hand {
 public:
 	Hand();
-	vector<Card*> addHand(Card*);
+	Hand(const Hand&);
+	Hand& operator= (const Hand&);
+	void addHand(Card*);
+	Card* getCardInHand(int);
 	void setSize(int);
 	int getSize();
-	void removeHand(Card*);
+	vector<Card*> getHand();
+	void removeHand(int);
+	bool handFull();
 
+	//Output stream operator for vectors
 	friend ostream& operator<< (ostream&, const vector<Card*>);
+
+	//Output stream operator for a hand object
+	friend ostream& operator<< (ostream&, const Hand&);
 
 private:
 	int sizeHand{};
