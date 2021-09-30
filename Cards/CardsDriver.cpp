@@ -78,6 +78,8 @@ int main() {
 
 	delete deck;
 	delete hand;
+	deck = NULL;
+	hand = NULL;
 
 	return 0;
 }
