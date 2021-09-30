@@ -239,6 +239,8 @@ void playGame()
         cout << "copygame State: " << *copygame->currentState << endl; // Test copied state object
     }
     delete copygame;
+    copygame = NULL;
     delete equalsGame;
+    equalsGame = NULL;
     end(game);
 }
