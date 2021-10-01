@@ -10,13 +10,13 @@ public:
 	Card();
 	Card(const Card*);
 	Card& operator= (const Card&);
-	void play(class Hand*, int, class Deck*);
+	virtual void play(class Hand*, int, class Deck*, class Player*);
 	bool validateIndex(vector<Card*>, int);
 	string name;
 
 	//Output stream operator for vectors
 	friend ostream& operator<< (ostream&, const vector<Card*>);
-	
+
 	//Output stream operator for cards
 	friend ostream& operator<< (ostream&, const Card&);
 };
@@ -25,26 +25,31 @@ public:
 class Bomb : public Card {
 public:
 	Bomb();
+	void play(Hand*, int, Deck*, class Player*);
 };
 
 class Reinforcement : public Card {
 public:
 	Reinforcement();
+	void play(Hand*, int, Deck*, class Player*);
 };
 
 class Blockade : public Card {
 public:
 	Blockade();
+	void play(Hand*, int, Deck*, class Player*);
 };
 
 class Airlift : public Card {
 public:
 	Airlift();
+	void play(Hand*, int, Deck*, class Player*);
 };
 
 class Diplomacy : public Card {
 public:
 	Diplomacy();
+	void play(Hand*, int, Deck*, class Player*);
 };
 // -------------------------------
 
@@ -91,4 +96,28 @@ public:
 private:
 	int sizeHand{};
 	vector<Card*> cardsInHand;
+};
+
+
+//--- The following classes are only for the implementation of Assignemnt 1, they'll be removed in the future --- 
+class Player {
+public:
+	Player();
+	void issueOrder(class Order*);
+	vector<class Order*> getOrders();
+
+private:
+	string name;
+	vector<class Order*> orders;
+};
+
+class Order {
+public:
+	Order(string);
+
+	//Output stream operator for vectors
+	friend ostream& operator<< (ostream&, const vector<Order*>);
+
+private:
+	string name;
 };

@@ -10,7 +10,8 @@ int main() {
 
 	cout << "This file is just for testing at the moment." << '\n';
 
-	Card card; // Create an object card
+	Card* card = new Card(); // Create an object card
+	Player* player = new Player(); // Create an object player
 
 	Deck* deck = new Deck();
 	cout << *deck;
@@ -57,16 +58,18 @@ int main() {
 	cout << "What card do you want to play? Enter the index: ";
 	int index{};
 	cin >> index;
-	card.play(hand, index, deck);
+	card->play(hand, index, deck, player);
 	cout << *deck << *hand;
 
 	cout << "What card do you want to play? Enter the index: ";
 	cin >> index;
-	card.play(hand, index, deck);
+	card->play(hand, index, deck, player);
 	cout << *deck << *hand;
 
+	cout << "\nThe player has the following orders in his list: " << player->getOrders();
+
 	cout << "\n----------------------------------------------------------\n\n";
-	
+
 	cout << "Original deck: " << *deck << "Its memory address is : " << &deck << '\n';
 	cout << "Using the copy constructor: " << copyDeck << "Its memory address is: " << &copyDeck << '\n'; // Output of the copied deck
 	cout << "Using the assignment operator: " << copyDeck2 << "Its memory address is: " << &copyDeck2 << '\n'; // Output of the copied deck with assignment operator
@@ -75,9 +78,12 @@ int main() {
 	cout << "Using the copy constructor: " << copyHand << "Its memory address is: " << &copyHand << '\n'; // Output of the copied hand
 	cout << "Using the assignment operator: " << copyHand2 << "Its memory address is: " << &copyHand2 << '\n'; // Output of the copied hand with assignment operator
 
-
+	delete card;
+	delete player;
 	delete deck;
 	delete hand;
+	card = NULL;
+	player = NULL;
 	deck = NULL;
 	hand = NULL;
 

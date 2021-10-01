@@ -8,11 +8,9 @@
 using namespace std;
 
 // Default constructor
-Card::Card() : name("No name") {
-}
+Card::Card() : name("No name") { }
 
-Card::Card(const Card* card) : name(card->name) {
-}
+Card::Card(const Card* card) : name(card->name) { }
 
 Card& Card::operator= (const Card& card) {
 	this->name = card.name;
@@ -20,7 +18,7 @@ Card& Card::operator= (const Card& card) {
 	return *this;
 }
 
-void Card::play(Hand* hand, int index, Deck* deck) {
+void Card::play(Hand* hand, int index, Deck* deck, Player* player) {
 	if (!validateIndex(hand->getHand(), index)) {
 		cout << "\nYour hand only contains " << hand->getHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
 		exit(1);
@@ -28,6 +26,8 @@ void Card::play(Hand* hand, int index, Deck* deck) {
 
 	Card* playedCard = hand->getCardInHand(index);
 	cout << "\nThe " << playedCard->name << " card has been played." << '\n';
+
+	hand->getCardInHand(index)->play(hand, index, deck, player); // calling the child's play method
 
 	hand->removeHand(index); // removes card played from the hand
 	deck->addCard(playedCard); // adds the card played to the deck
@@ -55,24 +55,39 @@ bool Card::validateIndex(vector<Card*> vector, int index) {
 	return true; // Actually returns 1
 }
 
-Bomb::Bomb() {
-	name = "Bomb";
+Bomb::Bomb() { name = "Bomb"; }
+
+void Bomb::play(Hand* hand, int index, Deck* deck, Player* player) {
+	Order* order = new Order("Bomb");
+	player->issueOrder(order);
 }
 
-Reinforcement::Reinforcement() {
-	name = "Reinforcement";
+Reinforcement::Reinforcement() { name = "Reinforcement"; }
+
+void Reinforcement::play(Hand* hand, int index, Deck* deck, Player* player) {
+	Order* order = new Order("Reinforcement");
+	player->issueOrder(order);
 }
 
-Blockade::Blockade() {
-	name = "Blockade";
+Blockade::Blockade() { name = "Blockade"; }
+
+void Blockade::play(Hand* hand, int index, Deck* deck, Player* player) {
+	Order* order = new Order("Blockade");
+	player->issueOrder(order);
 }
 
-Airlift::Airlift() {
-	name = "Airlift";
+Airlift::Airlift() { name = "Airlift"; }
+
+void Airlift::play(Hand* hand, int index, Deck* deck, Player* player) {
+	Order* order = new Order("Airlift");
+	player->issueOrder(order);
 }
 
-Diplomacy::Diplomacy() {
-	name = "Diplomacy";
+Diplomacy::Diplomacy() { name = "Diplomacy"; }
+
+void Diplomacy::play(Hand* hand, int index, Deck* deck, Player* player) {
+	Order* order = new Order("Diplomacy");
+	player->issueOrder(order);
 }
 
 // Default constructor
@@ -120,7 +135,7 @@ Card* Deck::draw() {
 
 void Deck::addCard(Card* card) {
 	cards.push_back(card);
-	cout << "\nThe " << card->name << " has been added to the deck." << '\n';
+	cout << "\nThe " << card->name << " card has been added to the deck." << '\n';
 }
 
 ostream& operator<< (ostream& out, const Deck& deck) {
@@ -182,6 +197,33 @@ bool Hand::handFull() {
 
 ostream& operator<< (ostream& out, const Hand& hand) {
 	out << "The hand of " << hand.cardsInHand.size() << " card(s) contains " << hand.cardsInHand;
+
+	return out;
+}
+
+
+//--- The following methods are only for the implementation of Assignemnt 1, they'll be removed in the future ---
+Player::Player() : name("Default player") { }
+
+void Player::issueOrder(Order* order) {
+	orders.push_back(order);
+}
+
+vector<Order*> Player::getOrders() {
+	return orders;
+}
+
+Order::Order(string name) : name(name) {
+	cout << "The " << name << " order has been initiated.";
+}
+
+ostream& operator<< (ostream& out, const vector<Order*> orders) {
+	out << "[ ";
+	for (int i = 0; i < orders.size(); i++) {
+		out << orders[i]->name;
+		if (i != orders.size() - 1) out << ", ";
+	}
+	out << " ]\n";
 
 	return out;
 }
