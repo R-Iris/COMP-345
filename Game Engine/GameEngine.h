@@ -28,10 +28,11 @@ class Transition
 public:
     State* current;
     State* next;
+    string command;
     // Default Constructor
     Transition();
     // Parametrized Constructor
-    Transition(State *current, State *next);
+    Transition(State *current, State *next, string command);
     // Destructor
     ~Transition();
     // Copy constructor
@@ -47,6 +48,7 @@ class GameEngine
 public:
     // Vector of pointers to states
     vector<Transition*> transitions;
+    vector<State*> states;
     // Current State
     State* currentState;
     // Default Constructor
@@ -54,7 +56,7 @@ public:
     // Destructor
     ~GameEngine();
     // Copy constructor
-    GameEngine(vector<Transition*> &transitions, State *currentState);
+    GameEngine(const GameEngine &gameEngine);
     // = operator copy constructor
     GameEngine& operator=(const GameEngine& gameEngine);
     // << ostream conversion
