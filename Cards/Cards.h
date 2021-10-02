@@ -5,10 +5,9 @@
 
 using namespace std;
 
-enum class cardType { Bomb, Reinforcement, Blockade, Airlift, Diplomacy };
-
 class Card {
 public:
+	enum class cardType { Bomb, Reinforcement, Blockade, Airlift, Diplomacy };
 	Card();
 	Card(cardType);
 	Card(const Card*);

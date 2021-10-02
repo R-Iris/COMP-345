@@ -100,11 +100,11 @@ Deck::Deck() : sizeDeck(5) {
 	cout << "\nCreating a generic deck..." << '\n';
 
 	//Since the default deck has 5 cards, and we have 5 different types of cards, we'll create 1 card of each type
-	cards.push_back(new Card(cardType::Bomb));
-	cards.push_back(new Card(cardType::Reinforcement));
-	cards.push_back(new Card(cardType::Blockade));
-	cards.push_back(new Card(cardType::Airlift));
-	cards.push_back(new Card(cardType::Diplomacy));
+	cards.push_back(new Card(Card::cardType::Bomb));
+	cards.push_back(new Card(Card::cardType::Reinforcement));
+	cards.push_back(new Card(Card::cardType::Blockade));
+	cards.push_back(new Card(Card::cardType::Airlift));
+	cards.push_back(new Card(Card::cardType::Diplomacy));
 }
 
 //Copy constructor
