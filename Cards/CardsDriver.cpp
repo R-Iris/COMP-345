@@ -2,7 +2,7 @@
 #include "Cards.h"
 
 using namespace std;
-	
+
 int main() {
 	srand((int)time(NULL));			//Regenerate the seed for the rand() call
 

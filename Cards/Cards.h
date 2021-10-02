@@ -5,50 +5,26 @@
 
 using namespace std;
 
+enum class cardType { Bomb, Reinforcement, Blockade, Airlift, Diplomacy };
+
 class Card {
 public:
 	Card();
+	Card(cardType);
 	Card(const Card*);
 	Card& operator= (const Card&);
 	virtual void play(class Hand*, int, class Deck*, class Player*);
 	bool validateIndex(vector<Card*>, int);
-	string name;
+	string getCardTypeName();
 
 	//Output stream operator for vectors containing pointers to card objects
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
 	//Output stream operator for objects of type card
 	friend ostream& operator<< (ostream&, const Card&);
-};
 
-class Bomb : public Card {
-public:
-	Bomb();
-	void play(Hand*, int, Deck*, class Player*);
-};
-
-class Reinforcement : public Card {
-public:
-	Reinforcement();
-	void play(Hand*, int, Deck*, class Player*);
-};
-
-class Blockade : public Card {
-public:
-	Blockade();
-	void play(Hand*, int, Deck*, class Player*);
-};
-
-class Airlift : public Card {
-public:
-	Airlift();
-	void play(Hand*, int, Deck*, class Player*);
-};
-
-class Diplomacy : public Card {
-public:
-	Diplomacy();
-	void play(Hand*, int, Deck*, class Player*);
+private:
+	string cardTypeName;
 };
 
 class Deck {
@@ -60,7 +36,7 @@ public:
 	int getSize();
 	Card* draw();
 	void addCard(Card* card);
-	~Deck();
+	//~Deck();
 
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
@@ -84,7 +60,7 @@ public:
 	vector<Card*> getHand();
 	void removeHand(int);
 	bool handFull();
-	~Hand();
+	//~Hand();
 
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
@@ -96,14 +72,13 @@ private:
 	vector<Card*> cardsInHand;
 };
 
-
-//--- The following classes are only for the implementation of Assignemnt 1, they'll be removed in the future --- 
+//--- The following classes are only for the implementation of Assignemnt 1, they'll be removed in the future ---
 class Player {
 public:
 	Player();
 	void issueOrder(class Order*);
 	vector<class Order*> getOrders();
-	~Player();
+	//~Player();
 
 private:
 	string name;

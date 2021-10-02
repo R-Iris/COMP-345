@@ -8,21 +8,40 @@
 using namespace std;
 
 //Default constructor
-Card::Card() : name("No name") { }
+Card::Card() : cardTypeName("Default") { }
+
+Card::Card(cardType type) {
+	switch (type) {
+	case cardType::Bomb:
+		cardTypeName = "Bomb";
+		break;
+	case cardType::Reinforcement:
+		cardTypeName = "Reinforcement";
+		break;
+	case cardType::Blockade:
+		cardTypeName = "Blockade";
+		break;
+	case cardType::Airlift:
+		cardTypeName = "Airlift";
+		break;
+	case cardType::Diplomacy:
+		cardTypeName = "Diplomacy";
+		break;
+	}
+}
 
 //Copy constructor
-Card::Card(const Card* card) : name(card->name) { }
+Card::Card(const Card* card) : cardTypeName(card->cardTypeName) { }
 
 //Overloading the assignment operator
 Card& Card::operator= (const Card& card) {
-	this->name = card.name;
+	this->cardTypeName = card.cardTypeName;
 
 	return *this;
 }
 
 //Play method that is inherited by all children of the card class. It takes a card from the player's hand, creates an order and puts the card back into the deck.
 void Card::play(Hand* hand, int index, Deck* deck, Player* player) {
-
 	//Validating that the index the user inputted is correct
 	if (!validateIndex(hand->getHand(), index)) {
 		cout << "\nYour hand only contains " << hand->getHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
@@ -31,10 +50,13 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player) {
 
 	//Temporary pointer to the card played
 	Card* playedCard = hand->getCardInHand(index);
-	cout << "\nThe " << playedCard->name << " card has been played." << '\n';
+	cout << "\nThe " << playedCard->cardTypeName << " card has been played." << '\n';
 
-	//Calling the child's play method
-	hand->getCardInHand(index)->play(hand, index, deck, player);
+	//Creates a pointer to an order of the card's type
+	Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
+
+	//Adds the order to the player's list of orders
+	player->issueOrder(order);
 
 	//Removes card played from the hand
 	hand->removeHand(index);
@@ -47,7 +69,7 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player) {
 ostream& operator<< (ostream& out, const vector<Card*> cards) {
 	out << "[ ";
 	for (int i = 0; i < cards.size(); i++) {
-		out << cards[i]->name;
+		out << cards[i]->getCardTypeName();
 		if (i != cards.size() - 1) out << ", ";
 	}
 	out << " ]\n";
@@ -58,7 +80,7 @@ ostream& operator<< (ostream& out, const vector<Card*> cards) {
 
 //Overloading the ouput stream operator for the card object
 ostream& operator<< (ostream& out, const Card& card) {
-	out << "The card's name is " << card.name;
+	out << "The card's name is " << card.cardTypeName;
 
 	return out;
 }
@@ -69,51 +91,8 @@ bool Card::validateIndex(vector<Card*> vector, int index) {
 	return true;
 }
 
-Bomb::Bomb() { name = "Bomb"; }
-
-void Bomb::play(Hand* hand, int index, Deck* deck, Player* player) {
-	
-	//Creates a pointer to an order of type Bomb
-	Order* order = new Order("Bomb");
-
-	//Adds the order to player's list of orders
-	player->issueOrder(order);
-}
-
-Reinforcement::Reinforcement() { name = "Reinforcement"; }
-
-void Reinforcement::play(Hand* hand, int index, Deck* deck, Player* player) {
-
-	//Creates a pointer to an order of type Reinforcement
-	Order* order = new Order("Reinforcement");
-	player->issueOrder(order);
-}
-
-Blockade::Blockade() { name = "Blockade"; }
-
-void Blockade::play(Hand* hand, int index, Deck* deck, Player* player) {
-
-	//Creates a pointer to an order of type Blockade
-	Order* order = new Order("Blockade");
-	player->issueOrder(order);
-}
-
-Airlift::Airlift() { name = "Airlift"; }
-
-void Airlift::play(Hand* hand, int index, Deck* deck, Player* player) {
-
-	//Creates a pointer to an order of type Airlift
-	Order* order = new Order("Airlift");
-	player->issueOrder(order);
-}
-
-Diplomacy::Diplomacy() { name = "Diplomacy"; }
-
-void Diplomacy::play(Hand* hand, int index, Deck* deck, Player* player) {
-
-	//Creates a pointer to an order of type Diplomacy
-	Order* order = new Order("Diplomacy");
-	player->issueOrder(order);
+string Card::getCardTypeName() {
+	return cardTypeName;
 }
 
 //Default constructor
@@ -121,11 +100,11 @@ Deck::Deck() : sizeDeck(5) {
 	cout << "\nCreating a generic deck..." << '\n';
 
 	//Since the default deck has 5 cards, and we have 5 different types of cards, we'll create 1 card of each type
-	cards.push_back(new Bomb());
-	cards.push_back(new Reinforcement());
-	cards.push_back(new Blockade());
-	cards.push_back(new Airlift());
-	cards.push_back(new Diplomacy());
+	cards.push_back(new Card(cardType::Bomb));
+	cards.push_back(new Card(cardType::Reinforcement));
+	cards.push_back(new Card(cardType::Blockade));
+	cards.push_back(new Card(cardType::Airlift));
+	cards.push_back(new Card(cardType::Diplomacy));
 }
 
 //Copy constructor
@@ -153,7 +132,6 @@ int Deck::getSize() {
 
 //Draw method that takes a card from the deck and adds it to the player's hand
 Card* Deck::draw() {
-
 	//Random int from 0 to the size of the deck
 	int index{ rand() % (int)cards.size() };
 	cout << "\nYou picked the " << index + 1 << " nth card from the deck." << '\n';
@@ -170,12 +148,12 @@ Card* Deck::draw() {
 //Adds a card to the deck
 void Deck::addCard(Card* card) {
 	cards.push_back(card);
-	cout << "\nThe " << card->name << " card has been added to the deck." << '\n';
+	cout << "\nThe " << card->getCardTypeName() << " card has been added to the deck." << '\n';
 }
 
+/*
 //Destructor for the deck object
 Deck::~Deck() {
-
 	//Removing each pointer and pointing them to NULL
 	for (int i = 0; i < cards.size(); i++) {
 		delete cards[i];
@@ -184,7 +162,7 @@ Deck::~Deck() {
 
 	//Clearing the vector
 	cards.clear();
-}
+}*/
 
 //Overloading the output stream operator for the deck object
 ostream& operator<< (ostream& out, const Deck& deck) {
@@ -200,7 +178,6 @@ Hand::Hand() : sizeHand(3) {
 
 //Copy constructor
 Hand::Hand(const Hand& hand) : sizeHand(hand.sizeHand) {
-
 	//Copying each element from the original hand to the new one
 	for (int i = 0; i < hand.cardsInHand.size(); i++) {
 		cardsInHand.push_back(hand.cardsInHand[i]);
@@ -253,9 +230,9 @@ bool Hand::handFull() {
 	return false;
 }
 
+/*
 //Destructor for the hand object
 Hand::~Hand() {
-
 	//Removing each pointer and pointing them to NULL
 	for (int i = 0; i < cardsInHand.size(); i++) {
 		delete cardsInHand[i];
@@ -264,7 +241,7 @@ Hand::~Hand() {
 
 	//Clearing the vector
 	cardsInHand.clear();
-}
+}*/
 
 //Overloading the output stream operator for the hand object
 ostream& operator<< (ostream& out, const Hand& hand) {
@@ -272,7 +249,6 @@ ostream& operator<< (ostream& out, const Hand& hand) {
 
 	return out;
 }
-
 
 //--- The following methods are only for the implementation of Assignemnt 1, they'll be removed in the future ---
 Player::Player() : name("Default player") { }
@@ -287,9 +263,9 @@ vector<Order*> Player::getOrders() {
 	return orders;
 }
 
+/*
 //Destructor for the player object
 Player::~Player() {
-
 	//Removing each pointer and pointing them to NULL
 	for (int i = 0; i < orders.size(); i++) {
 		delete orders[i];
@@ -298,7 +274,7 @@ Player::~Player() {
 
 	//Clearing the vector
 	orders.clear();
-}
+}*/
 
 Order::Order(string name) : name(name) {
 	cout << "The " << name << " order has been initiated.";
