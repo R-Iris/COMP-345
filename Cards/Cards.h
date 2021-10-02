@@ -14,14 +14,13 @@ public:
 	bool validateIndex(vector<Card*>, int);
 	string name;
 
-	//Output stream operator for vectors
+	//Output stream operator for vectors containing pointers to card objects
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
-	//Output stream operator for cards
+	//Output stream operator for objects of type card
 	friend ostream& operator<< (ostream&, const Card&);
 };
 
-// --- children of the class Card, each with their respective constructors ---
 class Bomb : public Card {
 public:
 	Bomb();
@@ -51,7 +50,6 @@ public:
 	Diplomacy();
 	void play(Hand*, int, Deck*, class Player*);
 };
-// -------------------------------
 
 class Deck {
 public:
@@ -62,8 +60,8 @@ public:
 	int getSize();
 	Card* draw();
 	void addCard(Card* card);
+	~Deck();
 
-	//Output stream operator for vectors
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
 	//Output stream operator for a deck object
@@ -86,8 +84,8 @@ public:
 	vector<Card*> getHand();
 	void removeHand(int);
 	bool handFull();
+	~Hand();
 
-	//Output stream operator for vectors
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
 	//Output stream operator for a hand object
@@ -105,6 +103,7 @@ public:
 	Player();
 	void issueOrder(class Order*);
 	vector<class Order*> getOrders();
+	~Player();
 
 private:
 	string name;
@@ -115,7 +114,7 @@ class Order {
 public:
 	Order(string);
 
-	//Output stream operator for vectors
+	//Output stream operator for vectors containing pointers to order objects
 	friend ostream& operator<< (ostream&, const vector<Order*>);
 
 private:
