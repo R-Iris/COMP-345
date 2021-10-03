@@ -151,18 +151,19 @@ void Deck::addCard(Card* card) {
 	cout << "\nThe " << card->getCardTypeName() << " card has been added to the deck." << '\n';
 }
 
-/*
 //Destructor for the deck object
 Deck::~Deck() {
+	//Stopping the deck from resizing itself
+	cards.reserve(cards.size());
+
 	//Removing each pointer and pointing them to NULL
 	for (int i = 0; i < cards.size(); i++) {
-		delete cards[i];
 		cards[i] = NULL;
 	}
 
 	//Clearing the vector
 	cards.clear();
-}*/
+}
 
 //Overloading the output stream operator for the deck object
 ostream& operator<< (ostream& out, const Deck& deck) {
@@ -230,18 +231,19 @@ bool Hand::handFull() {
 	return false;
 }
 
-/*
 //Destructor for the hand object
 Hand::~Hand() {
+	//Stopping the hand from resizing itself
+	cardsInHand.reserve(cardsInHand.size());
+
 	//Removing each pointer and pointing them to NULL
 	for (int i = 0; i < cardsInHand.size(); i++) {
-		delete cardsInHand[i];
 		cardsInHand[i] = NULL;
 	}
 
 	//Clearing the vector
 	cardsInHand.clear();
-}*/
+}
 
 //Overloading the output stream operator for the hand object
 ostream& operator<< (ostream& out, const Hand& hand) {
@@ -263,18 +265,19 @@ vector<Order*> Player::getOrders() {
 	return orders;
 }
 
-/*
 //Destructor for the player object
 Player::~Player() {
+	//Stopping the orders vector from resizing itself
+	orders.reserve(orders.size());
+
 	//Removing each pointer and pointing them to NULL
 	for (int i = 0; i < orders.size(); i++) {
-		delete orders[i];
 		orders[i] = NULL;
 	}
 
 	//Clearing the vector
 	orders.clear();
-}*/
+}
 
 Order::Order(string name) : name(name) {
 	cout << "The " << name << " order has been initiated.";

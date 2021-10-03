@@ -35,7 +35,7 @@ public:
 	int getSize();
 	Card* draw();
 	void addCard(Card* card);
-	//~Deck();
+	~Deck();
 
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
@@ -59,7 +59,7 @@ public:
 	vector<Card*> getHand();
 	void removeHand(int);
 	bool handFull();
-	//~Hand();
+	~Hand();
 
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
@@ -77,7 +77,7 @@ public:
 	Player();
 	void issueOrder(class Order*);
 	vector<class Order*> getOrders();
-	//~Player();
+	~Player();
 
 private:
 	string name;
