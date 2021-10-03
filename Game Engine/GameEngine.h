@@ -4,7 +4,7 @@
 #include <vector>
 using namespace std;
 
-// Keeps track of the state's name as well as next available state
+// A State holds a string
 class State
 {
 public:
@@ -16,38 +16,41 @@ public:
     State(string name);
     // Copy constructor
     State(const State &state);
-    // = operator copy constructor
+    // = assignment operator
     State &operator=(const State &state);
     // << ostream conversion
     friend ostream &operator<<(ostream &out, const State &state);
 };
 
-// Transitions between states and contains the ruleset for the game engine
+// Contains pointers from one state to another as well as its required command
 class Transition
 {
 public:
+    // current state
     State* current;
+    // next state
     State* next;
+    // Required command to perform transition
     string command;
     // Default Constructor
     Transition();
     // Parametrized Constructor
     Transition(State *current, State *next, string command);
-    // Destructor
-    ~Transition();
     // Copy constructor
     Transition(const Transition &transition);
-    // = operator copy constructor
+    // = assignment operator
     Transition &operator=(const Transition &transition);
     // << ostream conversion
     friend ostream &operator<<(ostream &out, const Transition &transition);
 };
 
+// The ruleset for the game using transitions and states
 class GameEngine
 {
 public:
-    // Vector of pointers to states
+    // Vector of pointers to transitions
     vector<Transition*> transitions;
+    // Vector of pointers to states
     vector<State*> states;
     // Current State
     State* currentState;
@@ -57,16 +60,19 @@ public:
     ~GameEngine();
     // Copy constructor
     GameEngine(const GameEngine &gameEngine);
-    // = operator copy constructor
+    // = assignment operator
     GameEngine& operator=(const GameEngine& gameEngine);
     // << ostream conversion
     friend ostream& operator<<(ostream& out, const GameEngine& gameEngine);
     // Checks and Changes the states
     bool changeState(string command);
+    // Creates a new state
+    State* newState(string state);
+    // Creates a new Transition
+    void newTransition(State* current, State* next, string command);
+    // Ends the game and deletes game object
+    void end();
 };
 
-// Ends the game and deletes game object
-void end(GameEngine *game);
 
-// Starts and plays the game
-void playGame();
+
