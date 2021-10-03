@@ -10,7 +10,7 @@ public:
 	enum class cardType { Bomb, Reinforcement, Blockade, Airlift, Diplomacy };
 	Card();
 	Card(cardType);
-	Card(const Card*);
+	Card(const Card&);
 	Card& operator= (const Card&);
 	virtual void play(class Hand*, int, class Deck*, class Player*);
 	bool validateIndex(vector<Card*>, int);

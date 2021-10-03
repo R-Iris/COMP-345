@@ -31,12 +31,12 @@ int main() {
 	Hand copyHand2 = *hand;			//Calls overloaded assignment operator
 
 	int index{};
-	cout << "What card do you want to play? Enter the index: ";
+	cout << endl << "What card do you want to play? Enter the index: ";
 	cin >> index;
 	card->play(hand, index, deck, player);
 	cout << *deck << *hand;
 
-	cout << "What card do you want to play? Enter the index: ";
+	cout << endl << "What card do you want to play? Enter the index: ";
 	cin >> index;
 	card->play(hand, index, deck, player);
 	cout << *deck << *hand;

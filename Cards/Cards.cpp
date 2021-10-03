@@ -31,7 +31,7 @@ Card::Card(cardType type) {
 }
 
 //Copy constructor
-Card::Card(const Card* card) : cardTypeName(card->cardTypeName) { }
+Card::Card(const Card &card) : cardTypeName(card.cardTypeName) { }
 
 //Overloading the assignment operator
 Card& Card::operator= (const Card& card) {
