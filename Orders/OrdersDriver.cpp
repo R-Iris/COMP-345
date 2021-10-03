@@ -1,4 +1,3 @@
-
 #include "Orders.h"
 #include <iostream>
 using namespace std;
@@ -45,11 +44,30 @@ int main(){
    ai1->execute(*p3);
    cout << endl;
 
-   /*
-    *Negotiate* n1 = new Negotiate();
-    *n1->execute();
-    *cout << endl;
-   */
+
+   Negotiate* n1 = new Negotiate();
+   n1->execute(*p1,*p2);
+   cout << endl;
+
+
+   vector<Orders*> orderList = {a1,b1,bl1,ai1};
+
+   OrdersList* ol = new OrdersList(orderList);
+
+   ol->print();
+
+   cout << endl;
+
+   ol->move(0,1);
+
+   ol->print();
+
+   cout << endl;
+
+   ol->move(1,0);
+
+   ol->print();
 
    return 0;
 }
+
