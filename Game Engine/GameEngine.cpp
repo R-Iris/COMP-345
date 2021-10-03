@@ -139,7 +139,7 @@ GameEngine::GameEngine(const GameEngine &gameEngine)
 {
     this->states = gameEngine.states;
     this->transitions = gameEngine.transitions;
-    this->currentState = new State(*currentState);
+    this->currentState = gameEngine.currentState;
 }
 
 GameEngine& GameEngine::operator=(const GameEngine& gameEngine) 
