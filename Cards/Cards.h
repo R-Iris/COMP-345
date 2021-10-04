@@ -7,51 +7,24 @@ using namespace std;
 
 class Card {
 public:
+	enum class cardType { Bomb, Reinforcement, Blockade, Airlift, Diplomacy };
 	Card();
-	Card(const Card*);
+	Card(cardType);
+	Card(const Card&);
 	Card& operator= (const Card&);
 	virtual void play(class Hand*, int, class Deck*, class Player*);
 	bool validateIndex(vector<Card*>, int);
-	string name;
+	string getCardTypeName();
 
-	//Output stream operator for vectors
+	//Output stream operator for vectors containing pointers to card objects
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
-	//Output stream operator for cards
+	//Output stream operator for objects of type card
 	friend ostream& operator<< (ostream&, const Card&);
-};
 
-// --- children of the class Card, each with their respective constructors ---
-class Bomb : public Card {
-public:
-	Bomb();
-	void play(Hand*, int, Deck*, class Player*);
+private:
+	string cardTypeName;
 };
-
-class Reinforcement : public Card {
-public:
-	Reinforcement();
-	void play(Hand*, int, Deck*, class Player*);
-};
-
-class Blockade : public Card {
-public:
-	Blockade();
-	void play(Hand*, int, Deck*, class Player*);
-};
-
-class Airlift : public Card {
-public:
-	Airlift();
-	void play(Hand*, int, Deck*, class Player*);
-};
-
-class Diplomacy : public Card {
-public:
-	Diplomacy();
-	void play(Hand*, int, Deck*, class Player*);
-};
-// -------------------------------
 
 class Deck {
 public:
@@ -62,8 +35,8 @@ public:
 	int getSize();
 	Card* draw();
 	void addCard(Card* card);
+	~Deck();
 
-	//Output stream operator for vectors
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
 	//Output stream operator for a deck object
@@ -86,8 +59,8 @@ public:
 	vector<Card*> getHand();
 	void removeHand(int);
 	bool handFull();
+	~Hand();
 
-	//Output stream operator for vectors
 	friend ostream& operator<< (ostream&, const vector<Card*>);
 
 	//Output stream operator for a hand object
@@ -98,13 +71,13 @@ private:
 	vector<Card*> cardsInHand;
 };
 
-
-//--- The following classes are only for the implementation of Assignemnt 1, they'll be removed in the future --- 
+//--- The following classes are only for the implementation of Assignemnt 1, they'll be removed in the future ---
 class Player {
 public:
 	Player();
 	void issueOrder(class Order*);
 	vector<class Order*> getOrders();
+	~Player();
 
 private:
 	string name;
@@ -115,7 +88,7 @@ class Order {
 public:
 	Order(string);
 
-	//Output stream operator for vectors
+	//Output stream operator for vectors containing pointers to order objects
 	friend ostream& operator<< (ostream&, const vector<Order*>);
 
 private:

@@ -5,6 +5,7 @@
 using namespace std;
 
 //-------------Fake classes :To remove in other assignments------------
+
 class Territory{
 private:
     string name;
@@ -12,9 +13,7 @@ public:
     explicit Territory(string name);
     vector<Territory*> neighbours;
     bool isNeighbour(Territory* t);
-
     void setName(string n);
-
     string getName();
 };
 
@@ -23,47 +22,35 @@ private:
     string name;
     vector<Territory*> territories;
 public:
-    //Parameterised constructor
-
     Player(string name, vector<Territory*> territories);
-
-    //Copy constructor
-
-    //Getters and setters
-
     void setTerritories(vector<Territory *> v);
     vector<Territory *> getTerritories();
     string getName();
     void setName(string n);
-
-    //void attack(Territory t);
-
     bool ownsTerritory(Territory *t);
 };
 
 //--------------End of Fake classes-------------------
 
+
+
+//----------------------Orders class------------------
 class Orders{
-
+private:
+    bool executed = false;
+    string effect;
 public:
-    //Default constructor
     Orders();
-
     //Copy constructor
-
-    //Assignment operator
-
-    //Stream insertion operator
-
-    //toString function containing the description of the order
+    Orders(const Orders& o);
+    ~Orders(); //Destructor
+    Orders& operator = (const Orders& orders); //Assignment operator
+    friend ostream& operator << (ostream &strm, Orders* o); //Stream insertion operator
     virtual string toString();
-
-    //Virtual validate method
-    //virtual bool validate();
-
-    //Virtual execute method;
-    //virtual void execute();
-
+    void setExecuted(bool exec);
+    bool getExecuted() const;
+    void setEffect(string eff);
+    string getEffect();
 };
 
 //---------Deploy class-------------------
@@ -72,71 +59,41 @@ private:
     int noOfArmies;
     Territory* target;
 public:
-    //Parametrized Constructor.
-    Deploy(int noOfArmies,Territory* target);
-    //Copy constructor
-
-    //Assignment operator
-
-    //Stream insertion operator
-
-    //Setters and Getters
+    Deploy(int noOfArmies,Territory* target); //Parametrized Constructor.
+    Deploy(const Deploy& deploy); //Copy constructor
+    Deploy& operator = (const Deploy& deploy); //Assignment operator
+    ~Deploy(); //Destructor
     void setNoOfArmies(int noOfArmies);
-
     int getNoOfArmies() const;
-
     void setTarget(Territory *target);
-
     Territory *getTarget();
-
-    //toString function containing description of the Deploy Order
-    string toString();
-
-    //Validate method
+    string toString() override;
     bool validate(Player p);
-
-    //Execute method
     void execute(Player p);
 };
 
-
 //------Advance class--------------------------
+
 class Advance : public Orders{
 private:
     int noOfArmies;
     Territory* source;
     Territory* target;
 public:
-    //Parametrized Constructor.
-    Advance(int noOfArmies, Territory* source, Territory* target);
+    Advance(int noOfArmies, Territory* source, Territory* target); //Parametrized Constructor.
     //Copy constructor
-
-    //Assignment operator
-
-    //Stream insertion operator
-
-    //Setters and Getters
+    Advance(const Advance& advance);
+    Advance& operator = (const Advance& advance); //Assignment operator
+    ~Advance(); //Destructor
     void setNoOfArmies(int noOfArmies);
-
     int getNoOfArmies() const;
-
     void setSource(Territory* source);
-
     Territory* getSource();
-
     void setTarget(Territory *target);
-
     Territory *getTarget();
-
-    //toString function containing description of the Deploy Order
-    string toString();
-
-    //Validate method
+    string toString() override;
     bool validate(Player p);
-
-    //Execute method
     void execute(Player p);
-
 };
 
 //--------------Bomb class---------------------
@@ -145,28 +102,16 @@ class Bomb : public Orders{
 private:
     Territory* target;
 public:
-    //Parametrized Constructor.
     explicit Bomb(Territory* target);
     //Copy constructor
-
-    //Assignment operator
-
-    //Stream insertion operator
-
-    //Setters and Getters
+    Bomb(const Bomb& bomb);
+    ~Bomb();
+    Bomb& operator = (const Bomb& bomb);
     void setTarget(Territory *target);
-
     Territory *getTarget();
-
-    //toString function containing description of the Deploy Order
-    string toString();
-
-    //Validate method
+    string toString() override;
     bool validate(Player p);
-
-    //Execute method
     void execute(Player p);
-
 };
 
 //--------------Blockade class---------------------
@@ -176,32 +121,18 @@ private:
     int noOfArmies;
     Territory* target;
 public:
-    //Parametrized Constructor.
     Blockade(int noOfArmies,Territory* target);
     //Copy constructor
-
-    //Assignment operator
-
-    //Stream insertion operator
-
-    //Setters and Getters
+    Blockade(const Blockade& blockade);
+    ~Blockade();
+    Blockade& operator = (const Blockade& blockade);
     void setNoOfArmies(int noOfArmies);
-
     int getNoOfArmies() const;
-
     void setTarget(Territory *target);
-
     Territory *getTarget();
-
-    //toString function containing description of the Deploy Order
-    string toString();
-
-    //Validate method
+    string toString() override;
     bool validate(Player p);
-
-    //Execute method
     void execute(Player p);
-
 };
 
 //--------------Airlift class---------------------
@@ -212,34 +143,19 @@ private:
     Territory* source;
     Territory* target;
 public:
-    //Parametrized Constructor.
     Airlift(int noOfArmies, Territory* source, Territory* target);
     //Copy constructor
-
-    //Assignment operator
-
-    //Stream insertion operator
-
-    //Setters and Getters
+    Airlift(const Airlift& airlift);
+    ~Airlift();
+    Airlift& operator = (const Airlift& airlift);
     void setNoOfArmies(int noOfArmies);
-
     int getNoOfArmies() const;
-
     void setSource(Territory* source);
-
     Territory* getSource();
-
     void setTarget(Territory *target);
-
     Territory *getTarget();
-
-    //toString function containing description of the Deploy Order
-    string toString();
-
-    //Validate method
+    string toString() override;
     bool validate(Player p);
-
-    //Execute method
     void execute(Player p);
 };
 
@@ -247,23 +163,29 @@ public:
 
 class Negotiate : public Orders{
 public:
-    //Default constructor
     Negotiate();
-    //Parametrized Constructor.
-
     //Copy constructor
-
-    //Assignment operator
-
-    //Stream insertion operator
-
-    //toString function containing description of the Negotiate Order
-    string toString();
-
-    //Validate method
+    Negotiate(const Negotiate& negotiate);
+    ~Negotiate();
+    Negotiate& operator= (const Negotiate& negotiate);
+    string toString() override;
     bool validate(Player p1, Player p2);
-
-    //Execute method
     void execute(Player p1,Player p2);
-
 };
+
+// ------------OrdersList class-----------------------
+class OrdersList{
+private:
+    vector<Orders*> ordersList;
+public:
+    explicit OrdersList(vector<Orders*> ordersList); //Parameterised constructor
+    OrdersList(const OrdersList& ol);
+    ~OrdersList();
+    void setOrdersList(vector<Orders*> ordersList);
+    vector<Orders*> getOrdersList();
+    bool remove(int index);
+    bool move(int i,int j);
+    void print();
+};
+
+//---------------------End-------------------------------
