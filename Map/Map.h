@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <exception>
+
 using namespace std;
 
 namespace MapSpace
@@ -29,11 +31,18 @@ namespace MapSpace
 			// COPY CONSTRUCTOR
 			Continent(const Continent &c);
 
+			// OPERATOR OVERLOADS
+			Continent &operator=(const Continent &c);
+
+			friend ostream& operator<<(ostream& out, const Continent& c);
+
 			// DESTRUCTOR
 			~Continent();
 
 			// MEMBER FUNCTIONS
 			string getName();
+			int getArmies();
+			int getIndex();
 	};
 
 	class Territory // This is a node on the graph
@@ -58,23 +67,52 @@ namespace MapSpace
 			Territory();
 			Territory(const Territory &t);
 
+			// Implementing the parent continent as an object
 			/*Territory(Player* owner, int numberOfArmies, int countryIndex, string name, Continent* parent, int x, int y);
 			Territory(Player* owner, int numberOfArmies, int countryIndex, string name, Continent* parent, vector<int>* adjacentCountries, int x, int y);
 			Territory(int numberOfArmies, int countryIndex, string name, Continent* parent, int x, int y);
 			Territory(int countryIndex, string name, Continent* parent, int x, int y);*/
 
+			// Implementing the parent continent as a number
 			Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, int x, int y);
 			Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, vector<int>* adjacentCountries, int x, int y);
 			Territory(int numberOfArmies, int countryIndex, string name, int parent, int x, int y);
 			Territory(int countryIndex, string name, int parent, int x, int y);
 
+			// OPERATOR OVERLOADS
+			Territory &operator=(const Territory &t);
+
+			friend ostream& operator<<(ostream& out, const Territory &t);
+
 			// MEMBER FUNCTIONS
+			int getIndex();
+			Player getOwner();
+			int getNumberOfArmies();
+			string getName();
+			int getContinent();
+			int getX();
+			int getY();
+
 			void setOwner(Player* player);
+			void setNumberOfArmies(int numArmies);
+			void setName(string newName);
+			void setX(int newX);
+			void setY(int newY);
 			
 			// DESTRUCTOR
 			~Territory();
 	}; 
-	
+
+	struct InvalidMapException : std::exception {
+		const enum MAP_ERRORS {
+			ISOLATED_NODE = 1,
+			DISCONNECTED_SUBGRAPH = 2,
+			EMPTY_CONTINENT = 3
+		};
+		
+		const string error() const throw();
+	};
+
 	class Map // This is the graph
 	{
 		private:
@@ -88,8 +126,28 @@ namespace MapSpace
 		public:
 			Map();
 			Map(const Map &m);
-			vector<Continent> getContinents();
 			Map(vector<Continent> continents, vector<Territory> countries, vector<tuple<int,int>> borders);
+
+			// OPERATOR OVERLOADS
+			Map &operator=(const Map &m);
+
+			friend ostream &operator<<(ostream& out, const Map &m);
+			
+			// MEMBER FUNCTIONS
+			vector<Continent> getContinents();
+			vector<Territory> getTerritories();
+			vector<tuple<int,int>> getBorders();
+
+			vector<Territory> getTerritoriesByContinent(int continent);
+
+			void setContinents(vector<Continent> continents);
+			void setTerritories(vector<Territory> territories);
+			void setBorders(vector<tuple<int,int>> borders);
+
+			void addContinent(Continent continent);
+			void addTerritory(Territory territory);
+			void addBorder(tuple<int, int> border);
+
 			~Map();
 
 			void validate();

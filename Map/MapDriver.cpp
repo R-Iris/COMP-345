@@ -11,8 +11,11 @@ int main()
 {
 	// TODO: Test MapLoader class
 
-	string fileName = "Assets/solar.map";
+	//string fileName = "Assets/solar.map";
 	//string fileName = "Assets/german-Empire1871.map";
+	//string fileName = "Assets/solar_with_empty_continent.map";
+	//string fileName = "Assets/german_with_disconnected_continent.map";
+	string fileName = "Assets/solar_with_isolated_node.map";
 
 	Map testMap = MapLoader::createMapfromFile(fileName);
 	cout << endl;
@@ -22,4 +25,6 @@ int main()
 	for (Continent c : testMap.getContinents()) {
 		cout << c.getName() << endl;
 	}
+
+	testMap.validate();
 }

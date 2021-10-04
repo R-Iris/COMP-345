@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <exception>
 #include "Map.h"
 
 using namespace std;
@@ -37,10 +38,32 @@ namespace MapSpace
 		return this->name;
 	}
 
+	int Continent::getArmies() {
+		return this->armies;
+	}
+
+	int Continent::getIndex()
+	{
+		return this->continentIndex;
+	}
+
 	Continent::Continent(int continentIndex, string name, int armies) {
 		this->continentIndex = continentIndex;
 		this->name = name;
 		this->armies = armies;
+	}
+
+	Continent& Continent::operator=(const Continent &c) {
+		this->continentIndex = c.continentIndex;
+		this->name = c.name;
+		this->armies = c.armies;
+
+		return *this;
+	}
+
+	ostream& operator<<(ostream &out, const Continent &c) {
+		// TODO: Implement Continent's toString()
+		return out;
 	}
 
 	Continent::~Continent() {
@@ -162,9 +185,82 @@ namespace MapSpace
 		this->y = y;
 	}
 
+	Territory& Territory::operator=(const Territory& t) {
+		this->owner = t.owner;
+		this->numberOfArmies = t.numberOfArmies;
+		this->countryIndex = t.countryIndex;
+		this->adjacentCountries = t.adjacentCountries;
+		this->name = t.name;
+		this->parent = t.parent;
+		this->x = t.x;
+		this->y = t.y;
+
+		return *this;
+	}
+
+	int Territory::getIndex()
+	{
+		return this->countryIndex;
+	}
+
+	Player Territory::getOwner()
+	{
+		return *(this->owner);
+	}
+
+	int Territory::getNumberOfArmies()
+	{
+		return this->numberOfArmies;
+	}
+
+	string Territory::getName()
+	{
+		return this->name;
+	}
+
+	ostream& operator<<(ostream& out, const Territory& t) {
+		// TODO: Implement Territory's toString()
+		return out;
+	}
+
+
+	int Territory::getContinent()
+	{
+		return this->parent;
+	}
+
+	int Territory::getX()
+	{
+		return this->x;
+	}
+
+	int Territory::getY()
+	{
+		return this->y;
+	}
 
 	void Territory::setOwner(Player* player) {
 		this->owner = player;
+	}
+
+	void Territory::setNumberOfArmies(int numArmies)
+	{
+		this->numberOfArmies = numArmies;
+	}
+
+	void Territory::setName(string newName)
+	{
+		this->name = newName;
+	}
+
+	void Territory::setX(int newX)
+	{
+		this->x = newX;
+	}
+
+	void Territory::setY(int newY)
+	{
+		this->y = newY;
 	}
 
 	Territory::~Territory() {
@@ -174,6 +270,13 @@ namespace MapSpace
 		parent = nullptr;
 		delete adjacentCountries;
 		adjacentCountries = nullptr;*/
+	}
+
+	// **************************************
+	// INVALID MAP EXCEPTION IMPLEMENTATION
+	// **************************************
+	const string InvalidMapException::error() const throw() {
+		return " ";
 	}
 
 	// **************************************
@@ -198,12 +301,154 @@ namespace MapSpace
 		this->borders = borders;
 	}
 
+	Map& Map::operator=(const Map& m) {
+		this->continents = m.continents;
+		this->countries = m.countries;
+		this->borders = m.borders;
+
+		return *this;
+	}
+
+	ostream& operator<<(ostream& out, const Map& m) {
+		// TODO: Implement Map's toString()
+		return out;
+	}
+
 	vector<Continent> Map::getContinents() {
 		return this->continents;
 	}
 
+	vector<Territory> Map::getTerritories()
+	{
+		return vector<Territory>();
+	}
+
+	vector<tuple<int, int>> Map::getBorders()
+	{
+		return vector<tuple<int, int>>();
+	}
+
+	vector<Territory> Map::getTerritoriesByContinent(int continent)
+	{
+		vector<Territory> continentCountries;
+		
+		for (Territory t : this->countries) {
+			if (t.getContinent() == continent) {
+				continentCountries.push_back(t);
+			}
+		}
+
+		return continentCountries;
+	}
+
+	void Map::setContinents(vector<Continent> continents)
+	{
+		this->continents = continents;
+	}
+
+	void Map::setTerritories(vector<Territory> territories)
+	{
+		this->countries = territories;
+	}
+
+	void Map::setBorders(vector<tuple<int, int>> borders)
+	{
+		this->borders = borders;
+	}
+
+	void Map::addContinent(Continent continent)
+	{
+		this->continents.push_back(continent);
+	}
+
+	void Map::addTerritory(Territory territory)
+	{
+		this->countries.push_back(territory);
+	}
+
+	void Map::addBorder(tuple<int, int> border)
+	{
+		this->borders.push_back(border);
+	}
+
 	void Map::validate() {
 		// TODO: Add actual validation logic!!!
+
+		// Check if the map is a connected graph (invalid if there exists a node that is not connected to anything)
+		for (Territory t : this->countries) {
+			// There is an isolated node if that node does not share a border with any country.
+			int borderCursor = 0;
+
+			for (tuple<int, int> border : this->borders) {
+				if (get<0>(border) == t.getIndex()) {
+					// A border exists for this node! move on to the next node.
+					break;
+				}
+				borderCursor++;
+			}
+
+			// At this point, we've gone through the entire borders collection without finding a border for our node.
+			if (borderCursor == (int) this->borders.size()) {
+				// TODO: Throw Invalid Map Exception - Isolated Node
+				cout << "Map is invalid: Map cannot contain an isolated node." << endl;
+				exit(EXIT_SUCCESS);
+			}
+		}
+
+		// At this point, we can confirm that the map is a connected graph!
+
+		// Check if continents are connected subgraphs (return a group of territories by continent index)
+		// Loop through all defined continents
+		for (Continent c : this->continents) {
+
+			// Return a group of countries by continent
+			vector<Territory> continentCountries = this->getTerritoriesByContinent(c.getIndex());
+			
+			if (continentCountries.size() == 0) {
+				// TODO: Throw exception, as there is a continent defined with no countries belonging to it
+				cout << "Map is invalid: All continents must have at least one node." << endl;
+				exit(EXIT_SUCCESS);
+
+			}
+
+			else if (continentCountries.size() > 1) {
+				int cursor = 1;
+				
+				while (cursor <= (int) continentCountries.size()) {
+					Territory left = continentCountries.at(cursor - 1);
+					Territory right = (cursor == continentCountries.size()) ? continentCountries.at(0) : continentCountries.at(cursor);
+
+					int borderCursor = 0;
+					for (tuple<int, int> border : this->borders) {
+						
+						if ((get<0>(border) == left.getIndex() && get<1>(border) == right.getIndex()) ||
+							(get<1>(border) == left.getIndex() && get<0>(border) == right.getIndex()))
+						{
+							// Break out of the loop as we have proven that the two countries are connected.
+							break;
+						}
+
+						borderCursor++;
+					}
+
+					if (borderCursor == (int)this->borders.size()) {
+						cout << "Map is invalid: All nodes within a continent must be connected." << endl;
+						exit(EXIT_SUCCESS);
+					}
+
+					cursor++;
+				}
+
+				// At this point, we can say that all countries belonging to that continent are connected!
+			}
+
+			else {
+				// If there is only one country in a continent, it technically is a connected subgraph
+			}
+		}
+
+		// If the function exits without throwing an exception, we can say that the map is valid!
+		cout << "This map is valid!" << endl;
 	}
 
 	Map::~Map() {
@@ -333,7 +578,12 @@ namespace MapSpace
 			}
 		}
 
+		// Close ifstream
+		mapFile.close();
+
+		// Generate and return a map from the data received from the map file
 		return Map(tempContinents, tempCountries, tempBorders);
+
 		// TODO: Figure out what makes an invalid map file.
 		// TODO: Implement custom Exception for Invalid Map Files
 	}
