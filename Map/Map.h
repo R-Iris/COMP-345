@@ -9,8 +9,8 @@ using namespace std;
 
 namespace MapSpace
 {
+	// PLACEHOLDER FOR THE ACTUAL PLAYER CLASS
 	class Player {
-		// PLACEHOLDER FOR THE ACTUAL PLAYER CLASS
 		public:
 			Player();
 			~Player();
@@ -67,12 +67,6 @@ namespace MapSpace
 			Territory();
 			Territory(const Territory &t);
 
-			// Implementing the parent continent as an object
-			/*Territory(Player* owner, int numberOfArmies, int countryIndex, string name, Continent* parent, int x, int y);
-			Territory(Player* owner, int numberOfArmies, int countryIndex, string name, Continent* parent, vector<int>* adjacentCountries, int x, int y);
-			Territory(int numberOfArmies, int countryIndex, string name, Continent* parent, int x, int y);
-			Territory(int countryIndex, string name, Continent* parent, int x, int y);*/
-
 			// Implementing the parent continent as a number
 			Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, int x, int y);
 			Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, vector<int>* adjacentCountries, int x, int y);
@@ -116,8 +110,8 @@ namespace MapSpace
 	class Map // This is the graph
 	{
 		private:
-			vector<Continent> continents;
-			vector<Territory> countries; // Nodes
+			vector<Continent>* continents;
+			vector<Territory>* countries; // Nodes
 			vector<tuple<int,int>> borders; // Edges
 
 			/* Check if continents are connected subgraphs if there exists an edge (set of borders) that contain the country number of each country belonging to a continent */
@@ -126,7 +120,7 @@ namespace MapSpace
 		public:
 			Map();
 			Map(const Map &m);
-			Map(vector<Continent> continents, vector<Territory> countries, vector<tuple<int,int>> borders);
+			Map(vector<Continent>* continents, vector<Territory>* countries, vector<tuple<int,int>> borders);
 
 			// OPERATOR OVERLOADS
 			Map &operator=(const Map &m);
@@ -140,8 +134,8 @@ namespace MapSpace
 
 			vector<Territory> getTerritoriesByContinent(int continent);
 
-			void setContinents(vector<Continent> continents);
-			void setTerritories(vector<Territory> territories);
+			void setContinents(vector<Continent>* continents);
+			void setTerritories(vector<Territory>* territories);
 			void setBorders(vector<tuple<int,int>> borders);
 
 			void addContinent(Continent continent);
@@ -158,7 +152,6 @@ namespace MapSpace
 		private:
 		public:
 			static Map createMapfromFile(string fileName);
-			~MapLoader();
 	};
 
 	// TODO: Define custom Exception for Invalid Map Files

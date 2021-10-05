@@ -10,6 +10,7 @@ using namespace std;
 
 namespace MapSpace 
 {
+	// PLACEHOLDER FOR THE ACTUAL PLAYER CLASS
 	Player::Player() {
 
 	}
@@ -62,7 +63,7 @@ namespace MapSpace
 	}
 
 	ostream& operator<<(ostream &out, const Continent &c) {
-		// TODO: Implement Continent's toString()
+		out << "Continent " << c.name << " with index " << c.continentIndex << " applies an army bonus of " << c.armies << " when a player controls all of its countries."  << endl;
 		return out;
 	}
 
@@ -80,69 +81,24 @@ namespace MapSpace
 		this->countryIndex = 0;
 		this->name = "";
 		this->adjacentCountries = nullptr;
-		//this->parent = nullptr;
 		this->parent = 0;
 		this->x = 0;
 		this->y = 0;
 	}
 
 	Territory::Territory(const Territory &t) {
-		this->owner = t.owner;
+		this->owner = new Player(*(t.owner));
 		this->numberOfArmies = t.numberOfArmies;
 		this->countryIndex = t.countryIndex;
-		this->adjacentCountries = t.adjacentCountries;
+		//this->adjacentCountries = new vector<int>(*(t.adjacentCountries));
 		this->name = t.name;
 		this->parent = t.parent;
 		this->x = t.x;
 		this->y = t.y;
 	}
 
-	/*Territory::Territory(Player* owner, int numberOfArmies, int countryIndex, string name, Continent* parent, int x, int y) {
-		this->owner = owner;
-		this->numberOfArmies = numberOfArmies;
-		this->countryIndex = countryIndex;
-		this->adjacentCountries = nullptr;
-		this->name = name;
-		this->parent = parent;
-		this->x = x;
-		this->y = y;
-	}
-
-	Territory::Territory(Player* owner, int numberOfArmies, int countryIndex, string name, Continent* parent, vector<int>* adjacentCountries, int x, int y) {
-		this->owner = owner;
-		this->numberOfArmies = numberOfArmies;
-		this->countryIndex = countryIndex;
-		this->name = name;
-		this->parent = parent;
-		this->adjacentCountries = adjacentCountries;
-		this->x = x;
-		this->y = y;
-	}
-
-	Territory::Territory(int numberOfArmies, int countryIndex, string name, Continent* parent, int x, int y) {
-		this->owner = nullptr;
-		this->numberOfArmies = numberOfArmies;
-		this->countryIndex = countryIndex;
-		this->name = name;
-		this->adjacentCountries = nullptr;
-		this->parent = parent;
-		this->x = x;
-		this->y = y;
-	}
-
-	Territory::Territory(int countryIndex, string name, Continent* parent, int x, int y) {
-		this->owner = nullptr;
-		this->numberOfArmies = 0;
-		this->countryIndex = countryIndex;
-		this->name = name;
-		this->parent = parent;
-		this->adjacentCountries = nullptr;
-		this->x = x;
-		this->y = y;
-	}*/
-
 	Territory::Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, int x, int y) {
-		this->owner = owner;
+		this->owner = new Player(*(owner));
 		this->numberOfArmies = numberOfArmies;
 		this->countryIndex = countryIndex;
 		this->adjacentCountries = nullptr;
@@ -153,12 +109,12 @@ namespace MapSpace
 	}
 
 	Territory::Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, vector<int>* adjacentCountries, int x, int y) {
-		this->owner = owner;
+		this->owner = new Player(*(owner));
 		this->numberOfArmies = numberOfArmies;
 		this->countryIndex = countryIndex;
 		this->name = name;
 		this->parent = parent;
-		this->adjacentCountries = adjacentCountries;
+		this->adjacentCountries = new vector<int>(*(adjacentCountries));
 		this->x = x;
 		this->y = y;
 	}
@@ -186,10 +142,10 @@ namespace MapSpace
 	}
 
 	Territory& Territory::operator=(const Territory& t) {
-		this->owner = t.owner;
+		this->owner = new Player(*(t.owner));
 		this->numberOfArmies = t.numberOfArmies;
 		this->countryIndex = t.countryIndex;
-		this->adjacentCountries = t.adjacentCountries;
+		this->adjacentCountries = new vector<int>(*(t.adjacentCountries));
 		this->name = t.name;
 		this->parent = t.parent;
 		this->x = t.x;
@@ -205,7 +161,7 @@ namespace MapSpace
 
 	Player Territory::getOwner()
 	{
-		return *(this->owner);
+		return (*this->owner);
 	}
 
 	int Territory::getNumberOfArmies()
@@ -219,7 +175,7 @@ namespace MapSpace
 	}
 
 	ostream& operator<<(ostream& out, const Territory& t) {
-		// TODO: Implement Territory's toString()
+		out << t.name << " is the country with index " << t.countryIndex << " and is located at position (" << t.x << ", " << t.y << ")." << endl;
 		return out;
 	}
 
@@ -240,7 +196,7 @@ namespace MapSpace
 	}
 
 	void Territory::setOwner(Player* player) {
-		this->owner = player;
+		this->owner = new Player(*(player));
 	}
 
 	void Territory::setNumberOfArmies(int numArmies)
@@ -264,11 +220,9 @@ namespace MapSpace
 	}
 
 	Territory::~Territory() {
-		/*delete owner;
+		delete owner;
 		owner = nullptr;
-		delete parent;
-		parent = nullptr;
-		delete adjacentCountries;
+		/*delete adjacentCountries;
 		adjacentCountries = nullptr;*/
 	}
 
@@ -284,55 +238,55 @@ namespace MapSpace
 	// **************************************
 
 	Map::Map() {
-		/*this->continents = nullptr;
+		this->continents = nullptr;
 		this->countries = nullptr;
-		this->borders = nullptr;*/
+		//this->borders = nullptr;
 	}
 
 	Map::Map(const Map& m) {
-		this->continents = m.continents;
-		this->countries = m.countries;
+		this->continents = new vector<Continent>(*(m.continents));
+		this->countries = new vector<Territory>(*(m.countries));
 		this->borders = m.borders;
 	}
 
-	Map::Map(vector<Continent> continents, vector<Territory> countries, vector<tuple<int, int>> borders) {
-		this->continents = continents;
-		this->countries = countries;
+	Map::Map(vector<Continent>* continents, vector<Territory>* countries, vector<tuple<int, int>> borders) {
+		this->continents = new vector<Continent>(*(continents));
+		this->countries = new vector<Territory>(*(countries));
 		this->borders = borders;
 	}
 
 	Map& Map::operator=(const Map& m) {
-		this->continents = m.continents;
-		this->countries = m.countries;
+		this->continents = new vector<Continent>(*(m.continents));
+		this->countries = new vector<Territory>(*(m.countries));
 		this->borders = m.borders;
 
 		return *this;
 	}
 
 	ostream& operator<<(ostream& out, const Map& m) {
-		// TODO: Implement Map's toString()
+		out << "MAP PROPERTIES : # of continents=" << m.continents->size() << ", # of countries=" << m.countries->size() << endl;
 		return out;
 	}
 
 	vector<Continent> Map::getContinents() {
-		return this->continents;
+		return (*this->continents);
 	}
 
 	vector<Territory> Map::getTerritories()
 	{
-		return vector<Territory>();
+		return (*this->countries);
 	}
 
 	vector<tuple<int, int>> Map::getBorders()
 	{
-		return vector<tuple<int, int>>();
+		return this->borders;
 	}
 
 	vector<Territory> Map::getTerritoriesByContinent(int continent)
 	{
 		vector<Territory> continentCountries;
 		
-		for (Territory t : this->countries) {
+		for (Territory t : *(this->countries)) {
 			if (t.getContinent() == continent) {
 				continentCountries.push_back(t);
 			}
@@ -341,12 +295,12 @@ namespace MapSpace
 		return continentCountries;
 	}
 
-	void Map::setContinents(vector<Continent> continents)
+	void Map::setContinents(vector<Continent>* continents)
 	{
 		this->continents = continents;
 	}
 
-	void Map::setTerritories(vector<Territory> territories)
+	void Map::setTerritories(vector<Territory>* territories)
 	{
 		this->countries = territories;
 	}
@@ -358,12 +312,12 @@ namespace MapSpace
 
 	void Map::addContinent(Continent continent)
 	{
-		this->continents.push_back(continent);
+		(*this->continents).push_back(continent);
 	}
 
 	void Map::addTerritory(Territory territory)
 	{
-		this->countries.push_back(territory);
+		(*this->countries).push_back(territory);
 	}
 
 	void Map::addBorder(tuple<int, int> border)
@@ -372,10 +326,8 @@ namespace MapSpace
 	}
 
 	void Map::validate() {
-		// TODO: Add actual validation logic!!!
-
 		// Check if the map is a connected graph (invalid if there exists a node that is not connected to anything)
-		for (Territory t : this->countries) {
+		for (Territory t : this->getTerritories()) {
 			// There is an isolated node if that node does not share a border with any country.
 			int borderCursor = 0;
 
@@ -389,7 +341,7 @@ namespace MapSpace
 
 			// At this point, we've gone through the entire borders collection without finding a border for our node.
 			if (borderCursor == (int) this->borders.size()) {
-				// TODO: Throw Invalid Map Exception - Isolated Node
+				// Throw Invalid Map Exception - Isolated Node
 				cout << "Map is invalid: Map cannot contain an isolated node." << endl;
 				exit(EXIT_SUCCESS);
 			}
@@ -399,13 +351,13 @@ namespace MapSpace
 
 		// Check if continents are connected subgraphs (return a group of territories by continent index)
 		// Loop through all defined continents
-		for (Continent c : this->continents) {
+		for (Continent c : this->getContinents()) {
 
 			// Return a group of countries by continent
 			vector<Territory> continentCountries = this->getTerritoriesByContinent(c.getIndex());
 			
 			if (continentCountries.size() == 0) {
-				// TODO: Throw exception, as there is a continent defined with no countries belonging to it
+				// Throw exception, as there is a continent defined with no countries belonging to it
 				cout << "Map is invalid: All continents must have at least one node." << endl;
 				exit(EXIT_SUCCESS);
 
@@ -432,6 +384,7 @@ namespace MapSpace
 					}
 
 					if (borderCursor == (int)this->borders.size()) {
+						cout << "Territories that are not connected: " << left.getName() << " and " << right.getName() << endl;
 						cout << "Map is invalid: All nodes within a continent must be connected." << endl;
 						exit(EXIT_SUCCESS);
 					}
@@ -452,11 +405,11 @@ namespace MapSpace
 	}
 
 	Map::~Map() {
-		/*delete continents;
+		delete continents;
 		continents = nullptr;
 		delete countries;
 		countries = nullptr;
-		delete borders;
+		/*delete borders;
 		borders = nullptr;*/
 	}
 
@@ -495,7 +448,6 @@ namespace MapSpace
 
 						string armyValue = currentLine.substr(offset, currentLine.find(delimiter, offset));
 
-						// TODO: Create Continent and add it to the vector.
 						Continent c(currentContinent, name, stoi(armyValue));
 						tempContinents.push_back(c);
 					}
@@ -530,12 +482,8 @@ namespace MapSpace
 
 						string y = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // Y position
 
-						// TODO: Create Territory and add it to the vector
 						int index = stoi(continent);
 						Continent c = tempContinents.at(stoi(continent) - 1);
-						//Territory t(stoi(countryNumber), countryName, &c, stoi(x), stoi(y));
-						//Territory t(stoi(countryNumber), countryName, &c, stoi(x), stoi(y));
-						//tempCountries.push_back(Territory(stoi(countryNumber), countryName, &(tempContinents.at(stoi(continent) - 1)), stoi(x), stoi(y)));
 						tempCountries.push_back(Territory(stoi(countryNumber), countryName, stoi(continent), stoi(x), stoi(y)));
 					}
 				}
@@ -565,7 +513,7 @@ namespace MapSpace
 							offset += sharedBorder.length() + delimiter.length();
 						}
 
-						// TODO: Create an edge between the country (belonging to the number) and each adjacent country and add it to the vector
+						// TODO: Rework logic to use pointers to other countries instead of integer tuples.
 						for (string s : adjCountries)
 						{
 							tuple<int,int> edge = { stoi(countryNumber), stoi(s) };
@@ -582,7 +530,7 @@ namespace MapSpace
 		mapFile.close();
 
 		// Generate and return a map from the data received from the map file
-		return Map(tempContinents, tempCountries, tempBorders);
+		return Map(&tempContinents, &tempCountries, tempBorders);
 
 		// TODO: Figure out what makes an invalid map file.
 		// TODO: Implement custom Exception for Invalid Map Files
