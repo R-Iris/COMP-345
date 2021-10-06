@@ -80,7 +80,6 @@ namespace MapSpace
 		this->numberOfArmies = 0;
 		this->countryIndex = 0;
 		this->name = "";
-		this->adjacentCountries = nullptr;
 		this->parent = 0;
 		this->x = 0;
 		this->y = 0;
@@ -90,7 +89,7 @@ namespace MapSpace
 		this->owner = new Player(*(t.owner));
 		this->numberOfArmies = t.numberOfArmies;
 		this->countryIndex = t.countryIndex;
-		//this->adjacentCountries = new vector<int>(*(t.adjacentCountries));
+		this->adjacentCountries = t.adjacentCountries;
 		this->name = t.name;
 		this->parent = t.parent;
 		this->x = t.x;
@@ -101,20 +100,19 @@ namespace MapSpace
 		this->owner = new Player(*(owner));
 		this->numberOfArmies = numberOfArmies;
 		this->countryIndex = countryIndex;
-		this->adjacentCountries = nullptr;
 		this->name = name;
 		this->parent = parent;
 		this->x = x;
 		this->y = y;
 	}
 
-	Territory::Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, vector<int>* adjacentCountries, int x, int y) {
+	Territory::Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, vector<Territory*> adjacentCountries, int x, int y) {
 		this->owner = new Player(*(owner));
 		this->numberOfArmies = numberOfArmies;
 		this->countryIndex = countryIndex;
 		this->name = name;
 		this->parent = parent;
-		this->adjacentCountries = new vector<int>(*(adjacentCountries));
+		this->adjacentCountries = adjacentCountries;
 		this->x = x;
 		this->y = y;
 	}
@@ -124,7 +122,6 @@ namespace MapSpace
 		this->numberOfArmies = numberOfArmies;
 		this->countryIndex = countryIndex;
 		this->name = name;
-		this->adjacentCountries = nullptr;
 		this->parent = parent;
 		this->x = x;
 		this->y = y;
@@ -136,7 +133,6 @@ namespace MapSpace
 		this->countryIndex = countryIndex;
 		this->name = name;
 		this->parent = parent;
-		this->adjacentCountries = nullptr;
 		this->x = x;
 		this->y = y;
 	}
@@ -145,7 +141,7 @@ namespace MapSpace
 		this->owner = new Player(*(t.owner));
 		this->numberOfArmies = t.numberOfArmies;
 		this->countryIndex = t.countryIndex;
-		this->adjacentCountries = new vector<int>(*(t.adjacentCountries));
+		this->adjacentCountries = t.adjacentCountries;
 		this->name = t.name;
 		this->parent = t.parent;
 		this->x = t.x;
@@ -179,10 +175,21 @@ namespace MapSpace
 		return out;
 	}
 
+	bool& operator==(const Territory& lhs, const Territory& rhs)
+	{
+		bool toReturn = lhs.countryIndex == rhs.countryIndex;
+		return toReturn;
+	}
+
 
 	int Territory::getContinent()
 	{
 		return this->parent;
+	}
+
+	vector<Territory*> Territory::getAdjacentTerritories()
+	{
+		return this->adjacentCountries;
 	}
 
 	int Territory::getX()
@@ -209,6 +216,11 @@ namespace MapSpace
 		this->name = newName;
 	}
 
+	void Territory::setAdjacentTerritories(vector<Territory*> territories)
+	{
+		this->adjacentCountries = territories;
+	}
+
 	void Territory::setX(int newX)
 	{
 		this->x = newX;
@@ -219,11 +231,21 @@ namespace MapSpace
 		this->y = newY;
 	}
 
+	void Territory::addAdjacentCountry(Territory* territory)
+	{
+		this->adjacentCountries.push_back(territory);
+	}
+
 	Territory::~Territory() {
 		delete owner;
 		owner = nullptr;
-		/*delete adjacentCountries;
-		adjacentCountries = nullptr;*/
+
+		/*for (int i = 0; i < adjacentCountries.size(); i++) {
+			delete adjacentCountries.at(i);
+			adjacentCountries.at(i) = NULL;
+		}*/
+
+		adjacentCountries.clear();
 	}
 
 	// **************************************
@@ -237,44 +259,41 @@ namespace MapSpace
 	// MAP IMPLEMENTATION
 	// **************************************
 
-	Map::Map() {
-		this->continents = nullptr;
-		this->countries = nullptr;
-		//this->borders = nullptr;
-	}
+	Map::Map() {}
 
 	Map::Map(const Map& m) {
-		this->continents = new vector<Continent>(*(m.continents));
-		this->countries = new vector<Territory>(*(m.countries));
+		this->continents = m.continents;
+		this->countries = m.countries;
 		this->borders = m.borders;
 	}
 
-	Map::Map(vector<Continent>* continents, vector<Territory>* countries, vector<tuple<int, int>> borders) {
-		this->continents = new vector<Continent>(*(continents));
-		this->countries = new vector<Territory>(*(countries));
+	Map::Map(vector<Continent*> continents, vector<Territory*> countries, vector<tuple<int, int>> borders) {
+		this->continents = continents;
+		this->countries = countries;
 		this->borders = borders;
 	}
 
 	Map& Map::operator=(const Map& m) {
-		this->continents = new vector<Continent>(*(m.continents));
-		this->countries = new vector<Territory>(*(m.countries));
+		this->continents = m.continents;
+		this->countries = m.countries;
 		this->borders = m.borders;
 
 		return *this;
 	}
 
 	ostream& operator<<(ostream& out, const Map& m) {
-		out << "MAP PROPERTIES : # of continents=" << m.continents->size() << ", # of countries=" << m.countries->size() << endl;
+		out << "MAP PROPERTIES : # of continents=" << m.continents.size() << ", # of countries=" << m.countries.size() << endl;
 		return out;
 	}
 
-	vector<Continent> Map::getContinents() {
-		return (*this->continents);
+	vector<Continent*> Map::getContinents()
+	{ 			
+		return this->continents;
 	}
 
-	vector<Territory> Map::getTerritories()
+	vector<Territory*> Map::getTerritories()
 	{
-		return (*this->countries);
+		return this->countries;
 	}
 
 	vector<tuple<int, int>> Map::getBorders()
@@ -282,12 +301,25 @@ namespace MapSpace
 		return this->borders;
 	}
 
-	vector<Territory> Map::getTerritoriesByContinent(int continent)
+	vector<tuple<int, int>> Map::getBordersByCountry(Territory country)
 	{
-		vector<Territory> continentCountries;
+		vector<tuple<int, int>> bordersByCountry;
+
+		for (tuple<int, int> border : this->borders) {
+			if (get<0>(border) == country.getIndex()) {
+				bordersByCountry.push_back(border);
+			}
+		}
+
+		return bordersByCountry;
+	}
+
+	vector<Territory*> Map::getTerritoriesByContinent(int continent)
+	{
+		vector<Territory*> continentCountries;
 		
-		for (Territory t : *(this->countries)) {
-			if (t.getContinent() == continent) {
+		for (Territory* t : this->countries) {
+			if (t->getContinent() == continent) {
 				continentCountries.push_back(t);
 			}
 		}
@@ -295,12 +327,12 @@ namespace MapSpace
 		return continentCountries;
 	}
 
-	void Map::setContinents(vector<Continent>* continents)
+	void Map::setContinents(vector<Continent*> continents)
 	{
 		this->continents = continents;
 	}
 
-	void Map::setTerritories(vector<Territory>* territories)
+	void Map::setTerritories(vector<Territory*> territories)
 	{
 		this->countries = territories;
 	}
@@ -310,14 +342,14 @@ namespace MapSpace
 		this->borders = borders;
 	}
 
-	void Map::addContinent(Continent continent)
+	void Map::addContinent(Continent* continent)
 	{
-		(*this->continents).push_back(continent);
+		this->continents.push_back(continent);
 	}
 
-	void Map::addTerritory(Territory territory)
+	void Map::addTerritory(Territory* territory)
 	{
-		(*this->countries).push_back(territory);
+		this->countries.push_back(territory);
 	}
 
 	void Map::addBorder(tuple<int, int> border)
@@ -325,76 +357,100 @@ namespace MapSpace
 		this->borders.push_back(border);
 	}
 
-	void Map::validate() {
-		// Check if the map is a connected graph (invalid if there exists a node that is not connected to anything)
-		for (Territory t : this->getTerritories()) {
-			// There is an isolated node if that node does not share a border with any country.
-			int borderCursor = 0;
+	bool Map::borderExists(vector<Territory*> toCheck, Territory destination, vector<Territory> checked)
+	{
+		// If there are no more nodes to check, we must assume that no links to the destination exist.
+		if (toCheck.size() == 0) {
+			return false;
+		}
 
-			for (tuple<int, int> border : this->borders) {
-				if (get<0>(border) == t.getIndex()) {
-					// A border exists for this node! move on to the next node.
-					break;
+		vector<Territory*> neighbours;
+
+		// For each node in toCheck, check to see if it shares a border with the destination node
+		for (Territory* t : toCheck) {
+			// Only proceed if we have not checked this node already
+			if (!territoryExists(checked, *t)) {
+				for (tuple<int, int> border : this->getBordersByCountry(*t)) {
+					if (get<1>(border) == destination.getIndex()) {
+						// A border links the two nodes, hence they are connected.
+						return true;
+					}
+
+					else {
+						// Cross this node off our list of nodes to check
+						checked.push_back(*t);
+
+						// Add this node's neighbours to our list of nodes to check
+						for (Territory* tr : t->getAdjacentTerritories()) {
+							if (!territoryExists(checked, *tr)) { // If it hasn't been checked already
+								neighbours.push_back(tr);
+							}
+						}
+					}
 				}
-				borderCursor++;
-			}
-
-			// At this point, we've gone through the entire borders collection without finding a border for our node.
-			if (borderCursor == (int) this->borders.size()) {
-				// Throw Invalid Map Exception - Isolated Node
-				cout << "Map is invalid: Map cannot contain an isolated node." << endl;
-				exit(EXIT_SUCCESS);
 			}
 		}
 
+		return borderExists(neighbours, destination, checked);
+	}
+
+	void Map::validate() {
+		// This function takes a while to complete, so let the user know that things are moving along.
+		cout << "Validating map..." << endl;
+
+		vector<Territory> checked;
+
+		// Check if the map is a connected graph (invalid if there exists a node that is not connected to anything)
+		Territory* node1 = this->countries.at(0);
+
+		for (Territory* t : this->getTerritories()) {
+			// We want to check all other nodes
+			if (node1 != t) {
+				cout << "Checking: " << node1->getIndex() << ", " << t->getIndex() << endl;
+				vector<Territory*> tmp;
+				tmp.push_back(node1);
+				if (!borderExists(tmp, *t, checked)) {
+					// Throw Invalid Map Exception - Isolated Node
+					cout << "Map is invalid: Map cannot contain an isolated node." << endl;
+					exit(EXIT_SUCCESS);
+				}
+
+				else {
+					cout << "Link established!" << endl;
+				}
+			}
+		}
+		
 		// At this point, we can confirm that the map is a connected graph!
-
 		// Check if continents are connected subgraphs (return a group of territories by continent index)
+		
 		// Loop through all defined continents
-		for (Continent c : this->getContinents()) {
+		for (Continent* c : this->getContinents()) {
+			cout << "Validating continent " << c->getIndex() << endl;
+			vector<Territory*> continentCountries = this->getTerritoriesByContinent(c->getIndex());
 
-			// Return a group of countries by continent
-			vector<Territory> continentCountries = this->getTerritoriesByContinent(c.getIndex());
-			
 			if (continentCountries.size() == 0) {
 				// Throw exception, as there is a continent defined with no countries belonging to it
 				cout << "Map is invalid: All continents must have at least one node." << endl;
 				exit(EXIT_SUCCESS);
 
 			}
-
+			
 			else if (continentCountries.size() > 1) {
-				int cursor = 1;
-				
-				while (cursor <= (int) continentCountries.size()) {
-					Territory left = continentCountries.at(cursor - 1);
-					Territory right = (cursor == continentCountries.size()) ? continentCountries.at(0) : continentCountries.at(cursor);
+				Territory* startNode = continentCountries.at(0);
+				vector<Territory*> tmp;
+				tmp.push_back(startNode);
 
-					int borderCursor = 0;
-					for (tuple<int, int> border : this->borders) {
-						
-						if ((get<0>(border) == left.getIndex() && get<1>(border) == right.getIndex()) ||
-							(get<1>(border) == left.getIndex() && get<0>(border) == right.getIndex()))
-						{
-							// Break out of the loop as we have proven that the two countries are connected.
-							break;
-						}
-
-						borderCursor++;
-					}
-
-					if (borderCursor == (int)this->borders.size()) {
-						cout << "Territories that are not connected: " << left.getName() << " and " << right.getName() << endl;
+				for (Territory* t : continentCountries) {
+					vector<Territory> checked;
+					if (!borderExists(tmp, *t, checked)) {
 						cout << "Map is invalid: All nodes within a continent must be connected." << endl;
+						cout << "Territories that are not connected: " << startNode->getName() << " and " << t->getName() << endl;
 						exit(EXIT_SUCCESS);
 					}
-
-					cursor++;
 				}
-
-				// At this point, we can say that all countries belonging to that continent are connected!
 			}
-
+			
 			else {
 				// If there is only one country in a continent, it technically is a connected subgraph
 			}
@@ -404,13 +460,27 @@ namespace MapSpace
 		cout << "This map is valid!" << endl;
 	}
 
+	bool Map::territoryExists(vector<Territory> collection, Territory toFind)
+	{
+		for (Territory t : collection) {
+			if (t == toFind) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	Map::~Map() {
-		delete continents;
-		continents = nullptr;
-		delete countries;
-		countries = nullptr;
-		/*delete borders;
-		borders = nullptr;*/
+		for (Continent* c : continents) {
+			delete c;
+		}
+		continents.clear();
+
+		for (Territory* t : countries) {
+			delete t;
+		}
+		countries.clear();
 	}
 
 	// **************************************
@@ -425,8 +495,8 @@ namespace MapSpace
 		int currentContinent = 0;
 
 		// Vectors to store the data retrieved from the map file
-		vector<Continent> tempContinents;
-		vector<Territory> tempCountries;
+		vector<Continent*> tempContinents;
+		vector<Territory*> tempCountries;
 		vector<tuple<int, int>> tempBorders;
 
 		// Parse the file to create the map, use the headers to jump to different points in the file
@@ -448,7 +518,7 @@ namespace MapSpace
 
 						string armyValue = currentLine.substr(offset, currentLine.find(delimiter, offset));
 
-						Continent c(currentContinent, name, stoi(armyValue));
+						Continent* c = new Continent(currentContinent, name, stoi(armyValue));
 						tempContinents.push_back(c);
 					}
 				}
@@ -482,9 +552,8 @@ namespace MapSpace
 
 						string y = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // Y position
 
-						int index = stoi(continent);
-						Continent c = tempContinents.at(stoi(continent) - 1);
-						tempCountries.push_back(Territory(stoi(countryNumber), countryName, stoi(continent), stoi(x), stoi(y)));
+						Territory* t = new Territory(stoi(countryNumber), countryName, stoi(continent), stoi(x), stoi(y));
+						tempCountries.push_back(t);
 					}
 				}
 
@@ -513,11 +582,14 @@ namespace MapSpace
 							offset += sharedBorder.length() + delimiter.length();
 						}
 
-						// TODO: Rework logic to use pointers to other countries instead of integer tuples.
 						for (string s : adjCountries)
 						{
+							// Add edge tuple to the map
 							tuple<int,int> edge = { stoi(countryNumber), stoi(s) };
 							tempBorders.push_back(edge);
+
+							// Add territory pointer to the current node
+							tempCountries.at(stoi(countryNumber) - 1)->addAdjacentCountry(tempCountries.at(stoi(s) - 1));
 						}
 					}
 				}
@@ -530,9 +602,6 @@ namespace MapSpace
 		mapFile.close();
 
 		// Generate and return a map from the data received from the map file
-		return Map(&tempContinents, &tempCountries, tempBorders);
-
-		// TODO: Figure out what makes an invalid map file.
-		// TODO: Implement custom Exception for Invalid Map Files
+		return Map(tempContinents, tempCountries, tempBorders);
 	}
 }

@@ -19,8 +19,9 @@ int main()
 	//string fileName = "Assets/solar_with_isolated_node.map";
 
 	Map testMap = MapLoader::createMapfromFile(fileName);
+
 	// Display map properties
-	cout << endl;
+	/*cout << endl;
 	cout << "MAP" << endl;
 	cout << "===" << endl;
 	cout << endl;
@@ -44,8 +45,10 @@ int main()
 
 	for (Territory t : testMap.getTerritories()) {
 		cout << t << endl;
-	}
+	}*/
 
 	// TODO: Refine and test map validation
-	// testMap.validate();
+	testMap.validate();
+
+	// CLEANUP
 }

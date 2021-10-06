@@ -49,16 +49,16 @@ namespace MapSpace
 	{
 		private:
 			Player* owner;
-			int numberOfArmies; // QUESTION: Is a territory supposed to have a number of armies by default, or is this the number of armies that a player is devoting to it?
+			int numberOfArmies;
 			int countryIndex;
 			string name;
-			//Continent* parent;
 
 			int parent;
 
-			vector<int>* adjacentCountries; // This will store the nodes with which this node shares edges
+			vector<Territory*> adjacentCountries; // This will store the nodes with which this node shares borders
+			//vector<int> adjacentCountries;
 
-			// These determine where the circle of the country will go on the map
+			// Cartesian coordinates for the territory on the map
 			int x;
 			int y;
 		
@@ -69,7 +69,8 @@ namespace MapSpace
 
 			// Implementing the parent continent as a number
 			Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, int x, int y);
-			Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, vector<int>* adjacentCountries, int x, int y);
+			Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, vector<Territory*> adjacentCountries, int x, int y);
+			//Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, vector<int> adjacentCountries, int x, int y);
 			Territory(int numberOfArmies, int countryIndex, string name, int parent, int x, int y);
 			Territory(int countryIndex, string name, int parent, int x, int y);
 
@@ -77,6 +78,7 @@ namespace MapSpace
 			Territory &operator=(const Territory &t);
 
 			friend ostream& operator<<(ostream& out, const Territory &t);
+			friend bool& operator==(const Territory& lhs, const Territory& rhs);
 
 			// MEMBER FUNCTIONS
 			int getIndex();
@@ -84,14 +86,21 @@ namespace MapSpace
 			int getNumberOfArmies();
 			string getName();
 			int getContinent();
+			vector<Territory*> getAdjacentTerritories();
+			//vector<int> getAdjacentTerritories();
 			int getX();
 			int getY();
 
 			void setOwner(Player* player);
 			void setNumberOfArmies(int numArmies);
 			void setName(string newName);
+			void setAdjacentTerritories(vector<Territory*> territories);
+			//void setAdjacentTerritories(vector<int> territories);
 			void setX(int newX);
 			void setY(int newY);
+
+			void addAdjacentCountry(Territory* territory);
+			//void addAdjacentCountry(int territory);
 			
 			// DESTRUCTOR
 			~Territory();
@@ -110,8 +119,8 @@ namespace MapSpace
 	class Map // This is the graph
 	{
 		private:
-			vector<Continent>* continents;
-			vector<Territory>* countries; // Nodes
+			vector<Continent*> continents;
+			vector<Territory*> countries; // Nodes
 			vector<tuple<int,int>> borders; // Edges
 
 			/* Check if continents are connected subgraphs if there exists an edge (set of borders) that contain the country number of each country belonging to a continent */
@@ -120,7 +129,7 @@ namespace MapSpace
 		public:
 			Map();
 			Map(const Map &m);
-			Map(vector<Continent>* continents, vector<Territory>* countries, vector<tuple<int,int>> borders);
+			Map(vector<Continent*> continents, vector<Territory*> countries, vector<tuple<int,int>> borders);
 
 			// OPERATOR OVERLOADS
 			Map &operator=(const Map &m);
@@ -128,23 +137,28 @@ namespace MapSpace
 			friend ostream &operator<<(ostream& out, const Map &m);
 			
 			// MEMBER FUNCTIONS
-			vector<Continent> getContinents();
-			vector<Territory> getTerritories();
+			vector<Continent*> getContinents();
+			vector<Territory*> getTerritories();
 			vector<tuple<int,int>> getBorders();
 
-			vector<Territory> getTerritoriesByContinent(int continent);
+			vector<tuple<int, int>> getBordersByCountry(Territory country);
 
-			void setContinents(vector<Continent>* continents);
-			void setTerritories(vector<Territory>* territories);
+			vector<Territory*> getTerritoriesByContinent(int continent);
+
+			void setContinents(vector<Continent*> continents);
+			void setTerritories(vector<Territory*> territories);
 			void setBorders(vector<tuple<int,int>> borders);
 
-			void addContinent(Continent continent);
-			void addTerritory(Territory territory);
+			void addContinent(Continent* continent);
+			void addTerritory(Territory* territory);
 			void addBorder(tuple<int, int> border);
 
 			~Map();
 
+			bool borderExists(vector<Territory*> toCheck, Territory destination, vector<Territory> checked);
 			void validate();
+
+			static bool territoryExists(vector<Territory> collection, Territory toFind);
 	};
 
 	class MapLoader 
