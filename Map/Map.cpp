@@ -1,3 +1,10 @@
+/**
+ * COMP 345: Advanced Program Design with C++
+ * @file Map.cpp
+ * @author Jason Patel
+ * @version 8/10/2021
+ */
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -240,10 +247,10 @@ namespace MapSpace
 		delete owner;
 		owner = nullptr;
 
-		/*for (int i = 0; i < adjacentCountries.size(); i++) {
-			delete adjacentCountries.at(i);
+		for (int i = 0; i < adjacentCountries.size(); i++) {
+			//delete adjacentCountries.at(i);
 			adjacentCountries.at(i) = NULL;
-		}*/
+		}
 
 		adjacentCountries.clear();
 	}
@@ -251,6 +258,7 @@ namespace MapSpace
 	// **************************************
 	// INVALID MAP EXCEPTION IMPLEMENTATION
 	// **************************************
+
 	const string InvalidMapException::error() const throw() {
 		return " ";
 	}
@@ -472,13 +480,15 @@ namespace MapSpace
 	}
 
 	Map::~Map() {
-		for (Continent* c : continents) {
-			delete c;
+		for (int i = 0; i < continents.size(); i++) {
+			delete continents.at(i);
+			continents.at(i) = NULL;
 		}
 		continents.clear();
 
-		for (Territory* t : countries) {
-			delete t;
+		for (int j = 0; j < countries.size(); j++) {
+			delete countries.at(j);
+			countries.at(j) = NULL;
 		}
 		countries.clear();
 	}
@@ -598,10 +608,10 @@ namespace MapSpace
 			}
 		}
 
-		// Close ifstream
+		// We've finished reading the file, close it.
 		mapFile.close();
 
-		// Generate and return a map from the data received from the map file
+		// Generate and return a map from the data read from the map file
 		return Map(tempContinents, tempCountries, tempBorders);
 	}
 }

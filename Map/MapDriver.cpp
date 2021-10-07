@@ -1,5 +1,9 @@
-// MapDriver.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+/**
+ * COMP 345: Advanced Program Design with C++
+ * @file MapDriver.cpp
+ * @author Jason Patel
+ * @version 8/10/2021
+ */
 
 #include <iostream>
 #include "Map.h"
@@ -21,7 +25,7 @@ int main()
 	Map testMap = MapLoader::createMapfromFile(fileName);
 
 	// Display map properties
-	/*cout << endl;
+	cout << endl;
 	cout << "MAP" << endl;
 	cout << "===" << endl;
 	cout << endl;
@@ -33,8 +37,8 @@ int main()
 	cout << "==========" << endl;
 	cout << endl;
 
-	for (Continent c : testMap.getContinents()) {
-		cout << c << endl;
+	for (Continent* c : testMap.getContinents()) {
+		cout << *c << endl;
 	}
 
 	// Display countries
@@ -43,11 +47,13 @@ int main()
 	cout << "===========" << endl;
 	cout << endl;
 
-	for (Territory t : testMap.getTerritories()) {
-		cout << t << endl;
-	}*/
+	for (Territory* t : testMap.getTerritories()) {
+		cout << *t << endl;
+	}
 
-	// TODO: Refine and test map validation
+	cout << "Map successfully generated from map file!" << endl;
+	system("pause"); // Await user input before proceeding.
+
 	testMap.validate();
 
 	// CLEANUP
