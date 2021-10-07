@@ -29,6 +29,7 @@ private:
 class Deck {
 public:
 	Deck();
+	Deck(int);
 	Deck(const Deck&);
 	Deck& operator= (const Deck&);
 	void setSize(int sizeDeck);
@@ -50,6 +51,7 @@ private:
 class Hand {
 public:
 	Hand();
+	Hand(int);
 	Hand(const Hand&);
 	Hand& operator= (const Hand&);
 	void addHand(Card*);
