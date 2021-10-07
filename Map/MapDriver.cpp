@@ -22,14 +22,17 @@ int main()
 	//string fileName = "Assets/german_with_disconnected_continent.map";
 	//string fileName = "Assets/solar_with_isolated_node.map";
 
-	Map testMap = MapLoader::createMapfromFile(fileName);
+	// Demonstrate that Player class works
+	Player* p = new Player();
+
+	Map* testMap = MapLoader::createMapfromFile(fileName);
 
 	// Display map properties
 	cout << endl;
 	cout << "MAP" << endl;
 	cout << "===" << endl;
 	cout << endl;
-	cout << testMap << endl;
+	cout << *testMap << endl;
 	
 	// Display continents
 	cout << endl;
@@ -37,7 +40,7 @@ int main()
 	cout << "==========" << endl;
 	cout << endl;
 
-	for (Continent* c : testMap.getContinents()) {
+	for (Continent* c : testMap->getContinents()) {
 		cout << *c << endl;
 	}
 
@@ -47,14 +50,16 @@ int main()
 	cout << "===========" << endl;
 	cout << endl;
 
-	for (Territory* t : testMap.getTerritories()) {
+	for (Territory* t : testMap->getTerritories()) {
 		cout << *t << endl;
 	}
 
 	cout << "Map successfully generated from map file!" << endl;
 	system("pause"); // Await user input before proceeding.
 
-	testMap.validate();
+	testMap->validate();
 
 	// CLEANUP
+	delete testMap;
+	delete p;
 }

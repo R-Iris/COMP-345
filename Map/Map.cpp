@@ -210,7 +210,7 @@ namespace MapSpace
 	}
 
 	void Territory::setOwner(Player* player) {
-		this->owner = new Player(*(player));
+		this->owner = player;
 	}
 
 	void Territory::setNumberOfArmies(int numArmies)
@@ -244,14 +244,6 @@ namespace MapSpace
 	}
 
 	Territory::~Territory() {
-		delete owner;
-		owner = nullptr;
-
-		for (int i = 0; i < adjacentCountries.size(); i++) {
-			//delete adjacentCountries.at(i);
-			adjacentCountries.at(i) = NULL;
-		}
-
 		adjacentCountries.clear();
 	}
 
@@ -365,6 +357,22 @@ namespace MapSpace
 		this->borders.push_back(border);
 	}
 
+	/**
+	 * FUNCTION: borderExists
+	 *
+	 * @param toCheck <vector<Territory*>>: A collection of nodes to be verified as being able to connect to the 'destination' node.
+	 * @param destination <Territory>: The node to connect to.
+	 * @param checked <vector<Territory>>: A collection of nodes which marks nodes that have already been traversed.
+	 * 
+	 * 
+	 * This function tests each node in toCheck to see if it can connect to the 'destination' node. If a node can connect to 'destination', then the function returns true and exits. Otherwise,
+	 * it is marked as traversed by being added to the 'checked' vector and then its adjacent nodes are verified. If all nodes in toCheck, as well as their adjacent nodes, fail to connect to
+	 * 'destination', then the function returns false.
+	 * 
+	 * @returns boolean: True if one of the nodes in 'toCheck' can connect to 'destination', false otherwise.
+	 *
+	 */
+
 	bool Map::borderExists(vector<Territory*> toCheck, Territory destination, vector<Territory> checked)
 	{
 		// If there are no more nodes to check, we must assume that no links to the destination exist.
@@ -402,6 +410,23 @@ namespace MapSpace
 		return borderExists(neighbours, destination, checked);
 	}
 
+	/**
+	 * FUNCTION: validate
+	 *
+	 * This function validates the map instance it is tied to. It verifies the following: 
+	 * 1) The map is a connected graph.
+	 * 2) Each continent of the map is connected.
+	 *
+	 * Due to the format of the map files, the third requirement (that each territory belongs to a sole continent) is enforced, hence there is no need to verify this.
+	 * The function makes use of the helper method borderExists (see above function) to verify that the map is connected. It assumes that a map is connected if we can reach all nodes from a given
+	 * node, so if borderExists() returns true for each node, the map is a connected graph.
+	 *
+	 *
+	 * For the second requirement, the map's territories are subdivided into smaller graphs based on the continent they belong to. Then, for each subgraph, the process for 1) is applied. Unless
+	 * one of the borderExists() calls return false, all continents are connected subgraphs.
+	 *
+	 *
+	 */
 	void Map::validate() {
 		// This function takes a while to complete, so let the user know that things are moving along.
 		cout << "Validating map..." << endl;
@@ -497,7 +522,21 @@ namespace MapSpace
 	// MAPLOADER IMPLEMENTATION
 	// **************************************
 
-	Map MapLoader::createMapfromFile(string mapFileName) {
+	/**
+	 * FUNCTION: createMapfromFile
+	 * 
+	 * @param mapFileName <string>: The path to the map file to be read.
+	 *
+	 * Upon recieving a path to a map file, this function opens the file and begins parsing the file for data which it can then use to create a map. The function begins
+	 * by searching for a section header line (such as '[continents]', '[countries]' and '[borders]'). It then assumes every line that follows (until a blank line is read, in which case, 
+	 * it looks for another header line.) contains relevant data to the section it is in and reads each line before storing the object created from the data in the line in its proper vector.
+	 * Once all the vectors have been populated, a map is created using all of the vectors and returned upon exit.
+	 *
+	 *
+	 * @returns m <Map*>: The map that has been created based on the data in the provided map file.
+	 * 
+	 */
+	Map* MapLoader::createMapfromFile(string mapFileName) {
 		// Open the file
 		ifstream mapFile(mapFileName);
 		string currentLine;
@@ -612,6 +651,7 @@ namespace MapSpace
 		mapFile.close();
 
 		// Generate and return a map from the data read from the map file
-		return Map(tempContinents, tempCountries, tempBorders);
+		Map* m = new Map(tempContinents, tempCountries, tempBorders);
+		return m;
 	}
 }

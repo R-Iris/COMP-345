@@ -218,6 +218,6 @@ namespace MapSpace
 	{
 		private:
 		public:
-			static Map createMapfromFile(string fileName);
+			static Map* createMapfromFile(string fileName);
 	};
 }
