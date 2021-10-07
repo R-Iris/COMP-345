@@ -107,6 +107,17 @@ Deck::Deck() : sizeDeck(5) {
 	cards.push_back(new Card(Card::cardType::Diplomacy));
 }
 
+
+Deck::Deck(int number) : sizeDeck(number) {
+	for (int i = 0; i < sizeDeck / 5; i++) {
+		cards.push_back(new Card(Card::cardType::Bomb));
+		cards.push_back(new Card(Card::cardType::Reinforcement));
+		cards.push_back(new Card(Card::cardType::Blockade));
+		cards.push_back(new Card(Card::cardType::Airlift));
+		cards.push_back(new Card(Card::cardType::Diplomacy));
+	}
+}
+
 //Copy constructor
 Deck::Deck(const Deck& deck) : sizeDeck(deck.sizeDeck) {
 	for (int i = 0; i < deck.cards.size(); i++) {
@@ -177,6 +188,10 @@ Hand::Hand() : sizeHand(3) {
 	cout << "\nCreating the player's hand..." << '\n';
 }
 
+Hand::Hand(int number) : sizeHand(number) {
+	cout << "\nCreating the player's hand..." << '\n';
+}
+
 //Copy constructor
 Hand::Hand(const Hand& hand) : sizeHand(hand.sizeHand) {
 	//Copying each element from the original hand to the new one
@@ -223,7 +238,7 @@ void Hand::removeHand(int index) {
 
 //Verifies if the hand is full or not
 bool Hand::handFull() {
-	if (cardsInHand.size() >= sizeHand) {
+	if (cardsInHand.size() == sizeHand) {
 		cout << "Your hand is full." << '\n';
 		return true;
 	}

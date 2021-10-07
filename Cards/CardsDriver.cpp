@@ -8,24 +8,37 @@ int main() {
 
 	Card* card = new Card();		//Create an object card
 	Player* player = new Player();	//Create an object player
-	Deck* deck = new Deck();		//Create an object deck
+
+	int cardsDeck{};
+	cout << "Enter number of cards in the deck. Must be a multiple of 5 and at most 30: " << '\n';
+	cin >> cardsDeck;
+	while (cardsDeck % 5 != 0 || cardsDeck > 30) {
+		cout << "The number of cards you've entered does not fit the requirements. Please try again." << '\n';
+		cin >> cardsDeck;
+	}
+
+	Deck* deck = new Deck(cardsDeck);	//Create a deck object
 	cout << *deck;
 
 	Deck* copyDeck = new Deck(*deck);	//Copy constructor		
 	Deck copyDeck2 = *deck;				//Calls overloaded assignment operator
 
-	Hand* hand = new Hand();		//Create an object hand
+	int cardsHand{};
+	cout << "\nEnter number for the player's hand. It must be at most 5: " << '\n';
+	cin >> cardsHand;
+	while (cardsHand > 5) {
+		cout << "The number of cards you've entered does not fit the requirements. Please try again." << '\n';
+		cin >> cardsDeck;
+	}
+
+	Hand* hand = new Hand(cardsHand);		//Create an object hand
 
 	cout << "# of cards your hand can hold: " << hand->getSize() << '\n';
 
-	hand->addHand(deck->draw());	//Draws and adds the drawn card to the hand
-	cout << *deck << *hand;
-
-	hand->addHand(deck->draw());
-	cout << *deck << *hand;
-
-	hand->addHand(deck->draw());
-	cout << *deck << *hand;
+	while (!(hand->handFull())) {
+		hand->addHand(deck->draw());	//Draws and adds the drawn card to the hand
+		cout << *deck << *hand;
+	}
 
 	Hand* copyHand = new Hand(*hand);	//Copy constructor
 	Hand copyHand2 = *hand;				//Calls overloaded assignment operator
