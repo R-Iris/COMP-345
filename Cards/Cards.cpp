@@ -107,15 +107,41 @@ Deck::Deck() : sizeDeck(5) {
 	cards.push_back(new Card(Card::cardType::Diplomacy));
 }
 
-
+//Constructor accepting an integer
 Deck::Deck(int number) : sizeDeck(number) {
-	for (int i = 0; i < sizeDeck / 5; i++) {
-		cards.push_back(new Card(Card::cardType::Bomb));
-		cards.push_back(new Card(Card::cardType::Reinforcement));
-		cards.push_back(new Card(Card::cardType::Blockade));
-		cards.push_back(new Card(Card::cardType::Airlift));
-		cards.push_back(new Card(Card::cardType::Diplomacy));
+	int numberCorrected{ number - 5 };
+
+	//Making sure the deck has a card of each type
+	cards.push_back(new Card(Card::cardType::Bomb));
+	cards.push_back(new Card(Card::cardType::Reinforcement));
+	cards.push_back(new Card(Card::cardType::Blockade));
+	cards.push_back(new Card(Card::cardType::Airlift));
+	cards.push_back(new Card(Card::cardType::Diplomacy));
+	
+	for (int i = 0; i < numberCorrected; i++) {
+
+		//Random int from 0 to 4
+		int typeNumber{ rand() % 4 };
+
+		switch (typeNumber) {
+		case 0:
+			cards.push_back(new Card(Card::cardType::Bomb));
+			break;
+		case 1:
+			cards.push_back(new Card(Card::cardType::Reinforcement));
+			break;
+		case 2:
+			cards.push_back(new Card(Card::cardType::Blockade));
+			break;
+		case 3:
+			cards.push_back(new Card(Card::cardType::Airlift));
+			break;
+		case 4:
+			cards.push_back(new Card(Card::cardType::Diplomacy));
+			break;
+		}
 	}
+		
 }
 
 //Copy constructor
@@ -188,6 +214,7 @@ Hand::Hand() : sizeHand(3) {
 	cout << "\nCreating the player's hand..." << '\n';
 }
 
+//Constructor accepting an integer
 Hand::Hand(int number) : sizeHand(number) {
 	cout << "\nCreating the player's hand..." << '\n';
 }
@@ -239,7 +266,7 @@ void Hand::removeHand(int index) {
 //Verifies if the hand is full or not
 bool Hand::handFull() {
 	if (cardsInHand.size() == sizeHand) {
-		cout << "Your hand is full." << '\n';
+		cout << "\nYour hand is full." << '\n';
 		return true;
 	}
 
