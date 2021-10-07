@@ -25,12 +25,13 @@ void Orders::setEffect(string eff) {
     effect = eff;
 }
 
+//Implemented in other child classes
 bool Orders::validate() {
     return false;
 }
 
-void Orders::execute() {
-}
+//Implemented in order child classes
+void Orders::execute() {}
 
 string Orders::getName() {
     return std::string();
@@ -77,11 +78,14 @@ ostream& operator <<(ostream &strm, Deploy& deploy){
 
 //Assignment operator overload
 Deploy& Deploy::operator = (const Deploy& deploy){
+    //Intentionally shallow copying data members of deploy class since no new members are being created
+    this->orderOwner = deploy.orderOwner;
     this->noOfArmies = deploy.noOfArmies;
     this->target = deploy.target;
     return *this;
 }
 
+//Validate method checking if orderOwner owns target territory and number of armies is valid
 bool Deploy::validate() {
     if(orderOwner->ownsTerritory(getTarget()) && getNoOfArmies() > 0) {
         cout << "Deploy order is valid" << endl;
@@ -91,6 +95,7 @@ bool Deploy::validate() {
     return false;
 }
 
+//Executing method if valid -- Only printing strings for now
 void Deploy::execute() {
     if (validate()) {
         cout << "Executing the deploy order" << endl;
@@ -104,13 +109,15 @@ void Deploy::execute() {
         cout << "The deploy call was not executed" << endl;
     }
 }
-
+//Copy constructor
 Deploy::Deploy(const Deploy &deploy) {
-    //Shallow copy of target on purpose
+    //Intentionally shallow copying data members of deploy class since no new members are being created
+    this->orderOwner = deploy.orderOwner;
     this->target = deploy.target;
     this->noOfArmies = deploy.noOfArmies;
 }
 
+//Destructor is default since no new data members being created in the class
 Deploy::~Deploy()= default;
 
 //------------------------------Advance class---------------------
@@ -156,6 +163,7 @@ ostream& operator <<(ostream &strm, Advance& advance){
     else return strm << s1;
 }
 
+//Advance order valid only if target is neighbour of source
 bool Advance::validate() {
     //Checking if target is a neighbour of source
     if(source->isNeighbour(target) && orderOwner->ownsTerritory(source)){
@@ -165,7 +173,7 @@ bool Advance::validate() {
     cout << "Cannot advance to that territory since Player " + orderOwner->getName() + "does not have any owned neighbour territories" << endl;
     return false;
 }
-
+//If valid, checking if target is owner territory or enemy territory before executing
 void Advance::execute() {
     if(validate()){
         if(orderOwner->ownsTerritory(target)){
@@ -184,23 +192,28 @@ void Advance::execute() {
         setExecuted(true);
     }
     else{
-        cout << "The advance call was not executed" << endl;
+        cout << "The advance call was not executed since it was invalid" << endl;
     }
 }
 //Assignment operator overload
+//Intentionally shallow copying data members of deploy class since no new members are being created
 Advance &Advance::operator=(const Advance &advance) {
+    this->orderOwner = advance.orderOwner;
     this->target = advance.target;
     this->source = advance.source;
     this->noOfArmies = advance.noOfArmies;
     return *this;
 }
 
+//Intentionally shallow copying data members of deploy class since no new members are being created
 Advance::Advance(const Advance &advance) {
+    this->orderOwner = advance.orderOwner;
     this->target = advance.target;
     this->source = advance.source;
     this->noOfArmies = advance.noOfArmies;
 }
 
+//Destructor is default since no new data members being created in the class
 Advance::~Advance() = default;
 
 //------------------------------Bomb class---------------------
@@ -240,6 +253,7 @@ bool Bomb::validate() {
     cout << "Cannot bomb that territory since player " + orderOwner->getName() +" does not have any owned neighbour territories" << endl;
     return false;
 }
+//If valid, checking if target territory is owned by player before executing
 void Bomb::execute() {
     if(validate()){
         if(orderOwner->ownsTerritory(target)){
@@ -258,15 +272,20 @@ void Bomb::execute() {
     }
 }
 //Assignment operator overload
+//Intentionally shallow copying data members of deploy class since no new members are being created
 Bomb &Bomb::operator=(const Bomb &bomb) {
+    this->orderOwner = bomb.orderOwner;
     this->target = bomb.target;
     return *this;
 }
 
+//Intentionally shallow copying data members of deploy class since no new members are being created
 Bomb::Bomb(const Bomb &bomb) {
+    this->orderOwner = bomb.orderOwner;
     this->target = bomb.target;
 }
 
+//Destructor is default since no new data members being created in the class
 Bomb::~Bomb() = default;
 
 //------------------------------Blockade class---------------------
@@ -304,6 +323,7 @@ ostream& operator <<(ostream &strm, Blockade& blockade){
     else return strm << s1;
 }
 
+//Valid only if target territory is owned by player;
 bool Blockade::validate() {
     if(orderOwner->ownsTerritory(target)){
         return true;
@@ -311,6 +331,8 @@ bool Blockade::validate() {
     cout << "You do not own " + target->getName() + "territory" << endl;
     return false;
 }
+
+//Executing order if valid -- Only printing strings
 void Blockade::execute() {
     if(validate()){
         cout << "Executing blockade order" << endl;
@@ -323,18 +345,24 @@ void Blockade::execute() {
         cout << "The blockade order was not executed" << endl;
     }
 }
+
 //Assignment operator overload
+//Intentionally shallow copying data members of deploy class since no new members are being created
 Blockade &Blockade::operator=(const Blockade &blockade) {
+    this->orderOwner = blockade.orderOwner;
     this->target = blockade.target;
     this->noOfArmies = blockade.noOfArmies;
     return *this;
 }
 
+//Intentionally shallow copying data members of deploy class since no new members are being created
 Blockade::Blockade(const Blockade &blockade) {
+    this->orderOwner = blockade.orderOwner;
     this->target = blockade.target;
     this->noOfArmies = blockade.noOfArmies;
 }
 
+//Destructor is default since no new data members being created in the class
 Blockade::~Blockade() = default;
 
 
@@ -380,7 +408,7 @@ ostream& operator <<(ostream &strm, Airlift& airlift){
     }
     else return strm << s1;
 }
-
+//Airlift order valid if source territory is owned by OrderOwner
 bool Airlift::validate() {
     if(orderOwner->ownsTerritory(source)){
         return true;
@@ -388,6 +416,8 @@ bool Airlift::validate() {
     cout << "You do not own " + source->getName() + " territory" << endl;
     return false;
 }
+
+//Airlift order is executed if valid
 void Airlift::execute() {
     if(validate()){
         cout << "Executing Airlift order" << endl;
@@ -401,20 +431,26 @@ void Airlift::execute() {
         cout << "Airlift order has not been executed" <<endl;
     }
 }
+
 //Assignment operator overload
+//Intentionally shallow copying data members of deploy class since no new members are being created
 Airlift &Airlift::operator=(const Airlift &airlift) {
+    this->orderOwner = airlift.orderOwner;
     this->source = airlift.source;
     this->target = airlift.target;
     this->noOfArmies = airlift.noOfArmies;
     return *this;
 }
 
+//Intentionally shallow copying data members of deploy class since no new members are being created
 Airlift::Airlift(const Airlift &airlift) {
+    this->orderOwner = airlift.orderOwner;
     this->source = airlift.source;
     this->target = airlift.target;
     this->noOfArmies = airlift.noOfArmies;
 }
 
+//Destructor is default since no new data members being created in the class
 Airlift::~Airlift() = default;
 
 //--------------------------Negotiate class------------------
@@ -432,9 +468,12 @@ ostream& operator <<(ostream &strm, Negotiate& negotiate){
     else return strm << s1;
 }
 
+//Validate method not being implemented in this part of the assignment for Negotiate order
 bool Negotiate::validate(Player* otherPlayer) {
     return true;
 }
+
+//Negotiate method always being exected since validate method not yet implemented.
 void Negotiate::execute(Player* otherPlayer) {
     if(validate(otherPlayer)){
         cout << "Executing Negotiate order" << endl;
@@ -447,12 +486,18 @@ void Negotiate::execute(Player* otherPlayer) {
         cout << "Airlift order has not been executed" << endl;
     }
 }
+//Intentionally shallow copying data members of deploy class since no new members are being created
+Negotiate::Negotiate(const Negotiate &negotiate) {
+    this->orderOwner = negotiate.orderOwner;
+}
 
-Negotiate::Negotiate(const Negotiate &negotiate) = default;
-
+//Destructor is default since no new data members being created in the class
 Negotiate::~Negotiate() = default;
 
-Negotiate &Negotiate::operator=(const Negotiate &negotiate) = default;
+//Intentionally shallow copying data members of deploy class since no new members are being created
+Negotiate &Negotiate::operator=(const Negotiate &negotiate) {
+    this->orderOwner = negotiate.orderOwner;
+}
 
 string Negotiate::getName() {return name;}
 
@@ -470,6 +515,7 @@ vector<Orders*>  OrdersList::getOrdersList() {
     return this->ordersList;
 }
 
+//Removing order by index --> invalid indexes checked
 bool OrdersList::remove(int index) {
     cout << "Trying to remove order " + ordersList.at(index)->getName() + " from the list" << endl;
     if(index < 0 || index >= ordersList.size()){
@@ -489,6 +535,8 @@ bool OrdersList::remove(int index) {
     }
 }
 
+
+//Moving orders from one index to another using the rotate algorithm
 bool OrdersList::move(int i, int j) {
     cout << "Trying to move order " << ordersList.at(i)->getName() << " from position " << i << " to position " << j <<  " in the list " << endl;
     if(i < 0 || i >= ordersList.size() || j < 0 || j >= ordersList.size()) {
@@ -507,13 +555,14 @@ bool OrdersList::move(int i, int j) {
     }
 }
 
+//Destructor for ordersList, deleting each order pointer before clearing the vector
 OrdersList::~OrdersList() {
     for(auto & it : ordersList){
         delete it;
     }
     ordersList.clear();
 }
-
+//New order is created and put in the list but the data members of the order are still a shallow copy since no new members needed to be created
 OrdersList::OrdersList(const OrdersList& ol){
     vector<Orders*> newOrdersList;
     for(auto& it: ordersList){
@@ -523,6 +572,7 @@ OrdersList::OrdersList(const OrdersList& ol){
     this->ordersList = newOrdersList;
 }
 
+//Stream insertion operator overload --> Printing all orders(name only)
 ostream &operator<<(ostream &strm, OrdersList &ordersList) {
     cout << "Printing out the ordersList" << endl;
     for(auto& it : ordersList.ordersList){
@@ -539,6 +589,8 @@ void OrdersList::addOrders(Orders *o) {
 //End of OrdersList class implementation
 
 //--------Fake methods to test if everything works later---------------
+
+//Note : Copy constructors, assignment overload operators, stream overload operators and destructors not being implemented
 
 Player::Player(string name,vector<Territory*> territories,OrdersList* ol) {
     this->name = name;
