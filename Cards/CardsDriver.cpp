@@ -11,10 +11,10 @@ int main() {
 	Player* player = new Player();	//Create an object player
 
 	int cardsDeck{};
-	float cardsDeckf{};
+	float cardsDeckf{};				//Float is used to avoid issues with buffer reader
 	cout << "Enter number of cards in the deck. Must be between 5 and 30: " << '\n';
 	cin >> cardsDeckf;
-	cardsDeck = int(cardsDeckf);
+	cardsDeck = int(cardsDeckf);	//Casting the float to an int
 	while (cardsDeck < 5 || cardsDeck > 30) {
 		cout << "The number of cards you've entered does not fit the requirements. Please try again." << '\n';
 		cin >> cardsDeckf;
