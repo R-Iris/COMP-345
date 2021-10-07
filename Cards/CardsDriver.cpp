@@ -1,4 +1,5 @@
 #include <iostream>
+#include <istream>
 #include "Cards.h"
 
 using namespace std;
@@ -10,11 +11,14 @@ int main() {
 	Player* player = new Player();	//Create an object player
 
 	int cardsDeck{};
-	cout << "Enter number of cards in the deck. Must be a multiple of 5 and at most 30: " << '\n';
-	cin >> cardsDeck;
-	while (cardsDeck % 5 != 0 || cardsDeck > 30) {
+	float cardsDeckf{};
+	cout << "Enter number of cards in the deck. Must be between 5 and 30: " << '\n';
+	cin >> cardsDeckf;
+	cardsDeck = int(cardsDeckf);
+	while (cardsDeck < 5 || cardsDeck > 30) {
 		cout << "The number of cards you've entered does not fit the requirements. Please try again." << '\n';
-		cin >> cardsDeck;
+		cin >> cardsDeckf;
+		cardsDeck = int(cardsDeckf);
 	}
 
 	Deck* deck = new Deck(cardsDeck);	//Create a deck object
@@ -24,11 +28,14 @@ int main() {
 	Deck copyDeck2 = *deck;				//Calls overloaded assignment operator
 
 	int cardsHand{};
+	float cardsHandf{};
 	cout << "\nEnter number for the player's hand. It must be at most 5: " << '\n';
-	cin >> cardsHand;
-	while (cardsHand > 5) {
+	cin >> cardsHandf;
+	cardsHand = cardsHandf;
+	while (cardsHand > 5 || cardsHand < 0) {
 		cout << "The number of cards you've entered does not fit the requirements. Please try again." << '\n';
-		cin >> cardsDeck;
+		cin >> cardsHandf;
+		cardsHand = cardsHandf;
 	}
 
 	Hand* hand = new Hand(cardsHand);		//Create an object hand
@@ -44,13 +51,16 @@ int main() {
 	Hand copyHand2 = *hand;				//Calls overloaded assignment operator
 
 	int index{};
+	float indexf{};
 	cout << endl << "What card do you want to play? Enter the index: ";
-	cin >> index;
+	cin >> indexf;
+	index = int(indexf);
 	card->play(hand, index, deck, player);
 	cout << *deck << *hand;
 
 	cout << endl << "What card do you want to play? Enter the index: ";
-	cin >> index;
+	cin >> indexf;
+	index = int(indexf);
 	card->play(hand, index, deck, player);
 	cout << *deck << *hand;
 
