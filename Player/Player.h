@@ -13,15 +13,15 @@ using namespace std;
 
 class Player {
 public:
-	Player(class Hand*); // Default constructor requires at least a hand
+	Player(Hand*); // Default constructor requires at least a hand
 	Player(string name, class Hand*); // Constructor with player name and hand
 	Player(const Player &player); // Copy constructor
 	~Player(); // Destructor
 	Player& operator =(const Player& player); // Assignment operator
-	void addOwnedTerritory(class Territory*);
-	vector<class Territory*> toDefend();	// Returns a list of territories that are to be defended (owned territories)
-	vector<class Territory*> toAttack();	// Returns a list of territories that are to be attacked
-	void issueOrder(Orders*);	// Creates an Order object and puts it in the player’s list of orders
+	void addOwnedTerritory(Territory*);
+	vector<Territory*> toDefend();	// Returns a list of territories that are to be defended (owned territories)
+	vector<Territory*> toAttack();	// Returns a list of territories that are to be attacked
+	void issueOrder(Orders*);	// Creates an Order object and puts it in the playerï¿½s list of orders
 	bool ownsTerritory(Territory* t); // Whether player owns a territory in defend list
 	string getName(); // Name getter
 	class Hand* getHand(); // Hand pointer getter
@@ -30,8 +30,8 @@ public:
 
 private:
 	string name;
-	class Hand* hand; // Pointer to hand of cards
-	vector<class Territory*> territoriesOwned; // List of owned territories
+	Hand* hand; // Pointer to hand of cards
+	vector<Territory*> territoriesOwned; // List of owned territories
 	OrdersList* ordersList;
 };
 

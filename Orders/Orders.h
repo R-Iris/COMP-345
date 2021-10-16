@@ -2,6 +2,13 @@
 #include <vector>
 #include <string>
 
+#include "../Map/Map.h"
+#include "../Cards/Cards.h"
+#include "../Game Engine/GameEngine.h"
+#include "../Player/Player.h"
+
+using namespace MapSpace;
+
 using namespace std;
 
 //----------------------Orders class------------------
@@ -41,41 +48,6 @@ public:
     void addOrders(Orders* o);
 };
 
-/*
-
-//-------------Fake classes :To remove in other assignments------------
-
-class Territory{
-private:
-    string name;
-public:
-    explicit Territory(string name);
-    vector<Territory*> neighbours;
-    bool isNeighbour(Territory* t);
-    void setName(string n);
-    string getName();
-};
-
-class Player{
-private:
-    string name;
-    vector<Territory*> territories;
-    OrdersList* ordersList;
-public:
-    Player(string name, vector<Territory*> territories,OrdersList* ol);
-    void setTerritories(vector<Territory *> v);
-    void setOrdersList(OrdersList* ol);
-    OrdersList* getOrdersList();
-    vector<Territory *> getTerritories();
-    string getName();
-    void setName(string n);
-    bool ownsTerritory(Territory *t);
-};
-
-//--------------End of Fake classes-------------------
-
-*/
-
 //---------Deploy class-------------------
 class Deploy : public Orders{
 private:
@@ -92,7 +64,7 @@ public:
     int getNoOfArmies() const;
     string getName() override;
     void setTarget(Territory *target);
-    Territory *getTarget();
+    Territory* getTarget();
     friend ostream& operator << (ostream & strm, Deploy& deploy);
     bool validate();
     void execute();

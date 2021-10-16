@@ -33,9 +33,7 @@ bool Orders::validate() {
 //Implemented in order child classes
 void Orders::execute() {}
 
-string Orders::getName() {
-    return std::string();
-}
+string Orders::getName() {return {};}
 
 Orders::Orders(const Orders &o) = default; //Copy constructor
 Orders::~Orders() = default; //Destructor
@@ -43,7 +41,7 @@ Orders& Orders::operator= (const Orders& orders)= default; //Assignment operator
 
 //------------------Deploy class--------------------
 
-Deploy::Deploy(Player* orderOwner,int noOfArmies, Territory *target) {
+Deploy::Deploy(Player* orderOwner,int noOfArmies, Territory* target) {
     this->orderOwner = orderOwner;
     this->noOfArmies = noOfArmies;
     this->target = target;
@@ -166,7 +164,7 @@ ostream& operator <<(ostream &strm, Advance& advance){
 //Advance order valid only if target is neighbour of source
 bool Advance::validate() {
     //Checking if target is a neighbour of source
-    if(source->isNeighbour(target) && orderOwner->ownsTerritory(source)){
+    if(orderOwner->ownsTerritory(source)){
         cout << "Advance order is valid" << endl;
         return true;
     }
@@ -244,8 +242,8 @@ ostream& operator <<(ostream &strm, Bomb& bomb){
 
 bool Bomb::validate() {
     //Checking if one of the neighbours of target is owned by p or if the target itself is owned by p
-    auto it = target->neighbours.begin();
-    for(;it!=target->neighbours.end();it++){
+
+    for(auto it:target->getAdjacentTerritories()){
         if(orderOwner->ownsTerritory(*it) || orderOwner->ownsTerritory(target)){
             return true;
         }
@@ -587,64 +585,3 @@ void OrdersList::addOrders(Orders *o) {
 
 
 //End of OrdersList class implementation
-
-//--------Fake methods to test if everything works later---------------
-
-//Note : Copy constructors, assignment overload operators, stream overload operators and destructors not being implemented
-
-Player::Player(string name,vector<Territory*> territories,OrdersList* ol) {
-    this->name = name;
-    this->territories = territories;
-    this->ordersList = ol;
-}
-
-void Player::setName(string n){
-    this->name = n;
-}
-
-string Player::getName(){
-    return this->name;
-}
-
-vector<Territory*> Player::getTerritories(){
-    return this->territories;
-}
-
-void Player::setTerritories(vector<Territory*> v){
-    this->territories = v;
-}
-
-bool Player::ownsTerritory(Territory *t) {
-    auto it = territories.begin();
-    for(;it!=territories.end();it++){
-        if(t == *it) return true;
-    }
-    return false;
-}
-
-void Player::setOrdersList(OrdersList *ol) {
-    this->ordersList = ol;
-}
-
-OrdersList* Player::getOrdersList() {
-    return this->ordersList;
-}
-
-Territory::Territory(string n) {
-    this->name = n;
-}
-void Territory::setName(string n){
-    this->name = n;
-}
-string Territory::getName(){
-    return name;
-}
-bool Territory::isNeighbour(Territory *t) {
-    auto it = neighbours.begin();
-    for(;it!=neighbours.end();it++){
-        if(t == * it) return true;
-    }
-    return false;
-}
-
-//-------------------End of fake methods--------------------------

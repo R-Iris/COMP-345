@@ -1,3 +1,4 @@
+/*
 #include "Orders.h"
 #include <iostream>
 using namespace std;
@@ -83,3 +84,4 @@ int main(){
     delete deploy,delete airlift, delete bomb;
 }
 
+*/
