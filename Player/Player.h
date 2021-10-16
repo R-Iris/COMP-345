@@ -7,6 +7,8 @@
 
 using namespace std;
 
+// TO DO : ToDefend and ToAttack
+
 // The player class contains a Hand (of cards), a list of owned territories, and a list of issued orders
 
 class Player {
@@ -16,22 +18,21 @@ public:
 	Player(const Player &player); // Copy constructor
 	~Player(); // Destructor
 	Player& operator =(const Player& player); // Assignment operator
-	void addTerritoryDefend(class Territory*); // Add territory to owned territories vector
-	void addTerritoryAttack(class Territory*); // PLACEHOLDER : add territory to vector of territories to attack
+	void addOwnedTerritory(class Territory*);
 	vector<class Territory*> toDefend();	// Returns a list of territories that are to be defended (owned territories)
 	vector<class Territory*> toAttack();	// Returns a list of territories that are to be attacked
-	void issueOrder(string);	// Creates an Order object and puts it in the player’s list of orders
+	void issueOrder(Orders*);	// Creates an Order object and puts it in the player’s list of orders
+	bool ownsTerritory(Territory* t); // Whether player owns a territory in defend list
 	string getName(); // Name getter
 	class Hand* getHand(); // Hand pointer getter
-	// vector<class Order*> getOrders(); // PLACEHOLDER : Returns vector of orders
+	OrdersList* getOrdersList();
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
 
 private:
 	string name;
 	class Hand* hand; // Pointer to hand of cards
-	vector<class Territory*> territoriesDefend; // List of owned territories
-	vector<class Territory*> territoriesAttack; // List of territories to attack
-	vector<class Order*> orders; // List of orders issued
+	vector<class Territory*> territoriesOwned; // List of owned territories
+	OrdersList* ordersList;
 };
 
 // Territory, Hand, and Order classes are placeholders and all similar in functionality
