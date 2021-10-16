@@ -16,6 +16,8 @@ using namespace std;
 
 namespace MapSpace
 {
+
+	/*
 	// PLACEHOLDER FOR THE ACTUAL PLAYER CLASS
 	class Player {
 		public:
@@ -23,6 +25,8 @@ namespace MapSpace
 			~Player();
 	};
 	// ----------------------------------------
+
+	*/
 
 	/**
 	 * Implementation of a "Continent" object to be used in Warzone.

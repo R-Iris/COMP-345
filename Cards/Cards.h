@@ -73,6 +73,8 @@ private:
 	vector<Card*> cardsInHand;
 };
 
+/*
+
 //--- The following classes are only for the implementation of Assignemnt 1, they'll be removed in the future ---
 class Player {
 public:
@@ -96,3 +98,5 @@ public:
 private:
 	string name;
 };
+
+*/

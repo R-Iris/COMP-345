@@ -1,6 +1,10 @@
 #pragma once // Should be included in all header files to avoid redundant inclusions. Dealt by preprocessor
 #include <iostream> // Used for cout and stream insertion operator
 #include <vector> // Used for lists instead of arrays
+#include "../Cards/Cards.h"
+#include "../Orders/Orders.h"
+#include "../Map/Map.h"
+
 using namespace std;
 
 // The player class contains a Hand (of cards), a list of owned territories, and a list of issued orders
@@ -19,7 +23,7 @@ public:
 	void issueOrder(string);	// Creates an Order object and puts it in the player’s list of orders
 	string getName(); // Name getter
 	class Hand* getHand(); // Hand pointer getter
-	vector<class Order*> getOrders(); // PLACEHOLDER : Returns vector of orders
+	// vector<class Order*> getOrders(); // PLACEHOLDER : Returns vector of orders
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
 
 private:
@@ -32,6 +36,8 @@ private:
 
 // Territory, Hand, and Order classes are placeholders and all similar in functionality
 // Comments made in Territory are similar for Hand and Order
+
+/*
 
 class Territory {
 public:
@@ -71,3 +77,5 @@ public:
 private:
 	string orderString;
 };
+
+*/

@@ -41,6 +41,8 @@ public:
     void addOrders(Orders* o);
 };
 
+/*
+
 //-------------Fake classes :To remove in other assignments------------
 
 class Territory{
@@ -71,6 +73,8 @@ public:
 };
 
 //--------------End of Fake classes-------------------
+
+*/
 
 //---------Deploy class-------------------
 class Deploy : public Orders{
