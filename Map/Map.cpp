@@ -12,20 +12,12 @@
 #include <tuple>
 #include <exception>
 #include "Map.h"
+#include "../Player/Player.h"
 
 using namespace std;
 
 namespace MapSpace 
 {
-	// PLACEHOLDER FOR THE ACTUAL PLAYER CLASS
-	Player::Player() {
-
-	}
-
-	Player::~Player() {
-
-	}
-
 	// **************************************
 	// CONTINENT IMPLEMENTATION
 	// **************************************

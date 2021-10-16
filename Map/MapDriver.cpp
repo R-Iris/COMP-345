@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include "Map.h"
+#include "../Player/Player.h"
 
 using namespace std;
 using namespace MapSpace;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include "../Player/Player.h"
 /**
  * COMP 345: Advanced Program Design with C++
  * @file Map.h
@@ -16,18 +17,6 @@ using namespace std;
 
 namespace MapSpace
 {
-
-	/*
-	// PLACEHOLDER FOR THE ACTUAL PLAYER CLASS
-	class Player {
-		public:
-			Player();
-			~Player();
-	};
-	// ----------------------------------------
-
-	*/
-
 	/**
 	 * Implementation of a "Continent" object to be used in Warzone.
 	 *
