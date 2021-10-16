@@ -85,7 +85,7 @@ namespace MapSpace
 	}
 
 	Territory::Territory(const Territory &t) {
-		this->owner = new Player(*(t.owner));
+		this->owner = t.owner;
 		this->numberOfArmies = t.numberOfArmies;
 		this->countryIndex = t.countryIndex;
 		this->adjacentCountries = t.adjacentCountries;
@@ -96,7 +96,7 @@ namespace MapSpace
 	}
 
 	Territory::Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, int x, int y) {
-		this->owner = new Player(*(owner));
+		this->owner = owner;
 		this->numberOfArmies = numberOfArmies;
 		this->countryIndex = countryIndex;
 		this->name = name;
@@ -106,7 +106,7 @@ namespace MapSpace
 	}
 
 	Territory::Territory(Player* owner, int numberOfArmies, int countryIndex, string name, int parent, vector<Territory*> adjacentCountries, int x, int y) {
-		this->owner = new Player(*(owner));
+		this->owner = owner;
 		this->numberOfArmies = numberOfArmies;
 		this->countryIndex = countryIndex;
 		this->name = name;
@@ -137,7 +137,7 @@ namespace MapSpace
 	}
 
 	Territory& Territory::operator=(const Territory& t) {
-		this->owner = new Player(*(t.owner));
+		this->owner = t.owner;
 		this->numberOfArmies = t.numberOfArmies;
 		this->countryIndex = t.countryIndex;
 		this->adjacentCountries = t.adjacentCountries;
