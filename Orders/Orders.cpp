@@ -1,6 +1,7 @@
 #include "Orders.h"
 #include <iostream>
 #include <algorithm>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -25,12 +26,12 @@ void Orders::setEffect(string eff) {
     effect = eff;
 }
 
-//Implemented in other child classes
+//Implemented in other child classes -- Virtual function
 bool Orders::validate() {
     return false;
 }
 
-//Implemented in order child classes
+//Implemented in order child classes -- Virtual function
 void Orders::execute() {}
 
 string Orders::getName() {return {};}
@@ -85,6 +86,7 @@ Deploy& Deploy::operator = (const Deploy& deploy){
 
 //Validate method checking if orderOwner owns target territory and number of armies is valid
 bool Deploy::validate() {
+    //If the target territory does not belong to the player that issued the order, the order is invalid
     if(orderOwner->ownsTerritory(getTarget()) && getNoOfArmies() > 0) {
         cout << "Deploy order is valid" << endl;
         return true;
@@ -97,14 +99,18 @@ bool Deploy::validate() {
 void Deploy::execute() {
     if (validate()) {
         cout << "Executing the deploy order" << endl;
-        //Only printing the message, armies have not been moved
+        //Moving armies
+        int newNoOfArmies = getTarget()->getNumberOfArmies() + noOfArmies;
+        getTarget()->setNumberOfArmies(newNoOfArmies);
+        //Printing message
         setEffect("Player " + orderOwner->getName() + " has deployed " + to_string(getNoOfArmies()) +
-        " armies to territory " + target->getName() + "\n");
+        " armies to territory " + target->getName() + ". New army count = " + to_string(getTarget()->getNumberOfArmies())
+         + "\n");
         cout << getEffect();
         setExecuted(true);
     }
     else {
-        cout << "The deploy call was not executed" << endl;
+        cout << "The deploy call failed to execute" << endl;
     }
 }
 //Copy constructor
@@ -163,27 +169,79 @@ ostream& operator <<(ostream &strm, Advance& advance){
 
 //Advance order valid only if target is neighbour of source
 bool Advance::validate() {
-    //Checking if target is a neighbour of source
-    if(orderOwner->ownsTerritory(source)){
-        cout << "Advance order is valid" << endl;
-        return true;
+    //If the source territory does not belong to the player that issued the order, the order is invalid.
+    if(!orderOwner->ownsTerritory(source)){
+        cout << "Deploy order not valid" << endl;
+        cout << "Source territory does not belong to player " + orderOwner->getName() << endl;
+        return false;
     }
-    cout << "Cannot advance to that territory since Player " + orderOwner->getName() + "does not have any owned neighbour territories" << endl;
-    return false;
+    //If the target territory is not adjacent to the source territory, the order is invalid.
+    bool targetAdj = false;
+    for(auto it: getTarget()->getAdjacentTerritories()){
+        if(it == source){
+            targetAdj = true;
+        }
+    }
+    if(!targetAdj){
+        cout << "Deploy order not valid" << endl;
+        cout << "Target territory( " + getTarget()->getName() + ") not adjacent to source territory(" + source->getName() + ")" << endl;
+        return false;
+    }
+    cout << "Advance order valid" << endl;
+    return true;
 }
 //If valid, checking if target is owner territory or enemy territory before executing
 void Advance::execute() {
     if(validate()){
+        //If the source and target territory both belong to the player that issued the order, the army units are moved
+        //from the source to the target territory.
         if(orderOwner->ownsTerritory(target)){
             cout << "Executing advance order" << endl;
-            //Only printing the message, armies have not been moved
+            //Moving armies from source to target territory
+            int initialSourceArmy = source->getNumberOfArmies();
+            int initialTargetArmy = target->getNumberOfArmies();
+            target->setNumberOfArmies(initialTargetArmy + noOfArmies);
+            source->setNumberOfArmies(initialSourceArmy - noOfArmies);
             setEffect("Player " + orderOwner->getName() + " has moved " + to_string(getNoOfArmies()) + " armies from " + source->getName()
             + " territory to " + target->getName() + " territory \n");
             cout << getEffect();
         }
+        //If the target territory belongs to another player than the player that issued the advance order, an attack is
+        //simulated when the order is executed. An attack is simulated by the following battle simulation
+        //mechanism:
+        //1.Each attacking army unit involved has 60% chances of killing one defending army. At the same time,
+        //each defending army unit has 70% chances of killing one attacking army unit.
+        //2.If all the defender's armies are eliminated, the attacker captures the territory. The attacking army units
+        //that survived the battle then occupy the conquered territory.
+        //3.A player receives a card at the end of his turn if they successfully conquered at least one territory
+        //during their turn.
         else{
             cout << "Executing advance order" << endl;
-            //Only printing the message, not attacking the territory
+            //Random int from 1 to 10
+            int randNumber = rand() % 10 + 1;
+            //Reducing source army
+            source->setNumberOfArmies(source->getNumberOfArmies() - noOfArmies);
+            int attackingArmy = noOfArmies;
+            int defendingArmy = target->getNumberOfArmies();
+            for(int i = 0;i <noOfArmies;i++){
+                if(randNumber <= 6){
+                    defendingArmy--;
+                }
+                if(randNumber <=7){
+                    attackingArmy--;
+                }
+                if(defendingArmy == 0){
+                    //Attacker captures territory
+                    target->setOwner(orderOwner);
+                    target->setNumberOfArmies(attackingArmy);
+                    //A player receives a card at the end of his turn if
+                    //they successfully conquered at least one territory during their turn.
+
+                }
+                else if(attackingArmy == 0){
+                    //Nothing happens-- Battle lost
+                }
+            }
             setEffect("Player " + orderOwner->getName() + " attacking " + target->getName() + " territory\n");
             cout << getEffect();
         }
@@ -241,32 +299,36 @@ ostream& operator <<(ostream &strm, Bomb& bomb){
 }
 
 bool Bomb::validate() {
-    //Checking if one of the neighbours of target is owned by p or if the target itself is owned by p
-
-    for(auto it:target->getAdjacentTerritories()){
-        if(orderOwner->ownsTerritory(*it) || orderOwner->ownsTerritory(target)){
-            return true;
-        }
+    //If the target belongs to the player that issued the order, the order is invalid.
+    if(orderOwner->ownsTerritory(target)) {
+        cout << "Target belongs to order owner. Cannot bomb it" << endl;
+        return false;
     }
-    cout << "Cannot bomb that territory since player " + orderOwner->getName() +" does not have any owned neighbour territories" << endl;
-    return false;
+    //If the target territory is not adjacent to one of the territory owned by the player issuing the order, then the
+    //order is invalid
+    bool targetAdj = false;
+    for(auto it: target->getAdjacentTerritories()){
+        if(orderOwner->ownsTerritory(it)) targetAdj = true;
+    }
+    if(!targetAdj){
+        cout << "Bomb order invalid --> No territory owned adjacent to target territory " << endl;
+    }
+    cout << "Bomb order valid" << endl;
+    return true;
+
 }
 //If valid, checking if target territory is owned by player before executing
 void Bomb::execute() {
     if(validate()){
-        if(orderOwner->ownsTerritory(target)){
-            cout << "Order not executed, since you cannot bomb your own territories" << endl;
-        }
-        else{
             cout << "Executing bomb order" << endl;
-            //Only printing the message, not bombing the territory
+            //Reducing enemy army by half
+            target->setNumberOfArmies(target->getNumberOfArmies()/2);
             setEffect("Successfully bombed " + target->getName() + " territory\n");
             cout << getEffect();
             setExecuted(true);
-        }
     }
     else{
-        cout << "The bomb order was not executed" << endl;
+        cout << "The bomb order was not executed since it was invalid" << endl;
     }
 }
 //Assignment operator overload
@@ -321,20 +383,23 @@ ostream& operator <<(ostream &strm, Blockade& blockade){
     else return strm << s1;
 }
 
-//Valid only if target territory is owned by player;
+//The blockade order can only be created by playing the blockade card
 bool Blockade::validate() {
-    if(orderOwner->ownsTerritory(target)){
-        return true;
+    //If the target territory belongs to an enemy player, the order is declared invalid.
+    if(!orderOwner->ownsTerritory(target)){
+        cout << "Order invalid -- Target territory belongs to enemy player" << endl;
     }
-    cout << "You do not own " + target->getName() + "territory" << endl;
-    return false;
 }
 
 //Executing order if valid -- Only printing strings
 void Blockade::execute() {
     if(validate()){
         cout << "Executing blockade order" << endl;
-        //Only printing the message, not tripling the armies
+        //Doubling number of armies and transferring ownership
+        target->setNumberOfArmies(target->getNumberOfArmies() * 2);
+        //Ownership of the territory is transferred to the Neutral player, which must be created if it
+        //does not already exist.
+        target->setOwner(nullptr);
         setEffect("Successfully tripled the number of armies in " + target->getName() + " territory\n");
         cout << getEffect();
         setExecuted(true);
@@ -408,18 +473,27 @@ ostream& operator <<(ostream &strm, Airlift& airlift){
 }
 //Airlift order valid if source territory is owned by OrderOwner
 bool Airlift::validate() {
-    if(orderOwner->ownsTerritory(source)){
-        return true;
+    if(!orderOwner->ownsTerritory(source)){
+        cout << "Airlift order not valid -- " + orderOwner->getName() +
+        " does not own " + source->getName() + "(source) territory" << endl;
+        return false;
     }
-    cout << "You do not own " + source->getName() + " territory" << endl;
-    return false;
+    else if(!orderOwner->ownsTerritory(target)){
+        cout << "Airlift order not valid -- " + orderOwner->getName() +
+        " does not own " + target->getName() + "(target) territory" << endl;
+        return false;
+    }
+    cout << "Airlift order valid" << endl;
+    return true;
 }
 
 //Airlift order is executed if valid
 void Airlift::execute() {
     if(validate()){
         cout << "Executing Airlift order" << endl;
-        //Only printing the message, no armies have been moved
+        //Moving armies
+        target->setNumberOfArmies(target->getNumberOfArmies() + noOfArmies);
+        source->setNumberOfArmies(source->getNumberOfArmies() - noOfArmies);
         setEffect("Successfully moved " + to_string(getNoOfArmies()) + " armies from " +
         source->getName() + " to " + target->getName() + " territory via airlift\n");
         cout << getEffect();
@@ -455,7 +529,7 @@ Airlift::~Airlift() = default;
 
 Negotiate::Negotiate(Player* orderOwner){
     this->orderOwner = orderOwner;
-};
+}
 
 //Stream insertion operator overload
 ostream& operator <<(ostream &strm, Negotiate& negotiate){
@@ -466,16 +540,26 @@ ostream& operator <<(ostream &strm, Negotiate& negotiate){
     else return strm << s1;
 }
 
-//Validate method not being implemented in this part of the assignment for Negotiate order
+//A negotiate order targets an enemy player. It results in the target player and the player issuing
+//the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
+//order can only be created by playing the diplomacy card.
 bool Negotiate::validate(Player* otherPlayer) {
+    //If the target is the player issuing the order, then the order is invalid.
+    if(orderOwner == otherPlayer){
+        cout << "You cannot negotiate with yourself" << endl;
+        return false;
+    }
+    cout << "Negotiate order valid" << endl;
     return true;
 }
 
 //Negotiate method always being exected since validate method not yet implemented.
 void Negotiate::execute(Player* otherPlayer) {
+    //If the target is an enemy player, then the effect is that any attack that may be declared between territories
+    //of the player issuing the negotiate order and the target player will result in an invalid order.
     if(validate(otherPlayer)){
         cout << "Executing Negotiate order" << endl;
-        //Only printing message
+
         setEffect("Attacking between " + orderOwner->getName() + " and " + otherPlayer->getName() + " have been prevented until the end of the turn\n");
         cout << getEffect();
         setExecuted(true);
@@ -505,8 +589,8 @@ OrdersList::OrdersList(vector<Orders *> ordersList) {
     this->ordersList = ordersList;
 }
 
-void OrdersList::setOrdersList(vector<Orders*> ordersList) {
-    this->ordersList = ordersList;
+void OrdersList::setOrdersList(vector<Orders*> orderList) {
+    this->ordersList = orderList;
 }
 
 vector<Orders*>  OrdersList::getOrdersList() {
