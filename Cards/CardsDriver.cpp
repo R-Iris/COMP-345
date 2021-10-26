@@ -8,7 +8,6 @@ int main() {
 	srand((int)time(NULL));			//Regenerate the seed for the rand() call
 
 	Card* card = new Card();		//Create an object card
-	Player* player = new Player();	//Create an object player
 
 	int cardsDeck{};
 	float cardsDeckf{};				//Float is used to avoid issues with buffer reader
@@ -38,7 +37,10 @@ int main() {
 		cardsHand = cardsHandf;
 	}
 
-	Hand* hand = new Hand(cardsHand);		//Create an object hand
+	Hand* hand = new Hand(cardsHand);						//Create an object hand
+	Player* player = new Player(hand);						//Create an object player
+	vector<Orders*> orders{};								//Create a vector of pointers to orders
+	OrdersList* orderlist = new OrdersList(orders);			//Create an object list of orders
 
 	cout << "# of cards your hand can hold: " << hand->getSize() << '\n';
 
@@ -55,13 +57,13 @@ int main() {
 	cout << endl << "What card do you want to play? Enter the index: ";
 	cin >> indexf;
 	index = int(indexf);
-	card->play(hand, index, deck, player);
+	card->play(hand, index, deck, player, orderlist);
 	cout << *deck << *hand;
 
 	cout << endl << "What card do you want to play? Enter the index: ";
 	cin >> indexf;
 	index = int(indexf);
-	card->play(hand, index, deck, player);
+	card->play(hand, index, deck, player, orderlist);
 	cout << *deck << *hand;
 
 	cout << "\nThe player has the following orders in his list: " << player->getOrders();

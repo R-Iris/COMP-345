@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <type_traits>
+#include "../Player/Player.h"
+#include "../Orders/Orders.h"
 
 using namespace std;
 
@@ -12,9 +14,10 @@ public:
 	Card(cardType);
 	Card(const Card&);
 	Card& operator= (const Card&);
-	virtual void play(class Hand*, int, class Deck*, class Player*);
+	virtual void play(class Hand*, int, class Deck*, class Player*, class OrdersList*);
 	bool validateIndex(vector<Card*>, int);
 	string getCardTypeName();
+	int enumToInt(string);
 
 	//Output stream operator for vectors containing pointers to card objects
 	friend ostream& operator<< (ostream&, const vector<Card*>);
@@ -58,8 +61,9 @@ public:
 	Card* getCardInHand(int);
 	void setSize(int);
 	int getSize();
-	vector<Card*> getHand();
-	void removeHand(int);
+	vector<Card*> getCardsInHand();
+	//Change name of this
+	void removeCard(int);
 	bool handFull();
 	~Hand();
 
