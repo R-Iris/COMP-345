@@ -4,8 +4,10 @@
 #include <string>
 #include <vector>
 #include "Cards.h"
+#include "../Map/Map.h"
 
 using namespace std;
+using namespace MapSpace;
 
 //Default constructor
 Card::Card() : cardTypeName("Default") { }
@@ -56,7 +58,7 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player, OrdersList* o
 	//Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
 	switch (enumToInt(playedCard->getCardTypeName())) {
 	case 0:
-		orderlist->addOrders(new Bomb(player, territory)); //Make fake territories?
+		orderlist->addOrders(new Bomb(player, territory)); //Make fake territories // DONE
 		break;
 	case 1:
 		orderlist->addOrders(new Deploy(player, 10, territory)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
