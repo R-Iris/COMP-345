@@ -3,8 +3,8 @@
 #include <iostream>
 #include <list>
 #include <string>
-#include <ofstream>
-#include <string>
+#include <iostream>
+#include <fstream>
 using namespace std;
 
 
@@ -15,7 +15,7 @@ class Observer
 
 class ILoggable
 {
-	virtual void stringToLog() = 0;
+	virtual ostream& stringToLog(ostream& os) = 0;
 };
 
 class Subject 

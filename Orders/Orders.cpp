@@ -40,6 +40,14 @@ Orders::Orders(const Orders &o) = default; //Copy constructor
 Orders::~Orders() = default; //Destructor
 Orders& Orders::operator= (const Orders& orders)= default; //Assignment operator overload
 
+//*********************
+// method from ILoggable
+ostream& Orders::stringToLog(ostream& os)
+{
+    os << this;
+    return os;
+}
+
 //------------------Deploy class--------------------
 
 Deploy::Deploy(Player* orderOwner,int noOfArmies, Territory* target) {
@@ -665,6 +673,14 @@ ostream &operator<<(ostream &strm, OrdersList &ordersList) {
 
 void OrdersList::addOrders(Orders *o) {
     ordersList.push_back(o);
+}
+
+//*********************
+// method from ILoggable
+ostream& OrdersList::stringToLog(ostream& os)
+{
+    os << this;
+    return os;
 }
 
 

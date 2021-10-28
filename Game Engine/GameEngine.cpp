@@ -120,3 +120,11 @@ void GameEngine::end()
     delete this;
     cout << "Thank you for playing!" << endl;
 }
+
+
+//******************
+// stringToLog Implementation for ILoggable
+ostream& GameEngine::stringToLog(ostream& os) {
+    os << this;
+    return os;
+}

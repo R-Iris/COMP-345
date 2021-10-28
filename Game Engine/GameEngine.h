@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "../LoggingObserver/LoggingObserver.h"
 using namespace std;
 
 // A State holds a string
@@ -45,7 +46,7 @@ public:
 };
 
 // The ruleset for the game using transitions and states
-class GameEngine
+class GameEngine : ILoggable, Subject
 {
 public:
     // Vector of pointers to transitions
@@ -72,6 +73,11 @@ public:
     void newTransition(State* current, State* next, string command);
     // Ends the game and deletes game object
     void end();
+
+
+    //******************
+    // stringToLog Implementation for ILoggable
+    ostream& stringToLog(ostream& os);
 };
 
 

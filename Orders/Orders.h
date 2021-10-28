@@ -6,13 +6,14 @@
 #include "../Cards/Cards.h"
 #include "../Game Engine/GameEngine.h"
 #include "../Player/Player.h"
+#include "../LoggingObserver/LoggingObserver.h"
 
 using namespace MapSpace;
 
 using namespace std;
 
 //----------------------Orders class------------------
-class Orders{
+class Orders : ILoggable, Subject{
 private:
     bool executed = false;
     string effect;
@@ -30,10 +31,13 @@ public:
     bool getExecuted() const;
     void setEffect(string eff);
     string getEffect();
+    //****************** Should this be implemented in each individual order class instead??
+    // stringToLog Implementation for ILoggable
+    ostream& stringToLog(ostream &os);
 };
 
 // ------------OrdersList class-----------------------
-class OrdersList{
+class OrdersList : ILoggable, Subject{
 private:
     vector<Orders*> ordersList;
 public:
@@ -46,6 +50,9 @@ public:
     bool move(int i,int j);
     friend ostream& operator << (ostream & strm, OrdersList& ordersList);
     void addOrders(Orders* o);
+    //******************
+    // stringToLog Implementation for ILoggable
+    ostream& stringToLog(ostream &os);
 };
 
 //---------Deploy class-------------------
