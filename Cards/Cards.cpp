@@ -4,8 +4,10 @@
 #include <string>
 #include <vector>
 #include "Cards.h"
+#include "../Map/Map.h"
 
 using namespace std;
+using namespace MapSpace;
 
 //Default constructor
 Card::Card() : cardTypeName("Default") { }
@@ -41,10 +43,10 @@ Card& Card::operator= (const Card& card) {
 }
 
 //Play method that is inherited by all children of the card class. It takes a card from the player's hand, creates an order and puts the card back into the deck.
-void Card::play(Hand* hand, int index, Deck* deck, Player* player) {
+void Card::play(Hand* hand, int index, Deck* deck, Player* player, OrdersList* orderlist) {
 	//Validating that the index the user inputted is correct
-	if (!validateIndex(hand->getHand(), index)) {
-		cout << "\nYour hand only contains " << hand->getHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
+	if (!validateIndex(hand->getCardsInHand(), index)) {
+		cout << "\nYour hand only contains " << hand->getCardsInHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
 		exit(1);
 	}
 
@@ -53,13 +55,27 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player) {
 	cout << "\nThe " << playedCard->cardTypeName << " card has been played." << '\n';
 
 	//Creates a pointer to an order of the card's type
-	Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
-
-	//Adds the order to the player's list of orders
-	player->issueOrder(order);
+	//Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
+	switch (enumToInt(playedCard->getCardTypeName())) {
+	case 0:
+		orderlist->addOrders(new Bomb(player, territory)); //Make fake territories // DONE
+		break;
+	case 1:
+		orderlist->addOrders(new Deploy(player, 10, territory)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
+		break;
+	case 2:
+		orderlist->addOrders(new Blockade(player, 10, territory));
+		break;
+	case 3:
+		orderlist->addOrders(new Airlift(player, 10, t1, t4));
+		break;
+	case 4:
+		orderlist->addOrders(new Negotiate(p3));
+		break;
+	}
 
 	//Removes card played from the hand
-	hand->removeHand(index);
+	hand->removeCard(index);
 
 	//Adds the card played to the deck
 	deck->addCard(playedCard);
@@ -93,6 +109,14 @@ bool Card::validateIndex(vector<Card*> vector, int index) {
 
 string Card::getCardTypeName() {
 	return cardTypeName;
+}
+
+int Card::enumToInt(string name) {
+	if (name == "Bomb") return 0;
+	if (name == "Reinforement") return 1;
+	if (name == "Blockade") return 2;
+	if (name == "Airlift") return 3;
+	if (name == "Diplomacy") return 4;
 }
 
 //Default constructor
@@ -254,12 +278,12 @@ Card* Hand::getCardInHand(int index) {
 }
 
 //Retrieves all cards in the hand
-vector<Card*> Hand::getHand() {
+vector<Card*> Hand::getCardsInHand() {
 	return cardsInHand;
 }
 
 //Removes a card at a specified index from the hand
-void Hand::removeHand(int index) {
+void Hand::removeCard(int index) {
 	cardsInHand.erase(cardsInHand.begin() + index);
 }
 
@@ -294,6 +318,7 @@ ostream& operator<< (ostream& out, const Hand& hand) {
 	return out;
 }
 
+/*
 //--- The following methods are only for the implementation of Assignemnt 1, they'll be removed in the future ---
 Player::Player() : name("Default player") { }
 
@@ -337,3 +362,4 @@ ostream& operator<< (ostream& out, const vector<Order*> orders) {
 	//The output has the form [ Pointer1, Pointer2, Pointer3 ]
 	return out;
 }
+*/
