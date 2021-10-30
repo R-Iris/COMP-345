@@ -6,11 +6,21 @@
 
 using namespace std;
 
-Command::Command(string command) : command(command), effect("N/A") { }
+Command::Command(string commandstr) : commandstr(commandstr), effect("N/A") { }
 
 //Temporary method, probably wrong
-void Command::saveEffect(string effect) {
-	this->effect = effect;
+void Command::saveEffect(string commandstr) {
+	if (commandstr == "loadmap") {
+		this->effect = "A map has been loaded";
+	}
+}
+
+string Command::getCommandStr() {
+	return commandstr;
+}
+
+string Command::getEffect() {
+	return effect;
 }
 
 Command* CommandProcessor::readCommand() {
@@ -21,15 +31,36 @@ Command* CommandProcessor::readCommand() {
 }
 
 void CommandProcessor::getCommand() {
-	validate(readCommand());
-	saveCommand(readCommand());
+	Command* command = readCommand();
+
+	validate(command);
+	saveCommand(command);
 }
 
 //Should this use GameEngine?
 bool CommandProcessor::validate(Command* command) {
 	//saveEffect called if the command is true
+
+	command->saveEffect(command->getCommandStr());
+	return true;
 }
 
 void CommandProcessor::saveCommand(Command* command) {
+	commandList.push_back(command);
+}
 
+vector<Command*> CommandProcessor::getCommandList() {
+	return commandList;
+}
+
+ostream& operator<< (ostream& out, const vector<Command*> commandList) {
+	out << "[ ";
+	for (int i = 0; i < commandList.size(); i++) {
+		out << '\n' + commandList[i]->getCommandStr() + " : " + commandList[i]->getEffect();
+		if (i != commandList.size() - 1) out << ", ";
+	}
+	out << " ]\n";
+
+	//The output has the form [ Pointer1, Pointer2, Pointer3 ]
+	return out;
 }

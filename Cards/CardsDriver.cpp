@@ -1,30 +1,35 @@
 #include <iostream>
 #include <istream>
+
 #include "Cards.h"
 
 using namespace std;
+using namespace MapSpace;
 
 int main() {
-	srand((int)time(NULL));			//Regenerate the seed for the rand() call
+	srand((int)time(NULL));					//Regenerate the seed for the rand() call
 
-	Card* card = new Card();		//Create an object card
+	Card* card = new Card();				//Create an object card
+
+	Territory* start = new Territory();		//Create an object Territory
+	Territory* target = new Territory();	//Create an object Territory
 
 	int cardsDeck{};
-	float cardsDeckf{};				//Float is used to avoid issues with buffer reader
+	float cardsDeckf{};						//Float is used to avoid issues with buffer reader
 	cout << "Enter number of cards in the deck. Must be between 5 and 30: " << '\n';
 	cin >> cardsDeckf;
-	cardsDeck = int(cardsDeckf);	//Casting the float to an int
+	cardsDeck = int(cardsDeckf);			//Casting the float to an int
 	while (cardsDeck < 5 || cardsDeck > 30) {
 		cout << "The number of cards you've entered does not fit the requirements. Please try again." << '\n';
 		cin >> cardsDeckf;
 		cardsDeck = int(cardsDeckf);
 	}
 
-	Deck* deck = new Deck(cardsDeck);	//Create a deck object
+	Deck* deck = new Deck(cardsDeck);		//Create a deck object
 	cout << *deck;
 
-	Deck* copyDeck = new Deck(*deck);	//Copy constructor		
-	Deck copyDeck2 = *deck;				//Calls overloaded assignment operator
+	Deck* copyDeck = new Deck(*deck);		//Copy constructor		
+	Deck copyDeck2 = *deck;					//Calls overloaded assignment operator
 
 	int cardsHand{};
 	float cardsHandf{};
@@ -57,16 +62,17 @@ int main() {
 	cout << endl << "What card do you want to play? Enter the index: ";
 	cin >> indexf;
 	index = int(indexf);
-	card->play(hand, index, deck, player, orderlist);
+	card->play(hand, index, deck, player, orderlist, start, target);
 	cout << *deck << *hand;
 
 	cout << endl << "What card do you want to play? Enter the index: ";
 	cin >> indexf;
 	index = int(indexf);
-	card->play(hand, index, deck, player, orderlist);
+	card->play(hand, index, deck, player, orderlist, start, target);
 	cout << *deck << *hand;
 
-	cout << "\nThe player has the following orders in his list: " << player->getOrders();
+
+	cout << "\nThe player has the following orders in his list: " << orderlist;
 
 	cout << "\n----------------------------------------------------------\n\n";
 

@@ -2,9 +2,12 @@
 #include <string>
 #include <vector>
 #include <type_traits>
+
 #include "../Player/Player.h"
 #include "../Orders/Orders.h"
+#include "../Map/Map.h"
 
+using namespace MapSpace;
 using namespace std;
 
 class Card {
@@ -14,7 +17,7 @@ public:
 	Card(cardType);
 	Card(const Card&);
 	Card& operator= (const Card&);
-	virtual void play(class Hand*, int, class Deck*, class Player*, class OrdersList*);
+	virtual void play(class Hand*, int, class Deck*, class Player*, class OrdersList*, class MapSpace::Territory*, class MapSpace::Territory*);
 	bool validateIndex(vector<Card*>, int);
 	string getCardTypeName();
 	int enumToInt(string);

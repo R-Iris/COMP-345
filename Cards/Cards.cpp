@@ -3,8 +3,8 @@
 #include <time.h>
 #include <string>
 #include <vector>
+
 #include "Cards.h"
-#include "../Map/Map.h"
 
 using namespace std;
 using namespace MapSpace;
@@ -43,7 +43,7 @@ Card& Card::operator= (const Card& card) {
 }
 
 //Play method that is inherited by all children of the card class. It takes a card from the player's hand, creates an order and puts the card back into the deck.
-void Card::play(Hand* hand, int index, Deck* deck, Player* player, OrdersList* orderlist) {
+void Card::play(Hand* hand, int index, Deck* deck, Player* player, OrdersList* orderlist, MapSpace::Territory* start, MapSpace::Territory* target) {
 	//Validating that the index the user inputted is correct
 	if (!validateIndex(hand->getCardsInHand(), index)) {
 		cout << "\nYour hand only contains " << hand->getCardsInHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
@@ -58,19 +58,19 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player, OrdersList* o
 	//Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
 	switch (enumToInt(playedCard->getCardTypeName())) {
 	case 0:
-		orderlist->addOrders(new Bomb(player, territory)); //Make fake territories // DONE
+		orderlist->addOrders(new Bomb(player, target));
 		break;
 	case 1:
-		orderlist->addOrders(new Deploy(player, 10, territory)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
+		orderlist->addOrders(new Deploy(player, 10, target)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
 		break;
 	case 2:
-		orderlist->addOrders(new Blockade(player, 10, territory));
+		orderlist->addOrders(new Blockade(player, 10, target));
 		break;
 	case 3:
-		orderlist->addOrders(new Airlift(player, 10, t1, t4));
+		orderlist->addOrders(new Airlift(player, 10, start, target));
 		break;
 	case 4:
-		orderlist->addOrders(new Negotiate(p3));
+		orderlist->addOrders(new Negotiate(player));
 		break;
 	}
 
