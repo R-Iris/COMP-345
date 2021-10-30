@@ -115,7 +115,9 @@ int Card::enumToInt(string name) {
 	if (name == "Reinforement") return 1;
 	if (name == "Blockade") return 2;
 	if (name == "Airlift") return 3;
-	if (name == "Diplomacy") return 4;
+
+	//Diplomacy
+	return 4;
 }
 
 //Default constructor

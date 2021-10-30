@@ -4,7 +4,6 @@
 #include "Cards.h"
 
 using namespace std;
-using namespace MapSpace;
 
 int main() {
 	srand((int)time(NULL));					//Regenerate the seed for the rand() call
@@ -45,7 +44,7 @@ int main() {
 	Hand* hand = new Hand(cardsHand);						//Create an object hand
 	Player* player = new Player(hand);						//Create an object player
 	vector<Orders*> orders{};								//Create a vector of pointers to orders
-	OrdersList* orderlist = new OrdersList(orders);			//Create an object list of orders
+	OrdersList* ordersList = new OrdersList(orders);		//Create an object list of orders
 
 	cout << "# of cards your hand can hold: " << hand->getSize() << '\n';
 
@@ -62,17 +61,14 @@ int main() {
 	cout << endl << "What card do you want to play? Enter the index: ";
 	cin >> indexf;
 	index = int(indexf);
-	card->play(hand, index, deck, player, orderlist, start, target);
-	cout << *deck << *hand;
+	card->play(hand, index, deck, player, ordersList, start, target);
+	cout << *deck << *hand << *ordersList;
 
 	cout << endl << "What card do you want to play? Enter the index: ";
 	cin >> indexf;
 	index = int(indexf);
-	card->play(hand, index, deck, player, orderlist, start, target);
-	cout << *deck << *hand;
-
-
-	cout << "\nThe player has the following orders in his list: " << orderlist;
+	card->play(hand, index, deck, player, ordersList, start, target);
+	cout << *deck << *hand << *ordersList;
 
 	cout << "\n----------------------------------------------------------\n\n";
 
@@ -90,12 +86,18 @@ int main() {
 	delete hand;
 	delete copyDeck;
 	delete copyHand;
+	delete start;
+	delete target;
+	delete ordersList;
 	card = NULL;
 	player = NULL;
 	deck = NULL;
 	hand = NULL;
 	copyDeck = NULL;
 	copyHand = NULL;
+	start = NULL;
+	target = NULL;
+	ordersList = NULL;
 
 	return 0;
 }
