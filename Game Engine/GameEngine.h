@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "../LoggingObserver/LoggingObserver.h"
+#include "../Player/Player.h"
 using namespace std;
 
 // A State holds a string
@@ -55,6 +56,12 @@ public:
     vector<State*> states;
     // Current State
     State* currentState;
+
+    // Vector of pointers to players
+    vector<Player*> players; // 2 - 6 Players
+    // Pointer to the current map
+    Map* map;
+
     // Default Constructor
     GameEngine();
     // Destructor
@@ -74,6 +81,20 @@ public:
     // Ends the game and deletes game object
     void end();
 
+    // Startup Phase
+    void startupPhase();
+
+    // Main Game Loop
+    void mainGameLoop();
+
+    // Reinforcement Phase
+    void reinforcementPhase();
+
+    // Issue Orders Phase
+    void issueOrdersPhase();
+
+    // Execute Orders Phase
+    void executeOrdersPhase();
 
     //******************
     // stringToLog Implementation for ILoggable
