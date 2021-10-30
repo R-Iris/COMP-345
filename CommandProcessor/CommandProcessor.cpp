@@ -54,13 +54,12 @@ vector<Command*> CommandProcessor::getCommandList() {
 }
 
 ostream& operator<< (ostream& out, const vector<Command*> commandList) {
-	out << "[ ";
+	out << "\n[ ";
 	for (int i = 0; i < commandList.size(); i++) {
 		out << '\n' + commandList[i]->getCommandStr() + " : " + commandList[i]->getEffect();
 		if (i != commandList.size() - 1) out << ", ";
 	}
-	out << " ]\n";
+	out << " \n]\n";
 
-	//The output has the form [ Pointer1, Pointer2, Pointer3 ]
 	return out;
 }
