@@ -6,6 +6,7 @@
 #include "../Map/Map.h"
 
 using namespace std;
+using namespace MapSpace;
 
 // TO DO : ToDefend and ToAttack
 

@@ -7,15 +7,20 @@
 #include <fstream>
 using namespace std;
 
+class ILoggable
+{
+	virtual ostream& stringToLog(ostream& os) = 0;
+};
 
 class Observer
 {
 	virtual void Update(ILoggable& _observed_object) = 0;
 };
 
-class ILoggable
+class LogObserver : Observer
 {
-	virtual ostream& stringToLog(ostream& os) = 0;
+	void Update(ILoggable& _observed_object);
+	ostream& stringToLog(ostream& os);
 };
 
 class Subject 
@@ -28,10 +33,4 @@ public:
 	void Notify();
 private:
 	list<ILoggable*>* _loggable_objects;
-};
-
-
-class LogObserver : Observer
-{
-	void Update(ILoggable& _observed_object);
 };

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include "../Player/Player.h"
 /**
  * COMP 345: Advanced Program Design with C++
  * @file Map.h
@@ -9,9 +7,11 @@
  * @version 8/10/2021
  */
 
+#include <iostream>
 #include <vector>
 #include <tuple>
 #include <exception>
+#include "../Player/Player.h"
 
 using namespace std;
 

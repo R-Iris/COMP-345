@@ -23,11 +23,10 @@ void Subject::Notify() {
 	}
 }
 
-LogObserver::Update(ILoggable &_observed_object)
+void LogObserver::Update(ILoggable &_observed_object)
 {
 	ofstream logfile;
 	logfile.open("gamelog.txt", ofstream::app);
 	logfile << _observed_object->stringToLog();
 	logfile.close();
 }
-

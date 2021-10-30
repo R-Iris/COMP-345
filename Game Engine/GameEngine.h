@@ -6,6 +6,7 @@
 #include "../Player/Player.h"
 #include "../Map/Map.h"
 using namespace std;
+using namespace MapSpace;
 
 // A State holds a string
 class State
