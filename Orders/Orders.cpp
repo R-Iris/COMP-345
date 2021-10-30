@@ -284,7 +284,7 @@ Advance::~Advance() = default;
 
 //------------------------------Bomb class---------------------
 
-Bomb::Bomb(Player* orderOwner,Territory *target) {
+Bomb::Bomb(Player* orderOwner, Territory *target) {
     this->orderOwner = orderOwner;
     this->target = target;
 }
@@ -399,6 +399,7 @@ bool Blockade::validate() {
     if(!orderOwner->ownsTerritory(target)){
         cout << "Order invalid -- Target territory belongs to enemy player" << endl;
     }
+    return false; // TO CHANGE TO CHANGE TO CHANGE
 }
 
 //Executing order if valid -- Only printing strings
@@ -589,6 +590,7 @@ Negotiate::~Negotiate() = default;
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Negotiate &Negotiate::operator=(const Negotiate &negotiate) {
     this->orderOwner = negotiate.orderOwner;
+    return *this;
 }
 
 string Negotiate::getName() {return name;}

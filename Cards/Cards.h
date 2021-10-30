@@ -7,8 +7,12 @@
 #include "../Orders/Orders.h"
 #include "../Map/Map.h"
 
-using namespace MapSpace;
 using namespace std;
+
+// Forward declaration
+class Player;
+class Territory;
+class OrdersList;
 
 class Card {
 public:
@@ -17,7 +21,7 @@ public:
 	Card(cardType);
 	Card(const Card&);
 	Card& operator= (const Card&);
-	virtual void play(class Hand*, int, class Deck*, class Player*, class OrdersList*, class MapSpace::Territory*, class MapSpace::Territory*);
+	virtual void play(class Hand*, int, class Deck*, Player*, OrdersList*, Territory*, Territory*);
 	bool validateIndex(vector<Card*>, int);
 	string getCardTypeName();
 	int enumToInt(string);

@@ -2,11 +2,15 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "../LoggingObserver/LoggingObserver.h"
+
+//#include "../LoggingObserver/LoggingObserver.h"
 #include "../Player/Player.h"
 #include "../Map/Map.h"
 using namespace std;
-using namespace MapSpace;
+
+// Forward declaration
+class Player;
+class Map;
 
 // A State holds a string
 class State

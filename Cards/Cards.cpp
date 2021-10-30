@@ -7,7 +7,6 @@
 #include "Cards.h"
 
 using namespace std;
-using namespace MapSpace;
 
 //Default constructor
 Card::Card() : cardTypeName("Default") { }
@@ -43,7 +42,7 @@ Card& Card::operator= (const Card& card) {
 }
 
 //Play method that is inherited by all children of the card class. It takes a card from the player's hand, creates an order and puts the card back into the deck.
-void Card::play(Hand* hand, int index, Deck* deck, Player* player, OrdersList* orderlist, MapSpace::Territory* start, MapSpace::Territory* target) {
+void Card::play(Hand* hand, int index, Deck* deck, Player* player, OrdersList* ordersList, Territory* start, Territory* target) {
 	//Validating that the index the user inputted is correct
 	if (!validateIndex(hand->getCardsInHand(), index)) {
 		cout << "\nYour hand only contains " << hand->getCardsInHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
@@ -58,19 +57,19 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player, OrdersList* o
 	//Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
 	switch (enumToInt(playedCard->getCardTypeName())) {
 	case 0:
-		orderlist->addOrders(new Bomb(player, target));
+		ordersList->addOrders(new Bomb(player, target));
 		break;
 	case 1:
-		orderlist->addOrders(new Deploy(player, 10, target)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
+		ordersList->addOrders(new Deploy(player, 10, target)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
 		break;
 	case 2:
-		orderlist->addOrders(new Blockade(player, 10, target));
+		ordersList->addOrders(new Blockade(player, 10, target));
 		break;
 	case 3:
-		orderlist->addOrders(new Airlift(player, 10, start, target));
+		ordersList->addOrders(new Airlift(player, 10, start, target));
 		break;
 	case 4:
-		orderlist->addOrders(new Negotiate(player));
+		ordersList->addOrders(new Negotiate(player));
 		break;
 	}
 
@@ -121,8 +120,6 @@ int Card::enumToInt(string name) {
 
 //Default constructor
 Deck::Deck() : sizeDeck(5) {
-	cout << "\nCreating a generic deck..." << '\n';
-
 	//Since the default deck has 5 cards, and we have 5 different types of cards, we'll create 1 card of each type
 	cards.push_back(new Card(Card::cardType::Bomb));
 	cards.push_back(new Card(Card::cardType::Reinforcement));
@@ -234,14 +231,10 @@ ostream& operator<< (ostream& out, const Deck& deck) {
 }
 
 //Default constructor
-Hand::Hand() : sizeHand(3) {
-	cout << "\nCreating the player's hand..." << '\n';
-}
+Hand::Hand() : sizeHand(3) {}
 
 //Constructor accepting an integer
-Hand::Hand(int number) : sizeHand(number) {
-	cout << "\nCreating the player's hand..." << '\n';
-}
+Hand::Hand(int number) : sizeHand(number) {}
 
 //Copy constructor
 Hand::Hand(const Hand& hand) : sizeHand(hand.sizeHand) {

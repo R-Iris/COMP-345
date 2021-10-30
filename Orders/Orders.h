@@ -6,14 +6,15 @@
 #include "../Cards/Cards.h"
 #include "../Game Engine/GameEngine.h"
 #include "../Player/Player.h"
-#include "../LoggingObserver/LoggingObserver.h"
-
-using namespace MapSpace;
+//#include "../LoggingObserver/LoggingObserver.h"
 
 using namespace std;
 
+// Forward declaration
+class Territory;
+
 //----------------------Orders class------------------
-class Orders /*: ILoggable, Subject*/ {
+class Orders {
 private:
     bool executed = false;
     string effect;
@@ -39,7 +40,7 @@ public:
 };
 
 // ------------OrdersList class-----------------------
-class OrdersList /* : ILoggable, Subject */ {
+class OrdersList {
 private:
     vector<Orders*> ordersList;
 public:
@@ -67,7 +68,7 @@ private:
     int noOfArmies;
     Territory* target;
 public:
-    Deploy(Player* orderOwner,int noOfArmies,Territory* target); //Parametrized Constructor.
+    Deploy(Player* orderOwner,int noOfArmies, Territory* target); //Parametrized Constructor.
     Deploy(const Deploy& deploy); //Copy constructor
     Deploy& operator = (const Deploy& deploy); //Assignment operator
     ~Deploy(); //Destructor
@@ -116,7 +117,7 @@ private:
     string name = "Bomb";
     Territory* target;
 public:
-    explicit Bomb(Player* orderOwner,Territory* target);
+    explicit Bomb(Player* orderOwner, Territory* target);
     //Copy constructor
     Bomb(const Bomb& bomb);
     ~Bomb();
@@ -138,7 +139,7 @@ private:
     int noOfArmies;
     Territory* target;
 public:
-    Blockade(Player* orderOwner,int noOfArmies,Territory* target);
+    Blockade(Player* orderOwner,int noOfArmies, Territory* target);
     //Copy constructor
     Blockade(const Blockade& blockade);
     ~Blockade();

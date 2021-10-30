@@ -41,13 +41,13 @@ void Player::addOwnedTerritory(Territory* territory) {
 }
 
 // PLACEHOLDER: Return a list of owned territories
-vector<class Territory*> Player::toDefend() // Returns a list of territories that are to be defended
+vector<Territory*> Player::toDefend() // Returns a list of territories that are to be defended
 {
 	return territoriesOwned;
 }
 
 // PLACEHOLDER: Return a list of territories to attack
-vector<class Territory*> Player::toAttack() // Returns a list of territories that are to be attacked
+vector<Territory*> Player::toAttack() // Returns a list of territories that are to be attacked
 {
 	return territoriesOwned;
 }
