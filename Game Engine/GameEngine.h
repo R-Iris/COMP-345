@@ -49,7 +49,7 @@ public:
 };
 
 // The ruleset for the game using transitions and states
-class GameEngine : ILoggable, Subject
+class GameEngine /* : ILoggable, Subject */
 {
 public:
     // Vector of pointers to transitions
@@ -98,9 +98,11 @@ public:
     // Execute Orders Phase
     void executeOrdersPhase();
 
+    /*
     //******************
     // stringToLog Implementation for ILoggable
     ostream& stringToLog(ostream& os);
+    */
 };
 
 

@@ -233,10 +233,11 @@ void GameEngine::executeOrdersPhase() {
 
 }
 
-
+/*
 //******************
 // stringToLog Implementation for ILoggable
 ostream& GameEngine::stringToLog(ostream& os) {
     os << this;
     return os;
 }
+*/
