@@ -4,6 +4,7 @@
 #include <vector>
 #include "../LoggingObserver/LoggingObserver.h"
 #include "../Player/Player.h"
+#include "../Map/Map.h"
 using namespace std;
 
 // A State holds a string
