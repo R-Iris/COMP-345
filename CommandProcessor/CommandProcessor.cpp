@@ -81,22 +81,16 @@ Command* CommandProcessor::readCommand() {
 	switch (getIndexCmdVector(commandstr)) {
 	case 0:
 		return new Command(Command::commandType::loadmap);
-		break;
 	case 1:
 		return new Command(Command::commandType::validatemap);
-		break;
 	case 2:
 		return new Command(Command::commandType::addplayer);
-		break;
 	case 3:
 		return new Command(Command::commandType::gamestart);
-		break;
 	case 4:
 		return new Command(Command::commandType::replay);
-		break;
 	case 5:
 		return new Command(Command::commandType::quit);
-		break;
 	default:
 		return new Command(commandstr);
 	}
