@@ -23,7 +23,7 @@ class LogObserver : Observer
 	ostream& stringToLog(ostream& os);
 };
 
-class Subject 
+class Subject
 {
 public:
 	Subject();

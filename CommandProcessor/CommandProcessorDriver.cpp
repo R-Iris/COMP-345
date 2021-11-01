@@ -9,6 +9,8 @@ int main() {
 
 	cout << "Please enter a command" << '\n';
 	commandprocessor->getCommand();
+	commandprocessor->getCommand();
+	commandprocessor->getCommand();
 	cout << commandprocessor->getCommandList();
 
 	return 0;
