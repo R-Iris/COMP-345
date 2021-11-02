@@ -1,11 +1,29 @@
 #include "GameEngine.h"
+#include "../Map/Map.h"
+
 int main()
 {
     // Instantiate GameEngine object
     GameEngine* game = new GameEngine();
 
-    Player* p1 = new Player(new Hand());
+    // Create a map from file and assign to this game instance
+    Map* map = MapLoader::createMapfromFile("Assets/solar.map");;
+    game->setMap(map);
 
+    // Add new players
+    Player* p1 = new Player("P1", new Hand());
+    Player* p2 = new Player("P2", new Hand());
+
+    // Add players to game list
+    game->addPlayer(p1); game->addPlayer(p2);
+
+    // Execute start phase
+    game->startupPhase();
+
+    // Execute main game loop
+    game->mainGameLoop();
+
+    /*
     // Initializing states
     State* start = game->newState("start");
     State* map_loaded = game->newState("map_loaded");
@@ -51,6 +69,8 @@ int main()
             cin >> command;
         }
     }
+    */
+
     game->end();
     game = NULL;
     return 0;

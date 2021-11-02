@@ -32,6 +32,8 @@ public:
 	string getName(); // Name getter
 	Hand* getHand(); // Hand pointer getter
 	OrdersList* getOrdersList();
+	int getReinforcementPool();
+	void setReinforcementPool(int);
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
 
 private:
@@ -39,4 +41,5 @@ private:
 	Hand* hand; // Pointer to hand of cards
 	vector<Territory*> territoriesOwned; // List of owned territories
 	OrdersList* ordersList;
+	int reinforcementPool; // Number of armies in the reinforcement pool
 };

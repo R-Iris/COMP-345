@@ -10,7 +10,6 @@
 #include "../Player/Player.h"
 
 using namespace std;
-using namespace MapSpace;
 
 int main()
 {

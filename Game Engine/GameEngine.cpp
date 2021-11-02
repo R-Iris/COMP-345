@@ -88,6 +88,21 @@ ostream& operator<<(ostream& out, const GameEngine& gameEngine)
 	return out;
 }
 
+void GameEngine::setMap(Map* newMap)
+{
+	map = newMap;
+}
+
+void GameEngine::addPlayer(Player* player)
+{
+	players.push_back(player);
+}
+
+void GameEngine::removePlayer(Player* player)
+{
+	// REMOVE PLAYER FROM players USING A FOR LOOP AND ERASE
+}
+
 bool GameEngine::changeState(string command)
 {
 	for (int i = 0; i < transitions.size(); i++)
@@ -130,49 +145,52 @@ void GameEngine::startupPhase()
 // Main Game Loop
 
 void GameEngine::mainGameLoop() {
-	/*
-	This loop shall continue until only one of the players owns all the territories in the map, at which point a winner is
-	announced and the game ends.
-	*/
+
+	/*This loop shall continue until only one of the players owns all the territories in the map, at which point a winner is
+	announced and the game ends.*/
+
 	bool onePlayerOwnsAllTerritories = true;
-	/*int numTotalTerritories = map->getTerritories().size();*/
+	int numTotalTerritories = map->getTerritories().size(); // GET TERRITORIES CAUSES AN ERROR WHEN THERE IS NO MAP
 
-	//do {
-	//
-	//    /*
-	//    The main game loop also checks for any player that does not control at least one
-	//    territory; if so, the player is removed from the game
-	//    */
-	//    for (Player* p : players) {
-	//        if (p->toDefend().empty()) {
-	//            // Remove p from game
-	//        }
-	//        if (p->toDefend().size() >= numTotalTerritories) {
-	//            // Announce this player as winner
-	//            // End game
-	//        }
-	//    }
-	//
-	//    // Reinforcement Phase
-	//    reinforcementPhase();
+	do {
+	
+	    /*
+	    The main game loop also checks for any player that does not control at least one
+	    territory; if so, the player is removed from the game
+	    */
+	    for (Player* p : players) {
+	        if (p->toDefend().empty()) {
+				removePlayer(p);
+	        }
+	        if (p->toDefend().size() >= numTotalTerritories) {
+				onePlayerOwnsAllTerritories = true;
+				// Announce this player as winner
+				// announceWinner(p);
+				
+	            // End game
+	        }
+	    }
+	
+	    // Reinforcement Phase
+	    reinforcementPhase();
 
-	//    /*
-	//    Issuing Orders Phase — Players issue orders and place them in their order list through a call to the
-	//    Player::issueOrder() method. This method is called in round-robin fashion across all players by the
-	//    game engine. This must be implemented in a function/method named issueOrdersPhase() in the game
-	//    engine.
-	//    */
-	//    issueOrdersPhase();
+	    /*
+	    Issuing Orders Phase — Players issue orders and place them in their order list through a call to the
+	    Player::issueOrder() method. This method is called in round-robin fashion across all players by the
+	    game engine. This must be implemented in a function/method named issueOrdersPhase() in the game
+	    engine.
+	    */
+	    issueOrdersPhase();
 
-	//    /*
-	//    Orders Execution Phase — Once all the players have signified in the same turn that they are not issuing
-	//    one more order, the game engine proceeds to execute the top order on the list of orders of each player in
-	//    a round-robin fashion (i.e. the “Order Execution Phase”—see below). Once all the players’ orders have
-	//    been executed, the main game loop goes back to the reinforcement phase. This must be implemented in
-	//    a function/method named executeOrdersPhase() in the game engine.
-	//    */
-	//    executeOrdersPhase();
-	//} while (!onePlayerOwnsAllTerritories);
+	    /*
+	    Orders Execution Phase — Once all the players have signified in the same turn that they are not issuing
+	    one more order, the game engine proceeds to execute the top order on the list of orders of each player in
+	    a round-robin fashion (i.e. the “Order Execution Phase”—see below). Once all the players’ orders have
+	    been executed, the main game loop goes back to the reinforcement phase. This must be implemented in
+	    a function/method named executeOrdersPhase() in the game engine.
+	    */
+	    executeOrdersPhase();
+	} while (!onePlayerOwnsAllTerritories);
 }
 
 void GameEngine::reinforcementPhase() {
@@ -185,17 +203,20 @@ void GameEngine::reinforcementPhase() {
 	reinforcementPhase() in the game engine.
 	*/
 
-	//for (Player* p : players) {
-	//    // Armies = # of territories owned divided by 3, rounded down : or 3 minimum
-	//    int armies = floor(p->toDefend().size() / 3);
-	//    // Bonus for owning all continent's territories, does it get added to armies, or replaces it?
-	//    // Also how to find if a player owns all territories from a continent
-	//    // How to retrieve a continent's control bonus value
-	//    // armies = armies + continentControlBonus? OR armies = continentControlBonus?
+	for (Player* p : players) {
+	    // Armies = # of territories owned divided by 3, rounded down : or 3 minimum
+	    int armies = floor(p->toDefend().size() / 3);
 
-	//    // Place armies in player's reinforcement pool
-	//    // p.reinforcementPool(max(armies, 3));
-	//}
+	    // Bonus for owning all continent's territories, gets added
+		int continentBonus = 0;
+
+	    // Also how to find if a player owns all territories from a continent
+		// continentBonus = continent.getArmies();
+
+	    // Place armies in player's reinforcement pool
+	    p->setReinforcementPool(max(armies + continentBonus, 3));
+		
+	}
 }
 
 void GameEngine::issueOrdersPhase() {
@@ -219,8 +240,8 @@ void GameEngine::issueOrdersPhase() {
 	issueOrder() method of the player class in the Player.cpp/Player.h files.
 	*/
 
-	/*for (Player* p : players) {
-	}*/
+	for (Player* p : players) {
+	}
 }
 
 void GameEngine::executeOrdersPhase() {

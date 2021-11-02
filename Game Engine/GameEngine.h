@@ -78,6 +78,12 @@ public:
 	GameEngine& operator=(const GameEngine& gameEngine);
 	// << ostream conversion
 	friend ostream& operator<<(ostream& out, const GameEngine& gameEngine);
+	// Sets the map
+	void setMap(Map*);
+	// Adds players to player list
+	void addPlayer(Player*);
+	// Remove a player from the player list
+	void removePlayer(Player*);
 	// Checks and Changes the states
 	bool changeState(string command);
 	// Creates a new state

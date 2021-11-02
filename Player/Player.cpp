@@ -1,10 +1,10 @@
 #include "Player.h" // Including the appropriate header file
 
 // Default constructor requires a hand
-Player::Player(Hand* hand) : name("Unnamed"), hand(hand) {}
+Player::Player(Hand* hand) : name("Unnamed"), hand(hand), reinforcementPool(0) {}
 
 // Constructor with player name and hand
-Player::Player(string name, Hand* hand) : name(name), hand(hand){}
+Player::Player(string name, Hand* hand) : name(name), hand(hand), reinforcementPool(0) {}
 
 // Copy constructor
 Player::Player(const Player& player)
@@ -13,6 +13,7 @@ Player::Player(const Player& player)
 	this->hand = new Hand(*(player.hand));
 	territoriesOwned = player.territoriesOwned;
 	ordersList = new OrdersList(*(player.ordersList));
+	reinforcementPool = player.reinforcementPool;
 }
 
 // Destructor
@@ -32,6 +33,7 @@ Player& Player::operator=(const Player& player)
 	this->hand = new Hand(*(player.hand)); // Deep copy of hand is made by calling new
 	territoriesOwned = player.territoriesOwned;
 	ordersList = new OrdersList(*(player.ordersList));
+	reinforcementPool = player.reinforcementPool;
 	return *this;
 }
 
@@ -69,6 +71,16 @@ bool Player::ownsTerritory(Territory* territory) {
 string Player::getName() {return name;}
 Hand* Player::getHand() {return hand;}
 OrdersList* Player::getOrdersList() {return ordersList;}
+
+int Player::getReinforcementPool()
+{
+	return reinforcementPool;
+}
+
+void Player::setReinforcementPool(int rP)
+{
+	reinforcementPool = rP;
+}
 
 // Stream insertion operator, returns player's name
 ostream& operator<<(ostream& out, const Player& player) {
