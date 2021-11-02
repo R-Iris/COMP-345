@@ -483,6 +483,23 @@ void Map::validate() {
 	cout << "This map is valid!" << endl;
 }
 
+int Map::calculateContinentBonus(Player* player)
+{
+	int continentBonus = 0;
+	for (Continent* c : getContinents()) {
+		bool pHasAllT = true;
+		for (Territory* t : getTerritoriesByContinent(c->getIndex())) {
+			if (!player->ownsTerritory(t)) {
+				pHasAllT = false;
+			}
+		}
+		if (pHasAllT) {
+			continentBonus = continentBonus + c->getArmies();
+		}
+	}
+	return continentBonus;
+}
+
 bool Map::territoryExists(vector<Territory> collection, Territory toFind)
 {
 	for (Territory t : collection) {

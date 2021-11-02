@@ -154,6 +154,8 @@ void GameEngine::mainGameLoop() {
 
 	do {
 	
+		// Add state changes and transitions for phases
+
 	    /*
 	    The main game loop also checks for any player that does not control at least one
 	    territory; if so, the player is removed from the game
@@ -203,6 +205,8 @@ void GameEngine::reinforcementPhase() {
 	reinforcementPhase() in the game engine.
 	*/
 
+	//changeState("gamestart");
+
 	for (Player* p : players) {
 	    // Armies = # of territories owned divided by 3, rounded down : or 3 minimum
 	    int armies = floor(p->toDefend().size() / 3);
@@ -210,12 +214,11 @@ void GameEngine::reinforcementPhase() {
 	    // Bonus for owning all continent's territories, gets added
 		int continentBonus = 0;
 
-	    // Also how to find if a player owns all territories from a continent
 		// continentBonus = continent.getArmies();
+		continentBonus = map->calculateContinentBonus(p);
 
 	    // Place armies in player's reinforcement pool
 	    p->setReinforcementPool(max(armies + continentBonus, 3));
-		
 	}
 }
 
@@ -223,6 +226,8 @@ void GameEngine::issueOrdersPhase() {
 	/*
 	The issuing orders phase decision-making is implemented in the player’s issueOrder() method, which
 	implements the following:
+
+	// To attack -> vector<Territory*> getAdjacentTerritories(); what about priority
 	• The player decides which neighboring territories are to be attacked in priority (as a list return by the
 	toAttack() method), and which of their own territories are to be defended in priority (as a list returned by
 	the toDefend() method).
@@ -241,10 +246,27 @@ void GameEngine::issueOrdersPhase() {
 	*/
 
 	for (Player* p : players) {
+		// Deploy until no more reinforcements
+		// create deploy order obj
+		// input num armies to deploy
+		//Deploy(Player* orderOwner, int noOfArmies, Territory* target); //Parametrized Constructor.
+		// player->issueOrder(deployObj)
+
+		// Advance
+		// advance obj
+		// player->issueOrder(
+
+		// Card
+		// show user their hand
+		// choose a card to "play"
+		// play adds an order to the player's order list
 	}
 }
 
 void GameEngine::executeOrdersPhase() {
+	for (Player* p : players) {
+		// for each p, get order list, top to bottom, order->execute (validation done by execute)
+	}
 }
 
 /*

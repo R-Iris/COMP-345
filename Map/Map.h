@@ -196,6 +196,9 @@ public:
 	bool borderExists(vector<Territory*> toCheck, Territory destination, vector<Territory> checked);
 	void validate();
 
+	// Calculate the continent bonus a player gets in their reinforcement pool
+	int calculateContinentBonus(Player* player);
+
 	static bool territoryExists(vector<Territory> collection, Territory toFind);
 
 	// DESTRUCTOR
