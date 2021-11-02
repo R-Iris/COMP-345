@@ -111,10 +111,12 @@ bool GameEngine::changeState(string command)
 		{
 			currentState = transitions[i]->next;
 			cout << *currentState;
+			Notify(this);
 			return true;
 		}
 		else if (currentState->stateName == "win" && command == "end") return true;
 	}
+	Notify(this);
 	return false;
 }
 
@@ -269,11 +271,9 @@ void GameEngine::executeOrdersPhase() {
 	}
 }
 
-/*
+
 //******************
 // stringToLog Implementation for ILoggable
-ostream& GameEngine::stringToLog(ostream& os) {
-	os << this;
-	return os;
+string GameEngine::stringToLog() {
+	return "Current GameEngine State: " + currentState->stateName;
 }
-*/

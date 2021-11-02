@@ -9,28 +9,28 @@ using namespace std;
 
 class ILoggable
 {
-	virtual ostream& stringToLog(ostream& os) = 0;
+public:
+	virtual string stringToLog() = 0;
 };
 
 class Observer
 {
 public:
-	void Update(ILoggable& _loggable_object);
+	virtual void Update(ILoggable* _loggable_object) = 0;
 };
 
-class LogObserver : Observer
+class LogObserver : public Observer
 {
 public:
-	void Update(ILoggable& _loggable_object);
+	void Update(ILoggable* _loggable_object);
 };
 
 class Subject
 {
 public:
-	~Subject();
-	void Attach(Observer& _observed_object);
-	void Detach(Observer& _observed_object);
-	void Notify(ILoggable& _loggable_object);
+	void Attach(Observer* _logger);
+	void Detach();
+	void Notify(ILoggable* _loggable_object);
 private:
-	list<Observer*> _observed_objects;
+	Observer* _observer;
 };

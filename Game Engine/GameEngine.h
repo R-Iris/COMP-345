@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-//#include "../LoggingObserver/LoggingObserver.h"
+#include "../LoggingObserver/LoggingObserver.h"
 #include "../Player/Player.h"
 #include "../Map/Map.h"
 using namespace std;
@@ -53,7 +53,7 @@ public:
 };
 
 // The ruleset for the game using transitions and states
-class GameEngine /* : ILoggable, Subject */
+class GameEngine : public ILoggable, public Subject
 {
 public:
 	// Vector of pointers to transitions
@@ -108,9 +108,9 @@ public:
 	// Execute Orders Phase
 	void executeOrdersPhase();
 
-	/*
+	
 	//******************
 	// stringToLog Implementation for ILoggable
-	ostream& stringToLog(ostream& os);
-	*/
+	string stringToLog();
+	
 };

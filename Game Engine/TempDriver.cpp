@@ -1,13 +1,15 @@
 #include "GameEngine.h"
+#include "../LoggingObserver/LoggingObserver.h"
 #include "../Map/Map.h"
 
 int main()
 {
     // Instantiate GameEngine object
     GameEngine* game = new GameEngine();
-
+    Observer* logger = new LogObserver();
+    game->Attach(logger); // attaching to observer
     // Create a map from file and assign to this game instance
-    Map* map = MapLoader::createMapfromFile("Assets/solar.map");;
+    Map* map = MapLoader::createMapfromFile("Assets/solar.map");
     game->setMap(map);
 
     // Add new players
@@ -73,5 +75,8 @@ int main()
 
     game->end();
     game = NULL;
+    delete logger;
+    logger = NULL;
+    //game->Detach(); problematic for some reason
     return 0;
 }
