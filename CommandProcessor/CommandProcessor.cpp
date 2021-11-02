@@ -96,25 +96,36 @@ Command* CommandProcessor::readCommand() {
 	}
 }
 
-void CommandProcessor::getCommand() {
+void CommandProcessor::getCommand(GameEngine* game) {
 	Command* command = readCommand();
 
-	validate(command);
+	validate(command, game);
 	saveCommand(command);
 }
 
-//Should this use GameEngine?
-bool CommandProcessor::validate(Command* command) {
-	//saveEffect called if the command is true
-	if (command->getCommandStr() == "loadmap") {
-		cout << "Which map do you wish to load? ";
-		cin >> toAdd;
-		cout << '\n';
-		command->setCommandStr(toAdd);
+bool CommandProcessor::validate(Command* command, GameEngine* game) {
+	while (game->changeState(command->getCommandStr())) {
+		if (command->getCommandStr() == "loadmap") {
+			cout << "Which map do you wish to load? ";
+			cin >> toAdd;
+			cout << '\n';
+			command->setCommandStr(toAdd);
+		}
+		if (command->getCommandStr() == "addplayer") {
+			cout << "What is the name of the player? ";
+			cin >> toAdd;
+			cout << '\n';
+			command->setCommandStr(toAdd);
+		}
+		if (command->getCommandStr() == "quit") {
+			cout << "Quitting the game.";
+			exitProgram = true;
+		}
+		command->saveEffect(command, toAdd);
+		return true;
 	}
 
-	command->saveEffect(command, toAdd);
-	return true;
+	return false;
 }
 
 void CommandProcessor::saveCommand(Command* command) {
@@ -131,6 +142,10 @@ int CommandProcessor::getIndexCmdVector(string commandstr) {
 	}
 
 	return -1;
+}
+
+bool CommandProcessor::getExitProgram() {
+	return exitProgram;
 }
 
 ostream& operator<< (ostream& out, const vector<Command*> commandList) {
