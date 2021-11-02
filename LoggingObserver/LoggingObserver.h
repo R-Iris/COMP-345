@@ -14,23 +14,23 @@ class ILoggable
 
 class Observer
 {
-	virtual void Update(ILoggable& _observed_object) = 0;
+public:
+	void Update(ILoggable& _loggable_object);
 };
 
 class LogObserver : Observer
 {
-	void Update(ILoggable& _observed_object);
-	ostream& stringToLog(ostream& os);
+public:
+	void Update(ILoggable& _loggable_object);
 };
 
 class Subject
 {
 public:
-	Subject();
 	~Subject();
-	void Attach(ILoggable& _loggable_object);
-	void Detach(ILoggable& _loggable_object);
-	void Notify();
+	void Attach(Observer& _observed_object);
+	void Detach(Observer& _observed_object);
+	void Notify(ILoggable& _loggable_object);
 private:
-	list<ILoggable*>* _loggable_objects;
+	list<Observer*> _observed_objects;
 };
