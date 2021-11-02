@@ -1,32 +1,28 @@
 #include "../LoggingObserver/LoggingObserver.h"
 
-Subject::Subject() {
-	_loggable_objects = new list<ILoggable*>;
-}
-
 Subject::~Subject() {
-	delete _loggable_objects;
+	_observed_objects.clear();
 }
 
-void Subject::Attach(ILoggable& _loggable_object) {
-	_loggable_objects.insert(_loggable_object);
+void Subject::Attach(Observer& _observed_object) {
+	_observed_objects.push_back(_observed_object);
 }
 
-void Subject::Detach(ILoggable& _loggable_object) {
-	_loggable_objects.remove(_loggable_object);
+void Subject::Detach(Observer& _observed_object) {
+	_observed_objects.remove(_observed_object);
 }
 
-void Subject::Notify() {
-	for (list<ILoggable*>::iterator i = _loggable_objects->begin(); i != _loggable_objects->end(); i++)
+void Subject::Notify(ILoggable& _loggable_object) {
+	for (list<Observer*>::iterator i = _observed_objects.begin(); i != _observed_objects.end(); i++)
 	{
-		*i->Update();
+		i->Update();
 	}
 }
 
-void LogObserver::Update(ILoggable &_observed_object)
+void LogObserver::Update(ILoggable &_loggable_object)
 {
 	ofstream logfile;
 	logfile.open("gamelog.txt", ofstream::app);
-	logfile << _observed_object->stringToLog();
+	logfile << _loggable_object.stringToLog();
 	logfile.close();
 }
