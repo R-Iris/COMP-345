@@ -1,0 +1,20 @@
+[files]
+pic solar_pic.jpg
+map solar_map.gif
+crd solar.cards
+
+[continents]
+Yellow 10 yellow
+Blue 5 yellow
+
+[countries]
+1 A 1 0 0
+2 B 2 0 0
+3 C 1 0 0 
+4 D 2 0 0
+
+[borders]
+1 2 3
+2 1 4
+3 1 4
+4 2 3
