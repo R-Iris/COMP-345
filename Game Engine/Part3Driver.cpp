@@ -20,7 +20,7 @@ int main()
     game->addPlayer(p1); game->addPlayer(p2);
 
     // Execute start phase
-    game->startupPhase();
+    // game->startupPhase();
 
     // Execute main game loop
     game->mainGameLoop();
