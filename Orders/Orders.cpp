@@ -370,10 +370,10 @@ Bomb::~Bomb() = default;
 
 //------------------------------Blockade class---------------------
 
-Blockade::Blockade(Player* orderOwner,int noOfArmies, Territory *target) {
+Blockade::Blockade(Player* orderOwner, Territory *target,GameEngine* gameEngine1) {
     this->orderOwner = orderOwner;
-    this->noOfArmies = noOfArmies;
     this->target = target;
+    this->gameEngine = gameEngine1;
 }
 
 void Blockade::setTarget(Territory *t) {
@@ -382,14 +382,6 @@ void Blockade::setTarget(Territory *t) {
 
 Territory* Blockade::getTarget() {
     return target;
-}
-
-int Blockade::getNoOfArmies() const {
-    return noOfArmies;
-}
-
-void Blockade::setNoOfArmies(int n) {
-    noOfArmies = n;
 }
 
 string Blockade::getName() {return name;}
@@ -424,8 +416,8 @@ void Blockade::execute() {
         target->setNumberOfArmies(target->getNumberOfArmies() * 2);
         //Ownership of the territory is transferred to the Neutral player, which must be created if it
         //does not already exist.
-        target->setOwner(nullptr);
-        setEffect("Successfully tripled the number of armies in " + target->getName() + " territory\n");
+        target->setOwner(gameEngine->getNeutralPlayer());
+        setEffect("Successfully doubled the number of armies in " + target->getName() + " territory\n");
         cout << getEffect();
         setExecuted(true);
     }
@@ -439,7 +431,7 @@ void Blockade::execute() {
 Blockade &Blockade::operator=(const Blockade &blockade) {
     this->orderOwner = blockade.orderOwner;
     this->target = blockade.target;
-    this->noOfArmies = blockade.noOfArmies;
+    this->gameEngine = blockade.gameEngine;
     return *this;
 }
 
@@ -447,7 +439,7 @@ Blockade &Blockade::operator=(const Blockade &blockade) {
 Blockade::Blockade(const Blockade &blockade) {
     this->orderOwner = blockade.orderOwner;
     this->target = blockade.target;
-    this->noOfArmies = blockade.noOfArmies;
+    this->gameEngine = blockade.gameEngine;
 }
 
 //Destructor is default since no new data members being created in the class
@@ -552,8 +544,9 @@ Airlift::~Airlift() = default;
 
 //--------------------------Negotiate class------------------
 
-Negotiate::Negotiate(Player *orderOwner) {
+Negotiate::Negotiate(Player *orderOwner,Player* otherPlayer) {
     this->orderOwner = orderOwner;
+    this->otherPlayer = otherPlayer;
 }
 
 
@@ -569,7 +562,7 @@ ostream& operator <<(ostream &strm, Negotiate& negotiate){
 //A negotiate order targets an enemy player. It results in the target player and the player issuing
 //the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
 //order can only be created by playing the diplomacy card.
-bool Negotiate::validate(Player* otherPlayer) {
+bool Negotiate::validate() {
     //If the target is the player issuing the order, then the order is invalid.
     if(orderOwner == otherPlayer){
         cout << "You cannot negotiate with yourself" << endl;
@@ -582,10 +575,10 @@ bool Negotiate::validate(Player* otherPlayer) {
 //A negotiate order targets an enemy player. It results in the target player and the player issuing
 //the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
 //order can only be created by playing the diplomacy card.
-void Negotiate::execute(Player* otherPlayer) {
+void Negotiate::execute() {
     //If the target is an enemy player, then the effect is that any attack that may be declared between territories
     //of the player issuing the negotiate order and the target player will result in an invalid order.
-    if(validate(otherPlayer)){
+    if(validate()){
         cout << "Executing Negotiate order" << endl;
         orderOwner->getCannotAttack().push_back(otherPlayer);
         otherPlayer->getCannotAttack().push_back(orderOwner);
@@ -603,6 +596,7 @@ void Negotiate::execute(Player* otherPlayer) {
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Negotiate::Negotiate(const Negotiate &negotiate) {
     this->orderOwner = negotiate.orderOwner;
+    this->otherPlayer = negotiate.otherPlayer;
 }
 
 //Destructor is default since no new data members being created in the class
@@ -611,6 +605,7 @@ Negotiate::~Negotiate() = default;
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Negotiate &Negotiate::operator=(const Negotiate &negotiate) {
     this->orderOwner = negotiate.orderOwner;
+    this->otherPlayer = negotiate.otherPlayer;
     return *this;
 }
 
@@ -683,7 +678,7 @@ OrdersList::~OrdersList() {
 OrdersList::OrdersList(const OrdersList& ol){
     vector<Orders*> newOrdersList;
     for(auto& it: ordersList){
-        Orders* newOrder = new Orders(*it);
+        auto* newOrder = new Orders(*it);
         newOrdersList.push_back(newOrder);
     }
     this->ordersList = newOrdersList;
@@ -698,8 +693,8 @@ ostream &operator<<(ostream &strm, OrdersList &ordersList) {
     return strm << "END" << endl;
 }
 
-void OrdersList::addOrders(Orders *o) {
-    ordersList.push_back(o);
+void OrdersList::addOrders(Orders& o) {
+    ordersList.push_back(&o);
 }
 
 
@@ -715,3 +710,4 @@ ostream& OrdersList::stringToLog(ostream& os)
 //End of OrdersList class implementation
 
 /*Neutral player pointer return method*/
+

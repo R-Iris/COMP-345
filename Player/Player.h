@@ -27,7 +27,7 @@ public:
 	void addOwnedTerritory(Territory*);
 	vector<Territory*> toDefend();	// Returns a list of territories that are to be defended (owned territories)
 	vector<Territory*> toAttack();	// Returns a list of territories that are to be attacked
-	void issueOrder(Orders*);	// Creates an Order object and puts it in the player�s list of orders
+	void issueOrder(Orders& order);	// Creates an Order object and puts it in the player's list of orders
 	bool ownsTerritory(Territory* t); // Whether player owns a territory in defend list
 	string getName(); // Name getter
 	Hand* getHand(); // Hand pointer getter
@@ -36,6 +36,7 @@ public:
 	void setReinforcementPool(int);
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
     vector<Player*> getCannotAttack();
+    void setCannotAttack(vector<Player*> cannotAttack);
 private:
 	string name;
 	Hand* hand; // Pointer to hand of cards

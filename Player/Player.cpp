@@ -56,7 +56,7 @@ vector<Territory*> Player::toAttack() // Returns a list of territories that are 
 }
 
 // Create a new order and add to order list
-void Player::issueOrder(Orders* order) // Creates an Order object and puts it in the player�s list of orders
+void Player::issueOrder(Orders& order) // Creates an Order object and puts it in the player�s list of orders
 {
 	ordersList->addOrders(order);
 }
@@ -90,4 +90,8 @@ ostream& operator<<(ostream& out, const Player& player) {
 
 vector<Player *> Player::getCannotAttack() {
     return cannotAttack;
+}
+
+void Player::setCannotAttack(vector<Player *> c) {
+    cannotAttack = c;
 }

@@ -13,6 +13,7 @@ using namespace std;
 // Forward declaration
 class Territory;
 class Deck;
+class GameEngine;
 
 //----------------------Orders class------------------
 class Orders {
@@ -53,7 +54,7 @@ public:
 	bool remove(int index);
 	bool move(int i, int j);
 	friend ostream& operator << (ostream& strm, OrdersList& ordersList);
-	void addOrders(Orders* o);
+	void addOrders(Orders& o);
 	/*
 	//******************
 	// stringToLog Implementation for ILoggable
@@ -138,16 +139,14 @@ class Blockade : public Orders {
 private:
 	Player* orderOwner;
 	string name = "Blockade";
-	int noOfArmies;
 	Territory* target;
+    GameEngine* gameEngine;
 public:
-	Blockade(Player* orderOwner, int noOfArmies, Territory* target);
+	Blockade(Player* orderOwner,Territory* target,GameEngine* gameEngine1);
 	//Copy constructor
 	Blockade(const Blockade& blockade);
 	~Blockade();
 	Blockade& operator = (const Blockade& blockade);
-	void setNoOfArmies(int noOfArmies);
-	int getNoOfArmies() const;
 	string getName() override;
 	void setTarget(Territory* target);
 	Territory* getTarget();
@@ -188,16 +187,17 @@ public:
 class Negotiate : public Orders {
 private:
 	Player* orderOwner;
+    Player* otherPlayer;
 	string name = "Negotiate";
 public:
-	Negotiate(Player* orderOwner);
+	Negotiate(Player* orderOwner,Player* otherPlayer);
 	//Copy constructor
 	Negotiate(const Negotiate& negotiate);
 	~Negotiate();
 	Negotiate& operator= (const Negotiate& negotiate);
 	string getName() override;
 	friend ostream& operator << (ostream& strm, Negotiate& negotiate);
-	bool validate(Player* otherPlayer);
-	void execute(Player* otherPlayer);
+	bool validate() override;
+	void execute() override;
 };
 //---------------------End-------------------------------

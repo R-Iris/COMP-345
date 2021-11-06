@@ -6,6 +6,7 @@
 #include "../Player/Player.h"
 #include "../Orders/Orders.h"
 #include "../Map/Map.h"
+#include "../Game Engine/GameEngine.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ using namespace std;
 class Player;
 class Territory;
 class OrdersList;
+class GameEngine;
 
 class Card {
 public:
@@ -21,7 +23,7 @@ public:
 	Card(cardType);
 	Card(const Card&);
 	Card& operator= (const Card&);
-	virtual void play(class Hand*, int, class Deck*, Player*, OrdersList*, Territory*, Territory*);
+	virtual void play(class Hand*, int, class Deck*, Player*,Player*, OrdersList*, Territory*, Territory*,GameEngine* gameEngine);
 	bool validateIndex(vector<Card*>, int);
 	string getCardTypeName();
 	int enumToInt(string);

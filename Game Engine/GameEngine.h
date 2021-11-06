@@ -126,5 +126,9 @@ public:
 	//******************
 	// stringToLog Implementation for ILoggable
 	string stringToLog();
-	
+
+    //checking for a neutral player among the list of players and if there isnt one , a pointer to one will be created
+    //and added to the list of players
+
+    Player* getNeutralPlayer();
 };

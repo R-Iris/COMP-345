@@ -1,7 +1,7 @@
 #include "GameEngine.h"
 #include "../CommandProcessor/CommandProcessor.h"
 #include <regex>
-
+#include <math.h>
 // Members of State Class
 
 State::State() : stateName("none") {}
@@ -439,7 +439,10 @@ void GameEngine::executeOrdersPhase() {
 		// for each p, get order list, top to bottom, order->execute (validation done by execute)
 
 	}
-    //Hi can you just set each player's cannotAttack vector to null when executeOrdersPhase is done(after the for loop)? Thanks -- Abhay
+    //Something for the Negotiate order for Orders.cpp -- Abhay
+    for(auto it : players){
+        it->getCannotAttack().clear();
+    }
 }
 
 
@@ -448,3 +451,19 @@ void GameEngine::executeOrdersPhase() {
 string GameEngine::stringToLog() {
 	return "Current GameEngine State: " + currentState->stateName;
 }
+
+//Neutral Player related stuff for Blockade order in Orders.cpp
+//May need to change for A3
+
+Player* GameEngine::getNeutralPlayer(){
+    for(auto it : players){
+        if(it->getName() == "NEUTRAL"){
+            return it;
+        }
+    }
+    Player* neutralPlayer = new Player("NEUTRAL", nullptr);
+    this->players.push_back(neutralPlayer);
+    return neutralPlayer;
+}
+
+
