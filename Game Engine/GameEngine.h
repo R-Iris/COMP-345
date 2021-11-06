@@ -7,11 +7,13 @@
 #include "../Player/Player.h"
 #include "../Map/Map.h"
 #include "../CommandProcessor/CommandProcessor.h"
+#include "../Cards/Cards.h"
 using namespace std;
 
 // Forward declaration
 class Player;
 class Map;
+class Deck;
 
 // A State holds a string
 class State
@@ -68,6 +70,8 @@ public:
 	vector<Player*> players; // 2 - 6 Players
 	// Pointer to the current map
 	Map* map;
+	// Deck pointer
+	Deck* deck;
 
 	// Default Constructor
 	GameEngine();
@@ -79,12 +83,20 @@ public:
 	GameEngine& operator=(const GameEngine& gameEngine);
 	// << ostream conversion
 	friend ostream& operator<<(ostream& out, const GameEngine& gameEngine);
+	// Getter for map
+	Map* getMap();
 	// Sets the map
 	void setMap(Map*);
+	// Getter for deck
+	Deck* getDeck();
+	// Setter for deck
+	void setDeck(Deck*);
 	// Adds players to player list
 	void addPlayer(Player*);
 	// Remove a player from the player list
 	void removePlayer(Player*);
+	// STRICTLY Checks the states
+	bool checkState(string command);
 	// Checks and Changes the states
 	bool changeState(string command);
 	// Creates a new state

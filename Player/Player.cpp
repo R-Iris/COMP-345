@@ -6,7 +6,6 @@ Player::Player(Hand* hand) : name("Unnamed"), hand(hand), reinforcementPool(0) {
 // Constructor with player name and hand
 Player::Player(string name, Hand* hand) : name(name), hand(hand), reinforcementPool(0) {}
 
-Player::Player(string name, Hand* hand, Deck* deck) : name(name),hand(hand),reinforcementPool(0),deck(deck) {}
 
 // Copy constructor
 Player::Player(const Player& player)
@@ -87,10 +86,6 @@ void Player::setReinforcementPool(int rP)
 // Stream insertion operator, returns player's name
 ostream& operator<<(ostream& out, const Player& player) {
 	return out << player.name;
-}
-
-Deck *Player::getDeck() {
-    return deck;
 }
 
 vector<Player *> Player::getCannotAttack() {

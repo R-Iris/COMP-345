@@ -43,7 +43,7 @@ ostream& operator<<(ostream& out, const Transition& transition)
 
 // Members of GameEngine class
 
-GameEngine::GameEngine() : currentState(nullptr) {}
+GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()) {}
 GameEngine::~GameEngine()
 {
 	// use for loop first to delete pointer contents inside of vector
@@ -66,18 +66,32 @@ GameEngine::~GameEngine()
 
 	// Calls delete on every element inside of the vector
 	currentState = nullptr;
+
+	// Delete deck
+	delete deck;
+	deck = nullptr;
+
+	// Delete map
+	delete map;
+	map = nullptr;
 }
 
 GameEngine::GameEngine(const GameEngine& gameEngine)
 {
 	this->states = gameEngine.states;
 	this->transitions = gameEngine.transitions;
+	this->players = gameEngine.players;
+	this->map = new Map(*gameEngine.map);
+	this->deck = new Deck(*gameEngine.deck);
 }
 
 GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
 {
 	this->states = gameEngine.states;
 	this->transitions = gameEngine.transitions;
+	this->players = gameEngine.players;
+	this->map = new Map(*gameEngine.map);
+	this->deck = new Deck(*gameEngine.deck);
 	return *this;
 }
 
@@ -90,9 +104,24 @@ ostream& operator<<(ostream& out, const GameEngine& gameEngine)
 	return out;
 }
 
+Map* GameEngine::getMap()
+{
+	return map;
+}
+
 void GameEngine::setMap(Map* newMap)
 {
 	map = newMap;
+}
+
+Deck* GameEngine::getDeck()
+{
+	return deck;
+}
+
+void GameEngine::setDeck(Deck* newDeck)
+{
+	deck = newDeck;
 }
 
 void GameEngine::addPlayer(Player* player)
@@ -103,6 +132,19 @@ void GameEngine::addPlayer(Player* player)
 void GameEngine::removePlayer(Player* player)
 {
 	// REMOVE PLAYER FROM players USING A FOR LOOP AND ERASE
+}
+
+bool GameEngine::checkState(string command)
+{
+	for (int i = 0; i < transitions.size(); i++)
+	{
+		if (currentState->stateName == transitions[i]->current->stateName && command == transitions[i]->command)
+		{
+			return true;
+		}
+		else if (currentState->stateName == "win" && command == "end") return true;
+	}
+	return false;
 }
 
 bool GameEngine::changeState(string command)
@@ -186,7 +228,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			// Check to see if we have 2-6 players in the game
 
-			if (players.size < 6) {
+			if (players.size() < 6) {
 				if (std::regex_search(effect, match, extractionPattern)) {
 					addPlayer(new Player(match[1], new Hand));
 				}
@@ -198,7 +240,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			}
 
 
-			if (players.size >= 2) {
+			if (players.size() >= 2) {
 				// Switch states
 				changeState("gamestart");
 			}
