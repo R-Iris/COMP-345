@@ -165,6 +165,7 @@ private:
 	vector<Continent*> continents;
 	vector<Territory*> countries;
 	vector<tuple<int, int>> borders;
+	bool valid;
 
 public:
 	Map();
@@ -180,6 +181,7 @@ public:
 	vector<Continent*> getContinents();
 	vector<Territory*> getTerritories();
 	vector<tuple<int, int>> getBorders();
+	bool isValid();
 
 	vector<tuple<int, int>> getBordersByCountry(Territory country);
 

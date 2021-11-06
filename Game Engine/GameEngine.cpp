@@ -1,4 +1,6 @@
 #include "GameEngine.h"
+#include "../CommandProcessor/CommandProcessor.h"
+#include <regex>
 
 // Members of State Class
 
@@ -142,6 +144,66 @@ void GameEngine::end()
 
 void GameEngine::startupPhase()
 {
+	// Use the command list to get the commands, make sure to change states in between commands
+	for (Command* c : cp.getCommandList()) {
+		string command = c->getCommandStr();
+
+		if (command == "loadmap") {
+			// Load the map (how to parse the filename from the command?)
+			string effect = c->getEffect();
+			std::regex extractionPattern(".*(.*\\.map).*");
+			std::smatch match;
+
+			if (std::regex_search(effect.begin(), effect.end(), match, extractionPattern)) {
+				string mapFileName = match[1];
+				setMap(MapLoader::createMapfromFile(mapFileName));
+				changeState("validatemap");
+			}
+		}
+
+		else if (command == "validatemap") {
+			// Validate the map
+			map->validate();
+
+			if (map->isValid()) {
+				changeState("addplayer");
+			}
+
+			else {
+				// Does the state go back to loadmap, or do we just fail and exit?
+			}
+		}
+
+		else if (command == "addplayer") {
+			// Add player (This part should loop so as to ensure that we have 2-6 players in the game.)
+			string effect = c->getEffect();
+
+			std::regex extractionPattern("(.*) player has been added");
+			std::smatch match;
+
+			if (std::regex_search(effect.begin(), effect.end(), match, extractionPattern)) {
+				addPlayer(new Player(match[1], new Hand));
+			}
+
+		}
+
+		else if (command == "gamestart") {
+			/* Gamestart command does the following:
+			*  a) Evenly pass out territories to players (what happens when there aren't enough to go around?).
+
+			*  b) Determine the order in which players get their turns (Randomly rearrange this class's Players list)
+
+			*  c) Give 50 armies to each player, which are placed in their respective reinforcement pool (new Player field)
+
+			*  d) Let each player draw 2 cards from the deck using Deck's draw() method (Call Player.getHand()->push_back(Deck.draw())?)
+
+			*  e) Switch the game to the "play" state. (Call mainGameLoop())
+			*/
+			changeState("gamestart");
+		}
+	}
+
+	mainGameLoop();
 }
 
 // Main Game Loop

@@ -255,18 +255,21 @@ Map::Map(const Map& m) {
 	this->continents = m.continents;
 	this->countries = m.countries;
 	this->borders = m.borders;
+	this->valid = m.valid;
 }
 
 Map::Map(vector<Continent*> continents, vector<Territory*> countries, vector<tuple<int, int>> borders) {
 	this->continents = continents;
 	this->countries = countries;
 	this->borders = borders;
+	this->valid = false;
 }
 
 Map& Map::operator=(const Map& m) {
 	this->continents = m.continents;
 	this->countries = m.countries;
 	this->borders = m.borders;
+	this->valid = m.valid;
 
 	return *this;
 }
@@ -289,6 +292,11 @@ vector<Territory*> Map::getTerritories()
 vector<tuple<int, int>> Map::getBorders()
 {
 	return this->borders;
+}
+
+bool Map::isValid()
+{
+	return valid;
 }
 
 vector<tuple<int, int>> Map::getBordersByCountry(Territory country)
@@ -481,6 +489,7 @@ void Map::validate() {
 
 	// If the function exits without throwing an exception, we can say that the map is valid!
 	cout << "This map is valid!" << endl;
+	valid = true;
 }
 
 int Map::calculateContinentBonus(Player* player)
