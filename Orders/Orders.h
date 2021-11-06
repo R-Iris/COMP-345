@@ -12,6 +12,7 @@ using namespace std;
 
 // Forward declaration
 class Territory;
+class Deck;
 
 //----------------------Orders class------------------
 class Orders {

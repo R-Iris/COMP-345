@@ -14,6 +14,7 @@ using namespace std;
 class Player;
 class Map;
 class Deck;
+class CommandProcessor;
 
 // A State holds a string
 class State
