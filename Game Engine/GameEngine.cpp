@@ -247,12 +247,13 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			else {
 				// Let the user know that there needs to be more players for the game to start
+				cout << "There must be at least 2 players before the game can start." << endl;
 			}
 		}
 
 		else if (command == "gamestart") {
 			/* Gamestart command does the following:
-			*  a) Evenly pass out territories to players (what happens when there aren't enough to go around?).
+			*  a) Evenly pass out territories to players (remainder goes to the neutral player).
 
 			*  b) Determine the order in which players get their turns (Randomly rearrange this class's Players list)
 
@@ -264,6 +265,10 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			*/
 			
 			// Assign territories - TODO: Come up with a way to fairly distribute all countries between players
+			int neutralTerritories = map->getTerritories().size() % players.size();
+			int distrbutedTerritories = map->getTerritories().size() - neutralTerritories;
+
+			// TODO: Randomize the territories and then pass them out to each player
 			for (Player* p : players) {
 
 			}
@@ -294,10 +299,12 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			// Give each player 50 armies to begin with and let them draw 2 cards from the deck
 			for (Player* p : players) {
+				// Give 50 armies
 				p->setReinforcementPool(50);
 
-				// TODO: I think the GameEngine needs its own deck?
-				
+				// Draw 2 cards for the player
+				p->getHand()->addHand(deck->draw());
+				p->getHand()->addHand(deck->draw());
 			}
 
 			// Switch the game to the play phase
