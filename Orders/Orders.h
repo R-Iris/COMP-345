@@ -91,8 +91,9 @@ private:
 	int noOfArmies;
 	Territory* source;
 	Territory* target;
+    Deck* deck;
 public:
-	Advance(Player* orderOwner, int noOfArmies, Territory* source, Territory* target); //Parametrized Constructor.
+	Advance(Player* orderOwner, int noOfArmies, Territory* source, Territory* target, Deck* deck); //Parametrized Constructor.
 	//Copy constructor
 	Advance(const Advance& advance);
 	Advance& operator = (const Advance& advance); //Assignment operator
@@ -187,15 +188,13 @@ class Negotiate : public Orders {
 private:
 	Player* orderOwner;
 	string name = "Negotiate";
-    GameEngine* gameEngine;
 public:
-	Negotiate(Player* orderOwner,GameEngine* gameEngine);
+	Negotiate(Player* orderOwner);
 	//Copy constructor
 	Negotiate(const Negotiate& negotiate);
 	~Negotiate();
 	Negotiate& operator= (const Negotiate& negotiate);
 	string getName() override;
-    GameEngine* getGameEngine();
 	friend ostream& operator << (ostream& strm, Negotiate& negotiate);
 	bool validate(Player* otherPlayer);
 	void execute(Player* otherPlayer);

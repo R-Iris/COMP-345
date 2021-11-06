@@ -341,7 +341,7 @@ void GameEngine::mainGameLoop() {
 	    reinforcementPhase();
 
 	    /*
-	    Issuing Orders Phase — Players issue orders and place them in their order list through a call to the
+	    Issuing Orders Phase ï¿½ Players issue orders and place them in their order list through a call to the
 	    Player::issueOrder() method. This method is called in round-robin fashion across all players by the
 	    game engine. This must be implemented in a function/method named issueOrdersPhase() in the game
 	    engine.
@@ -349,9 +349,9 @@ void GameEngine::mainGameLoop() {
 	    issueOrdersPhase();
 
 	    /*
-	    Orders Execution Phase — Once all the players have signified in the same turn that they are not issuing
+	    Orders Execution Phase ï¿½ Once all the players have signified in the same turn that they are not issuing
 	    one more order, the game engine proceeds to execute the top order on the list of orders of each player in
-	    a round-robin fashion (i.e. the “Order Execution Phase”—see below). Once all the players’ orders have
+	    a round-robin fashion (i.e. the ï¿½Order Execution Phaseï¿½ï¿½see below). Once all the playersï¿½ orders have
 	    been executed, the main game loop goes back to the reinforcement phase. This must be implemented in
 	    a function/method named executeOrdersPhase() in the game engine.
 	    */
@@ -361,11 +361,11 @@ void GameEngine::mainGameLoop() {
 
 void GameEngine::reinforcementPhase() {
 	/*
-	Reinforcement Phase — Players are given a number of armies that depends on the number of territories
+	Reinforcement Phase ï¿½ Players are given a number of armies that depends on the number of territories
 	they own, (# of territories owned divided by 3, rounded down). If the player owns all the territories of an
-	entire continent, the player is given a number of armies corresponding to the continent’s control bonus
+	entire continent, the player is given a number of armies corresponding to the continentï¿½s control bonus
 	value. In any case, the minimal number of reinforcement armies per turn for any player is 3. These armies
-	are placed in the player’s reinforcement pool. This must be implemented in a function/method named
+	are placed in the playerï¿½s reinforcement pool. This must be implemented in a function/method named
 	reinforcementPhase() in the game engine.
 	*/
 
@@ -388,21 +388,21 @@ void GameEngine::reinforcementPhase() {
 
 void GameEngine::issueOrdersPhase() {
 	/*
-	The issuing orders phase decision-making is implemented in the player’s issueOrder() method, which
+	The issuing orders phase decision-making is implemented in the playerï¿½s issueOrder() method, which
 	implements the following:
 
 	// To attack -> vector<Territory*> getAdjacentTerritories(); what about priority
-	• The player decides which neighboring territories are to be attacked in priority (as a list return by the
+	ï¿½ The player decides which neighboring territories are to be attacked in priority (as a list return by the
 	toAttack() method), and which of their own territories are to be defended in priority (as a list returned by
 	the toDefend() method).
-	• The player issues deploy orders on its own territories that are in the list returned by toDefend(). As long
+	ï¿½ The player issues deploy orders on its own territories that are in the list returned by toDefend(). As long
 	as the player has armies still to deploy (see startup phase and reinforcement phase), it will issue a deploy
 	order and no other order. Once it has deployed all its available armies, it can proceed with other kinds of
 	orders.
-	• The player issues advance orders to either (1) move armies from one of its own territory to the other in
+	ï¿½ The player issues advance orders to either (1) move armies from one of its own territory to the other in
 	order to defend them (using toDefend() to make the decision), and/or (2) move armies from one of its
 	territories to a neighboring enemy territory to attack them (using toAttack() to make the decision).
-	• The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
+	ï¿½ The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
 	Note that the orders should not be validated as they are issued. Orders are to be validated only when they are
 	executed in the orders execution phase. This must be implemented in a function/method named
 	issueOrdersPhase() in the game engine. The decision-making code must be implemented within the
@@ -430,7 +430,9 @@ void GameEngine::issueOrdersPhase() {
 void GameEngine::executeOrdersPhase() {
 	for (Player* p : players) {
 		// for each p, get order list, top to bottom, order->execute (validation done by execute)
+
 	}
+    //Hi can you just set each player's cannotAttack vector to null when executeOrdersPhase is done(after the for loop)? Thanks -- Abhay
 }
 
 
