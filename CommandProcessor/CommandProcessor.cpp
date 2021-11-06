@@ -6,9 +6,9 @@
 
 using namespace std;
 
-Command::Command(string commandstr) : commandstr(commandstr), effect("N/A"), commandNumber(-1) { }
+Command::Command(string commandstr) : commandstr(commandstr), effect("Invalid command"), commandNumber(-1) { }
 
-Command::Command(commandType command) : effect("N/A") {
+Command::Command(commandType command) : effect("Invalid command") {
 	switch (command) {
 	case commandType::loadmap:
 		commandstr = "loadmap";
@@ -99,25 +99,29 @@ Command* CommandProcessor::readCommand() {
 void CommandProcessor::getCommand(GameEngine* game) {
 	Command* command = readCommand();
 
-	validate(command, game);
+	if (validate(command, game)) {
+		saveValidCommand(command);
+	}
+
 	saveCommand(command);
 }
 
 bool CommandProcessor::validate(Command* command, GameEngine* game) {
-	while (game->changeState(command->getCommandStr())) {
+	//Do not change state
+	if (game->changeState(command->getCommandStr())) {
 		if (command->getCommandStr() == "loadmap") {
 			cout << "Which map do you wish to load? ";
 			cin >> toAdd;
 			cout << '\n';
 			command->setCommandStr(toAdd);
 		}
-		if (command->getCommandStr() == "addplayer") {
+		else if (command->getCommandStr() == "addplayer") {
 			cout << "What is the name of the player? ";
 			cin >> toAdd;
 			cout << '\n';
 			command->setCommandStr(toAdd);
 		}
-		if (command->getCommandStr() == "quit") {
+		else if (command->getCommandStr() == "quit") {
 			cout << "Quitting the game.";
 			exitProgram = true;
 		}
@@ -132,8 +136,16 @@ void CommandProcessor::saveCommand(Command* command) {
 	commandList.push_back(command);
 }
 
+void CommandProcessor::saveValidCommand(Command* command) {
+	validCommandList.push_back(command);
+}
+
 vector<Command*> CommandProcessor::getCommandList() {
 	return commandList;
+}
+
+vector<Command*> CommandProcessor::getValidCommandList() {
+	return validCommandList;
 }
 
 int CommandProcessor::getIndexCmdVector(string commandstr) {

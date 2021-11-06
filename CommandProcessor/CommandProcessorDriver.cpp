@@ -16,6 +16,8 @@ int main() {
 	State* players_added = game->newState("players_added");
 	State* assign_reinforcement = game->newState("assign_reinforcement");
 	State* win = game->newState("win");
+	State* end_game = game->newState("end_game");
+
 
 	game->newTransition(start, map_loaded, "loadmap");
 	game->newTransition(map_loaded, map_loaded, "loadmap");
@@ -25,7 +27,7 @@ int main() {
 	game->newTransition(players_added, assign_reinforcement, "gamestart");
 	game->newTransition(assign_reinforcement, win, "gameend");	//For testing purposes
 	game->newTransition(win, start, "replay");
-	game->newTransition(win, start, "quit");
+	game->newTransition(win, end_game, "quit");
 
 	game->currentState = start;
 
@@ -33,7 +35,9 @@ int main() {
 	while (!(commandprocessor->getExitProgram())) {
 		commandprocessor->getCommand(game);
 	}
-	cout << commandprocessor->getCommandList();
+
+	cout << "\nAll commands: " << commandprocessor->getCommandList();
+	cout << "\nValid commands: " << commandprocessor->getValidCommandList();
 
 	return 0;
 }

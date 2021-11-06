@@ -6,6 +6,8 @@
 
 using namespace std;
 
+class GameEngine;
+
 class Command {
 public:
 	enum class commandType { loadmap, validatemap, addplayer, gamestart, replay, quit };
@@ -28,8 +30,10 @@ public:
 	virtual Command* readCommand();
 	void getCommand(GameEngine* game);
 	void saveCommand(Command*);
+	void saveValidCommand(Command*);
 	bool validate(Command*, GameEngine*);
 	vector<Command*> getCommandList();
+	vector<Command*> getValidCommandList();
 	int getIndexCmdVector(string);
 	bool getExitProgram();
 
@@ -37,6 +41,7 @@ public:
 
 private:
 	vector<Command*> commandList;
+	vector<Command*> validCommandList;
 	string toAdd{ "" };
 	bool exitProgram = false;
 	vector<string> commandVector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit" };
