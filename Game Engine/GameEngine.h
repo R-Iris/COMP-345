@@ -6,6 +6,7 @@
 #include "../LoggingObserver/LoggingObserver.h"
 #include "../Player/Player.h"
 #include "../Map/Map.h"
+#include "../CommandProcessor/CommandProcessor.h"
 using namespace std;
 
 // Forward declaration
@@ -94,7 +95,7 @@ public:
 	void end();
 
 	// Startup Phase
-	void startupPhase();
+	void startupPhase(CommandProcessor* cp);
 
 	// Main Game Loop
 	void mainGameLoop();

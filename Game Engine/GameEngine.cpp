@@ -142,10 +142,10 @@ void GameEngine::end()
 
 // Game Startup Phase
 
-void GameEngine::startupPhase()
+void GameEngine::startupPhase(CommandProcessor* cp)
 {
 	// Use the command list to get the commands, make sure to change states in between commands
-	for (Command* c : cp.getCommandList()) {
+	for (Command* c : cp->getCommandList()) {
 		string command = c->getCommandStr();
 
 		if (command == "loadmap") {
@@ -154,13 +154,15 @@ void GameEngine::startupPhase()
 			std::regex extractionPattern(".*(.*\\.map).*");
 			std::smatch match;
 
-			if (std::regex_search(effect.begin(), effect.end(), match, extractionPattern)) {
-				string mapFileName = match[1];
+			// We found a map file name from the commmand's effect!
+			if (std::regex_search(effect, match, extractionPattern)) {
+				string mapFileName = "Assets/" + (string)match[1];
 				setMap(MapLoader::createMapfromFile(mapFileName));
 				changeState("validatemap");
 			}
 		}
 
+		// Do I have to check if we are in a valid state before executing the command?
 		else if (command == "validatemap") {
 			// Validate the map
 			map->validate();
@@ -171,6 +173,7 @@ void GameEngine::startupPhase()
 
 			else {
 				// Does the state go back to loadmap, or do we just fail and exit?
+				cout << "An invalid map has been loaded." << endl;
 			}
 		}
 
@@ -181,10 +184,28 @@ void GameEngine::startupPhase()
 			std::regex extractionPattern("(.*) player has been added");
 			std::smatch match;
 
-			if (std::regex_search(effect.begin(), effect.end(), match, extractionPattern)) {
-				addPlayer(new Player(match[1], new Hand));
+			// Check to see if we have 2-6 players in the game
+
+			if (players.size < 6) {
+				if (std::regex_search(effect, match, extractionPattern)) {
+					addPlayer(new Player(match[1], new Hand));
+				}
 			}
 
+			else {
+				// Let the user know that they cannot add anymore players
+				cout << "Limit of players in game has been reached, no new players may be added." << endl;
+			}
+
+
+			if (players.size >= 2) {
+				// Switch states
+				changeState("gamestart");
+			}
+
+			else {
+				// Let the user know that there needs to be more players for the game to start
+			}
 		}
 
 		else if (command == "gamestart") {
@@ -199,11 +220,48 @@ void GameEngine::startupPhase()
 
 			*  e) Switch the game to the "play" state. (Call mainGameLoop())
 			*/
-			changeState("gamestart");
+			
+			// Assign territories - TODO: Come up with a way to fairly distribute all countries between players
+			for (Player* p : players) {
+
+			}
+
+			// Determine the turn order randomly - Re-arrange the players in the vector
+			
+			// Store randomly sorted arrangement of players
+			vector<Player*> tmp;
+
+			// Initialize random seed
+			srand(time(NULL));
+
+			while (players.size() > 0) {
+				// Generate a random number from 0 to the final index in the players vector
+				int choose = rand() % (players.size() - 1);
+
+				// Place randomly selected player in new vector
+				tmp.push_back(players.at(choose));
+
+				// Exclude newly placed player from next choice
+				players.erase(players.begin()+choose);
+			}
+
+			// Reset players vector
+			for (Player* player : tmp) {
+				players.push_back(player);
+			}
+
+			// Give each player 50 armies to begin with and let them draw 2 cards from the deck
+			for (Player* p : players) {
+				p->setReinforcementPool(50);
+
+				// TODO: I think the GameEngine needs its own deck?
+				
+			}
+
+			// Switch the game to the play phase
+			mainGameLoop();
 		}
 	}
-
-	mainGameLoop();
 }
 
 // Main Game Loop
