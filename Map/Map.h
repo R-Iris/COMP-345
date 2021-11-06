@@ -112,7 +112,7 @@ public:
 
 	// MEMBER FUNCTIONS
 	int getIndex();
-	Player getOwner();
+	Player* getOwner();
 	int getNumberOfArmies();
 	string getName();
 	int getContinent();

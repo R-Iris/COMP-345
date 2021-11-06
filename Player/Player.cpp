@@ -6,6 +6,8 @@ Player::Player(Hand* hand) : name("Unnamed"), hand(hand), reinforcementPool(0) {
 // Constructor with player name and hand
 Player::Player(string name, Hand* hand) : name(name), hand(hand), reinforcementPool(0) {}
 
+Player::Player(string name, Hand* hand, Deck* deck) : name(name),hand(hand),reinforcementPool(0),deck(deck) {}
+
 // Copy constructor
 Player::Player(const Player& player)
 {
@@ -55,7 +57,7 @@ vector<Territory*> Player::toAttack() // Returns a list of territories that are 
 }
 
 // Create a new order and add to order list
-void Player::issueOrder(Orders* order) // Creates an Order object and puts it in the player’s list of orders
+void Player::issueOrder(Orders* order) // Creates an Order object and puts it in the playerï¿½s list of orders
 {
 	ordersList->addOrders(order);
 }
@@ -85,4 +87,12 @@ void Player::setReinforcementPool(int rP)
 // Stream insertion operator, returns player's name
 ostream& operator<<(ostream& out, const Player& player) {
 	return out << player.name;
+}
+
+Deck *Player::getDeck() {
+    return deck;
+}
+
+vector<Player *> Player::getCannotAttack() {
+    return cannotAttack;
 }

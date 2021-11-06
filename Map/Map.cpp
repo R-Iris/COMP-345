@@ -152,9 +152,9 @@ int Territory::getIndex()
 	return this->countryIndex;
 }
 
-Player Territory::getOwner()
+Player* Territory::getOwner()
 {
-	return (*this->owner);
+	return this->owner;
 }
 
 int Territory::getNumberOfArmies()
