@@ -188,15 +188,13 @@ class Negotiate : public Orders {
 private:
 	Player* orderOwner;
 	string name = "Negotiate";
-    GameEngine* gameEngine;
 public:
-	Negotiate(Player* orderOwner,GameEngine* gameEngine);
+	Negotiate(Player* orderOwner);
 	//Copy constructor
 	Negotiate(const Negotiate& negotiate);
 	~Negotiate();
 	Negotiate& operator= (const Negotiate& negotiate);
 	string getName() override;
-    GameEngine* getGameEngine();
 	friend ostream& operator << (ostream& strm, Negotiate& negotiate);
 	bool validate(Player* otherPlayer);
 	void execute(Player* otherPlayer);

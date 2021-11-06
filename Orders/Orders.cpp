@@ -552,9 +552,8 @@ Airlift::~Airlift() = default;
 
 //--------------------------Negotiate class------------------
 
-Negotiate::Negotiate(Player *orderOwner, GameEngine *gameEngine) {
+Negotiate::Negotiate(Player *orderOwner) {
     this->orderOwner = orderOwner;
-    this->gameEngine = gameEngine;
 }
 
 
@@ -617,9 +616,6 @@ Negotiate &Negotiate::operator=(const Negotiate &negotiate) {
 
 string Negotiate::getName() {return name;}
 
-GameEngine *Negotiate::getGameEngine() {
-    return gameEngine;
-}
 
 
 //Start of OrdersList class implementation
