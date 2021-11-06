@@ -91,8 +91,9 @@ private:
 	int noOfArmies;
 	Territory* source;
 	Territory* target;
+    Deck* deck;
 public:
-	Advance(Player* orderOwner, int noOfArmies, Territory* source, Territory* target); //Parametrized Constructor.
+	Advance(Player* orderOwner, int noOfArmies, Territory* source, Territory* target, Deck* deck); //Parametrized Constructor.
 	//Copy constructor
 	Advance(const Advance& advance);
 	Advance& operator = (const Advance& advance); //Assignment operator

@@ -136,11 +136,12 @@ Deploy::~Deploy()= default;
 
 //------------------------------Advance class---------------------
 
-Advance::Advance(Player* orderOwner,int n, Territory *s, Territory *t) {
+Advance::Advance(Player* orderOwner,int n, Territory *s, Territory *t,Deck* deck) {
     this->orderOwner = orderOwner;
     this->noOfArmies = n;
     this->source = s;
     this->target = t;
+    this->deck = deck;
 }
 
 int Advance::getNoOfArmies() const {
@@ -253,7 +254,7 @@ void Advance::execute() {
                     target->setNumberOfArmies(attackingArmy);
                     //A player receives a card at the end of his turn if
                     //they successfully conquered at least one territory during their turn.
-                    orderOwner->getHand()->addHand(orderOwner->getDeck()->draw());
+                    orderOwner->getHand()->addHand(deck->draw());
                 }
                 else if(attackingArmy == 0){
                     //Nothing happens-- Battle lost
@@ -275,6 +276,7 @@ Advance &Advance::operator=(const Advance &advance) {
     this->target = advance.target;
     this->source = advance.source;
     this->noOfArmies = advance.noOfArmies;
+    this->deck = advance.deck;
     return *this;
 }
 
@@ -284,6 +286,7 @@ Advance::Advance(const Advance &advance) {
     this->target = advance.target;
     this->source = advance.source;
     this->noOfArmies = advance.noOfArmies;
+    this->deck = advance.deck;
 }
 
 //Destructor is default since no new data members being created in the class
