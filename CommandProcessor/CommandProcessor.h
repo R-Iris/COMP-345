@@ -20,23 +20,25 @@ public:
 private:
 	string commandstr;
 	string effect; //Ask teacher about what the effect is
-	int commandNumber;
+	int commandNumber{-1};
 };
 
 class CommandProcessor {
 public:
 	virtual Command* readCommand();
-	void getCommand();
+	void getCommand(GameEngine* game);
 	void saveCommand(Command*);
-	bool validate(Command*);
+	bool validate(Command*, GameEngine*);
 	vector<Command*> getCommandList();
 	int getIndexCmdVector(string);
+	bool getExitProgram();
 
 	friend ostream& operator<< (ostream&, const vector<Command*>);
 
 private:
 	vector<Command*> commandList;
-	string toAdd;
+	string toAdd{ "" };
+	bool exitProgram = false;
 	vector<string> commandVector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit" };
 };
 
