@@ -226,6 +226,13 @@ void Advance::execute() {
         //3.A player receives a card at the end of his turn if they successfully conquered at least one territory
         //during their turn.
         else{
+            Player* enemy = target->getOwner();
+            for(auto it: enemy->getCannotAttack()){
+                if(it == orderOwner){
+                    cout << "You cannot attack this player's territory for the remainder of this turn" << endl;
+                    return;
+                }
+            }
             cout << "Executing advance order" << endl;
             //Random int from 1 to 10
             int randNumber = rand() % 10 + 1;
@@ -246,7 +253,7 @@ void Advance::execute() {
                     target->setNumberOfArmies(attackingArmy);
                     //A player receives a card at the end of his turn if
                     //they successfully conquered at least one territory during their turn.
-
+                    orderOwner->getHand()->addHand(orderOwner->getDeck()->draw());
                 }
                 else if(attackingArmy == 0){
                     //Nothing happens-- Battle lost
@@ -394,15 +401,19 @@ ostream& operator <<(ostream &strm, Blockade& blockade){
 }
 
 //The blockade order can only be created by playing the blockade card
+//A blockade order targets a territory that belongs to the player issuing the order. Its effect is to
+//double the number of armies on the territory and to transfer the ownership of the territory to the Neutral player.
+//The blockade order can only be created by playing the blockade card.
 bool Blockade::validate() {
     //If the target territory belongs to an enemy player, the order is declared invalid.
     if(!orderOwner->ownsTerritory(target)){
         cout << "Order invalid -- Target territory belongs to enemy player" << endl;
+        return false;
     }
-    return false; // TO CHANGE TO CHANGE TO CHANGE
+    return true;
 }
 
-//Executing order if valid -- Only printing strings
+//Executing order if valid
 void Blockade::execute() {
     if(validate()){
         cout << "Executing blockade order" << endl;
@@ -538,9 +549,11 @@ Airlift::~Airlift() = default;
 
 //--------------------------Negotiate class------------------
 
-Negotiate::Negotiate(Player* orderOwner){
+Negotiate::Negotiate(Player *orderOwner, GameEngine *gameEngine) {
     this->orderOwner = orderOwner;
+    this->gameEngine = gameEngine;
 }
+
 
 //Stream insertion operator overload
 ostream& operator <<(ostream &strm, Negotiate& negotiate){
@@ -564,16 +577,22 @@ bool Negotiate::validate(Player* otherPlayer) {
     return true;
 }
 
-//Negotiate method always being exected since validate method not yet implemented.
+//A negotiate order targets an enemy player. It results in the target player and the player issuing
+//the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
+//order can only be created by playing the diplomacy card.
 void Negotiate::execute(Player* otherPlayer) {
     //If the target is an enemy player, then the effect is that any attack that may be declared between territories
     //of the player issuing the negotiate order and the target player will result in an invalid order.
     if(validate(otherPlayer)){
         cout << "Executing Negotiate order" << endl;
+        orderOwner->getCannotAttack().push_back(otherPlayer);
+        otherPlayer->getCannotAttack().push_back(orderOwner);
 
-        setEffect("Attacking between " + orderOwner->getName() + " and " + otherPlayer->getName() + " have been prevented until the end of the turn\n");
+        setEffect("Attacking between " + orderOwner->getName() + " and " + otherPlayer->getName() + " has been prevented until the end of the turn\n");
         cout << getEffect();
         setExecuted(true);
+
+
     }
     else{
         cout << "Airlift order has not been executed" << endl;
@@ -594,6 +613,11 @@ Negotiate &Negotiate::operator=(const Negotiate &negotiate) {
 }
 
 string Negotiate::getName() {return name;}
+
+GameEngine *Negotiate::getGameEngine() {
+    return gameEngine;
+}
+
 
 //Start of OrdersList class implementation
 
@@ -689,5 +713,6 @@ ostream& OrdersList::stringToLog(ostream& os)
     return os;
 }
 */
-
 //End of OrdersList class implementation
+
+/*Neutral player pointer return method*/
