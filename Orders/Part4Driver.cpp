@@ -1,7 +1,7 @@
 #include "Orders.h"
 
 int main(){
-    cout << "Part 4: Order Execution Implementation" << endl;
+    cout << "Part 4: Order Execution Implementation\n" << endl;
 
     auto* gameEngine = new GameEngine();
 
@@ -19,16 +19,17 @@ int main(){
 
     auto* t1 = new Territory();
     t1->setName("T1");
-    t1->setOwner(p1);
+    p1->addOwnedTerritory(t1);
     auto* t2 = new Territory();
     t2->setName("T2");
-    t2->setOwner(p2);
+    p2->addOwnedTerritory(t2);
     auto* t3 = new Territory();
     t3->setName("T3");
-    t3->setOwner(p3);
+    p3->addOwnedTerritory(t3);
     auto* t4 = new Territory();
     t4->setName("T4");
-    t4->setOwner(p4);
+    p4->addOwnedTerritory(t4);
+
 
     auto* deploy = new Deploy(p1,10,t1);
     //Attack between p1 and p2 -- P2 should win and t1 ownership should be transferred to p2
@@ -52,10 +53,28 @@ int main(){
     p4->issueOrder(*blockade);
     p3->issueOrder(*negotiate);
     p3->issueOrder(*advance1);
+    p3->issueOrder(*advance1);
 
-    //cout << *(p1->getOrdersList()) << endl;
+
+
+    cout << *(p1->getOrdersList()) << endl;
+    cout << *(p2->getOrdersList()) << endl;
+    cout << *(p3->getOrdersList()) << endl;
+    cout << *(p4->getOrdersList()) << endl;
+
+    cout << "Executing each player's order one by one\n" << endl;
+
+    for(auto it:p1->getOrdersList()->ordersList){
+        it->execute();
+    }
+
+
+
 
     cout << "END" << endl;
+
+    gameEngine->end();
+
 
     delete p1,delete p2,delete p3,delete p4;
     delete t1,delete t2,delete t3,delete t4;

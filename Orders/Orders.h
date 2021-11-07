@@ -44,13 +44,13 @@ public:
 // ------------OrdersList class-----------------------
 class OrdersList {
 private:
-	vector<Orders*> ordersList;
+    Player* ordersListOwner;
 public:
-	explicit OrdersList(vector<Orders*> ordersList); //Parameterised constructor
+	explicit OrdersList(Player* ordersListOwner,vector<Orders*> ordersList); //Parameterised constructor
 	OrdersList(const OrdersList& ol);
 	~OrdersList();
 	void setOrdersList(vector<Orders*> ordersList);
-	vector<Orders*> getOrdersList();
+    vector<Orders*> ordersList;
 	bool remove(int index);
 	bool move(int i, int j);
 	friend ostream& operator << (ostream& strm, OrdersList& ordersList);

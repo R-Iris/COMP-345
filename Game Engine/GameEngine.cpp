@@ -441,7 +441,7 @@ void GameEngine::executeOrdersPhase() {
 	}
     //Something for the Negotiate order for Orders.cpp -- Abhay
     for(auto it : players){
-        it->getCannotAttack().clear();
+        it->cannotAttack.clear();
     }
 }
 

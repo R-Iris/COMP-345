@@ -35,13 +35,11 @@ public:
 	int getReinforcementPool();
 	void setReinforcementPool(int);
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
-    vector<Player*> getCannotAttack();
-    void setCannotAttack(vector<Player*> cannotAttack);
+    vector<Player*> cannotAttack;//Vector of players which cannot be attacked
 private:
 	string name;
 	Hand* hand; // Pointer to hand of cards
 	vector<Territory*> territoriesOwned; // List of owned territories
 	OrdersList* ordersList;
 	int reinforcementPool; // Number of armies in the reinforcement pool
-    vector<Player*> cannotAttack; //Vector of players which cannot be attacked
 };

@@ -101,7 +101,7 @@ bool Deploy::validate() {
         cout << "Deploy order is valid" << endl;
         return true;
     }
-    cout << "Deploy order is invalid since player " + orderOwner->getName() + " does not own " + target->getName() + " territory" <<endl;
+    cout << "Deploy order is invalid since " + orderOwner->getName() + " does not own " + target->getName() + " territory" <<endl;
     return false;
 }
 
@@ -113,7 +113,7 @@ void Deploy::execute() {
         int newNoOfArmies = getTarget()->getNumberOfArmies() + noOfArmies;
         getTarget()->setNumberOfArmies(newNoOfArmies);
         //Printing message
-        setEffect("Player " + orderOwner->getName() + " has deployed " + to_string(getNoOfArmies()) +
+        setEffect(orderOwner->getName() + " has deployed " + to_string(getNoOfArmies()) +
         " armies to territory " + target->getName() + ". New army count = " + to_string(getTarget()->getNumberOfArmies())
          + "\n");
         cout << getEffect();
@@ -183,7 +183,7 @@ bool Advance::validate() {
     //If the source territory does not belong to the player that issued the order, the order is invalid.
     if(!orderOwner->ownsTerritory(source)){
         cout << "Deploy order not valid" << endl;
-        cout << "Source territory does not belong to player " + orderOwner->getName() << endl;
+        cout << "Source territory does not belong to " + orderOwner->getName() << endl;
         return false;
     }
     //If the target territory is not adjacent to the source territory, the order is invalid.
@@ -213,7 +213,7 @@ void Advance::execute() {
             int initialTargetArmy = target->getNumberOfArmies();
             target->setNumberOfArmies(initialTargetArmy + noOfArmies);
             source->setNumberOfArmies(initialSourceArmy - noOfArmies);
-            setEffect("Player " + orderOwner->getName() + " has moved " + to_string(getNoOfArmies()) + " armies from " + source->getName()
+            setEffect(orderOwner->getName() + " has moved " + to_string(getNoOfArmies()) + " armies from " + source->getName()
             + " territory to " + target->getName() + " territory \n");
             cout << getEffect();
         }
@@ -228,7 +228,7 @@ void Advance::execute() {
         //during their turn.
         else{
             Player* enemy = target->getOwner();
-            for(auto it: enemy->getCannotAttack()){
+            for(auto it: enemy->cannotAttack){
                 if(it == orderOwner){
                     cout << "You cannot attack this player's territory for the remainder of this turn" << endl;
                     return;
@@ -260,7 +260,7 @@ void Advance::execute() {
                     //Nothing happens-- Battle lost
                 }
             }
-            setEffect("Player " + orderOwner->getName() + " attacking " + target->getName() + " territory\n");
+            setEffect(orderOwner->getName() + " attacking " + target->getName() + " territory\n");
             cout << getEffect();
         }
         setExecuted(true);
@@ -580,8 +580,8 @@ void Negotiate::execute() {
     //of the player issuing the negotiate order and the target player will result in an invalid order.
     if(validate()){
         cout << "Executing Negotiate order" << endl;
-        orderOwner->getCannotAttack().push_back(otherPlayer);
-        otherPlayer->getCannotAttack().push_back(orderOwner);
+        orderOwner->cannotAttack.push_back(otherPlayer);
+        otherPlayer->cannotAttack.push_back(orderOwner);
 
         setEffect("Attacking between " + orderOwner->getName() + " and " + otherPlayer->getName() + " has been prevented until the end of the turn\n");
         cout << getEffect();
@@ -615,16 +615,13 @@ string Negotiate::getName() {return name;}
 
 //Start of OrdersList class implementation
 
-OrdersList::OrdersList(vector<Orders *> ordersList) {
+OrdersList::OrdersList(Player* ordersListOwner,vector<Orders *> ordersList) {
+    this->ordersListOwner = ordersListOwner;
     this->ordersList = ordersList;
 }
 
 void OrdersList::setOrdersList(vector<Orders*> orderList) {
     this->ordersList = orderList;
-}
-
-vector<Orders*>  OrdersList::getOrdersList() {
-    return this->ordersList;
 }
 
 //Removing order by index --> invalid indexes checked
@@ -686,7 +683,7 @@ OrdersList::OrdersList(const OrdersList& ol){
 
 //Stream insertion operator overload --> Printing all orders(name only)
 ostream &operator<<(ostream &strm, OrdersList &ordersList) {
-    cout << "Printing out the ordersList" << endl;
+    cout << "Printing out the ordersList of " + ordersList.ordersListOwner->getName() << endl;
     for(auto& it : ordersList.ordersList){
         cout << it->getName() + " -> ";
     }
@@ -694,7 +691,7 @@ ostream &operator<<(ostream &strm, OrdersList &ordersList) {
 }
 
 void OrdersList::addOrders(Orders& o) {
-    ordersList.push_back(&o);
+    this->ordersList.push_back(&o);
 }
 
 

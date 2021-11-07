@@ -1,10 +1,14 @@
 #include "Player.h" // Including the appropriate header file
 
 // Default constructor requires a hand
-Player::Player(Hand* hand) : name("Unnamed"), hand(hand), reinforcementPool(0) {}
+Player::Player(Hand* hand) : name("Unnamed"), hand(hand), reinforcementPool(0) {
+    this->ordersList = new OrdersList(this,*new vector<Orders*>);
+}
 
 // Constructor with player name and hand
-Player::Player(string name, Hand* hand) : name(name), hand(hand), reinforcementPool(0) {}
+Player::Player(string name, Hand* hand) : name(name), hand(hand), reinforcementPool(0) {
+    this->ordersList = new OrdersList(this,*new vector<Orders*>);
+}
 
 
 // Copy constructor
@@ -21,8 +25,8 @@ Player::Player(const Player& player)
 Player::~Player()
 {
 	delete hand; // Delete pointer to hand
+    delete getOrdersList(); //Delete allocated ordersList in constructor
 	delete ordersList; // Delete pointer to ordersList
-
 	// All cleared vectors need their content deleted, depending on how they are initialized (see driver)
 	territoriesOwned.clear();
 }
@@ -41,6 +45,7 @@ Player& Player::operator=(const Player& player)
 // Add territory to own
 void Player::addOwnedTerritory(Territory* territory) {
 	territoriesOwned.push_back(territory);
+    territory->setOwner(this);
 }
 
 // Return a list of owned territories
@@ -92,12 +97,4 @@ void Player::setReinforcementPool(int rP)
 // Stream insertion operator, returns player's name
 ostream& operator<<(ostream& out, const Player& player) {
 	return out << player.name;
-}
-
-vector<Player *> Player::getCannotAttack() {
-    return cannotAttack;
-}
-
-void Player::setCannotAttack(vector<Player *> c) {
-    cannotAttack = c;
 }
