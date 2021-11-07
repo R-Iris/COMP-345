@@ -96,6 +96,10 @@ Deploy& Deploy::operator = (const Deploy& deploy){
 
 //Validate method checking if orderOwner owns target territory and number of armies is valid
 bool Deploy::validate() {
+    if(getExecuted()){
+        cout << "Order already executed" << endl;
+        return false;
+    }
     //If the target territory does not belong to the player that issued the order, the order is invalid
     if(orderOwner->ownsTerritory(getTarget()) && getNoOfArmies() > 0) {
         cout << "Deploy order is valid" << endl;
@@ -180,9 +184,13 @@ ostream& operator <<(ostream &strm, Advance& advance){
 
 //Advance order valid only if target is neighbour of source
 bool Advance::validate() {
+    if(getExecuted()){
+        cout << "Order already executed" << endl;
+        return false;
+    }
     //If the source territory does not belong to the player that issued the order, the order is invalid.
     if(!orderOwner->ownsTerritory(source)){
-        cout << "Deploy order not valid" << endl;
+        cout << "Advance order not valid" << endl;
         cout << "Source territory does not belong to " + orderOwner->getName() << endl;
         return false;
     }
@@ -195,7 +203,7 @@ bool Advance::validate() {
     }
     if(!targetAdj){
         cout << "Deploy order not valid" << endl;
-        cout << "Target territory( " + getTarget()->getName() + ") not adjacent to source territory(" + source->getName() + ")" << endl;
+        cout << "Target territory (" + getTarget()->getName() + ") not adjacent to source territory(" + source->getName() + ")" << endl;
         return false;
     }
     cout << "Advance order valid" << endl;
@@ -203,6 +211,7 @@ bool Advance::validate() {
 }
 //If valid, checking if target is owner territory or enemy territory before executing
 void Advance::execute() {
+
     if(validate()){
         //If the source and target territory both belong to the player that issued the order, the army units are moved
         //from the source to the target territory.
@@ -235,13 +244,21 @@ void Advance::execute() {
                 }
             }
             cout << "Executing advance order" << endl;
+
+            cout << "Attack between " + orderOwner->getName() + " and " + enemy->getName() + " initiated" << endl;
+
             //Random int from 1 to 10
             int randNumber = rand() % 10 + 1;
             //Reducing source army
-            source->setNumberOfArmies(source->getNumberOfArmies() - noOfArmies);
+            if(source->getNumberOfArmies() - noOfArmies < 0){
+                //If not enough army is in source territory , use only army in source territory
+                source->setNumberOfArmies(0);
+                noOfArmies = source->getNumberOfArmies();
+            }
+            else source->setNumberOfArmies(source->getNumberOfArmies() - noOfArmies);
             int attackingArmy = noOfArmies;
             int defendingArmy = target->getNumberOfArmies();
-            for(int i = 0;i <noOfArmies;i++){
+            for(int i = 0;;i++){
                 if(randNumber <= 6){
                     defendingArmy--;
                 }
@@ -249,19 +266,29 @@ void Advance::execute() {
                     attackingArmy--;
                 }
                 if(defendingArmy == 0){
+                    cout << orderOwner->getName() + " won the battle and has captured territory " + target->getName()
+                    << " successfully" << endl;
+                    cout << "Number of armies on defeated target territory is now " << attackingArmy <<endl;
                     //Attacker captures territory
-                    target->setOwner(orderOwner);
                     target->setNumberOfArmies(attackingArmy);
+                    orderOwner->addOwnedTerritory(target);
                     //A player receives a card at the end of his turn if
                     //they successfully conquered at least one territory during their turn.
                     orderOwner->getHand()->addHand(deck->draw());
+                    setEffect(orderOwner->getName() + " won battle against "
+                    + enemy->getName() + "and takes " + target->getName() + " territory\n");
+                    break;
                 }
-                else if(attackingArmy == 0){
+                if(attackingArmy == 0){
                     //Nothing happens-- Battle lost
+                    cout << orderOwner->getName() + " lost the battle" << endl;
+                    cout << "Remaining number of armies on enemy territory is " << target->getNumberOfArmies() << endl;
+                    setEffect(orderOwner->getName() + " attacks " + enemy->getName() + " territory " +
+                    target->getName() + " and lost.");
+                    break;
                 }
+                randNumber = rand() % 10 + 1;
             }
-            setEffect(orderOwner->getName() + " attacking " + target->getName() + " territory\n");
-            cout << getEffect();
         }
         setExecuted(true);
     }
@@ -319,6 +346,10 @@ ostream& operator <<(ostream &strm, Bomb& bomb){
 }
 
 bool Bomb::validate() {
+    if(getExecuted()){
+        cout << "Order already executed" << endl;
+        return false;
+    }
     //If the target belongs to the player that issued the order, the order is invalid.
     if(orderOwner->ownsTerritory(target)) {
         cout << "Target belongs to order owner. Cannot bomb it" << endl;
@@ -332,6 +363,7 @@ bool Bomb::validate() {
     }
     if(!targetAdj){
         cout << "Bomb order invalid --> No territory owned adjacent to target territory " << endl;
+        return false;
     }
     cout << "Bomb order valid" << endl;
     return true;
@@ -400,6 +432,10 @@ ostream& operator <<(ostream &strm, Blockade& blockade){
 //double the number of armies on the territory and to transfer the ownership of the territory to the Neutral player.
 //The blockade order can only be created by playing the blockade card.
 bool Blockade::validate() {
+    if(getExecuted()){
+        cout << "Order already executed" << endl;
+        return false;
+    }
     //If the target territory belongs to an enemy player, the order is declared invalid.
     if(!orderOwner->ownsTerritory(target)){
         cout << "Order invalid -- Target territory belongs to enemy player" << endl;
@@ -417,7 +453,9 @@ void Blockade::execute() {
         //Ownership of the territory is transferred to the Neutral player, which must be created if it
         //does not already exist.
         target->setOwner(gameEngine->getNeutralPlayer());
-        setEffect("Successfully doubled the number of armies in " + target->getName() + " territory\n");
+        orderOwner->removeOwnedTerritory(target);
+        setEffect("Successfully doubled the number of armies in " + target->getName() + " territory" +
+        " and ownership changed to neutral player\n");
         cout << getEffect();
         setExecuted(true);
     }
@@ -490,6 +528,10 @@ ostream& operator <<(ostream &strm, Airlift& airlift){
 }
 //Airlift order valid if source territory is owned by OrderOwner
 bool Airlift::validate() {
+    if(getExecuted()){
+        cout << "Order already executed" << endl;
+        return false;
+    }
     if(!orderOwner->ownsTerritory(source)){
         cout << "Airlift order not valid -- " + orderOwner->getName() +
         " does not own " + source->getName() + "(source) territory" << endl;
@@ -563,6 +605,10 @@ ostream& operator <<(ostream &strm, Negotiate& negotiate){
 //the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
 //order can only be created by playing the diplomacy card.
 bool Negotiate::validate() {
+    if(getExecuted()){
+        cout << "Order already executed" << endl;
+        return false;
+    }
     //If the target is the player issuing the order, then the order is invalid.
     if(orderOwner == otherPlayer){
         cout << "You cannot negotiate with yourself" << endl;
