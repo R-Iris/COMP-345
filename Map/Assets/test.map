@@ -4,8 +4,8 @@ map solar_map.gif
 crd solar.cards
 
 [continents]
-Yellow 10 yellow
-Blue 5 yellow
+Yellow 20 yellow
+Blue 10 yellow
 
 [countries]
 1 A 1 0 0

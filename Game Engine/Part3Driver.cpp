@@ -2,53 +2,18 @@
 #include <vector>
 
 #include "GameEngine.h"
-#include "../LoggingObserver/LoggingObserver.h"
 #include "../Map/Map.h"
 
 int main()
 {
     // Instantiate GameEngine object
     GameEngine* game = new GameEngine();
-    //Observer* logger = new LogObserver();
-    //game->Attach(logger); // attaching to observer
     // Create a map from file and assign to this game instance
-    string fileName = "test.map";
+    string fileName = "C:/Users/Karim-480GB-SSD/Desktop/C++ VS/COMP-345/Map/Assets/test.map";
     Map* map = MapLoader::createMapfromFile(fileName);
-    map->validate();
+    //map->validate();
     game->setMap(map);
 
-    // Add new players
-    Player* p1 = new Player("P1", new Hand());
-    Player* p2 = new Player("P2", new Hand());
-
-    // Add players to game list
-    game->addPlayer(p1); game->addPlayer(p2);
-
-    // Execute start phase
-    // game->startupPhase();
-
-    vector<Territory*> territories = map->getTerritories();
-
-    for (Territory* t : territories) {
-        cout << t << endl;
-    }
-
-    //p1->addOwnedTerritory(territories.at(0));
-    //p2->addOwnedTerritory(territories.at(2));
-
-    // Execute main game loop
-    game->mainGameLoop();
-
-    cout << "P1's territories owned:" << endl;
-    for (Territory* t : p1->toDefend()) {
-        cout << t << endl;
-    }
-    cout << "P2's territories owned:" << endl;
-    for (Territory* t : p2->toDefend()) {
-        cout << t << endl;
-    }
-
-    /*
     // Initializing states
     State* start = game->newState("start");
     State* map_loaded = game->newState("map_loaded");
@@ -65,41 +30,71 @@ int main()
     game->newTransition(map_loaded, map_validated, "validatemap");
     game->newTransition(map_validated, players_added, "addplayer");
     game->newTransition(players_added, players_added, "addplayer");
-    game->newTransition(players_added, assign_reinforcement, "assigncountries");
+    game->newTransition(players_added, assign_reinforcement, "gamestart");
     game->newTransition(assign_reinforcement, issue_orders, "issueorder");
     game->newTransition(issue_orders, issue_orders, "issueorder");
-    game->newTransition(issue_orders, execute_orders, "endissueorders");
+    game->newTransition(issue_orders, execute_orders, "issueordersend");
     game->newTransition(execute_orders, execute_orders, "execorder");
     game->newTransition(execute_orders, assign_reinforcement, "endexecorders");
     game->newTransition(execute_orders, win, "win");
-    game->newTransition(win, start, "play");
-    ///////////////////////////////////////////
-    game->newTransition(start, win, "test"); // Used for demonstration purposes
+    game->newTransition(win, start, "replay");
+
+    // Add new players
+    Player* p1 = new Player("P1", new Hand());
+    Player* p2 = new Player("P2", new Hand());
+
+    // Add players to game list
+    game->addPlayer(p1); game->addPlayer(p2);
 
     // Initializing currentState
-    game->currentState = start;
+    game->currentState = players_added;
     // Announce current state
     cout << *game->currentState;
 
-    string command = "";
+    // Execute start phase
+    // game->startupPhase();
+    game->changeState("gamestart");
 
-    // Confirming ruleset
-    while (game->currentState->stateName != "win" || command != "end")
-    {
-        cout << "Please enter command: ";
-        cin >> command;
-        while (!game->changeState(command))
-        {
-            cout << "Command invalid, please try again: ";
-            cin >> command;
-        }
+    vector<Territory*> territories = map->getTerritories();
+
+    /*
+    for (Territory* t : territories) {
+        cout << t << endl;
     }
     */
 
+    p1->addOwnedTerritory(territories.at(0));
+    p2->addOwnedTerritory(territories.at(1));
+
+    // Execute main game loop
+    game->mainGameLoop();
+
+    cout << "P1's territories owned:" << endl;
+    for (Territory* t : p1->toDefend()) {
+        cout << t->getName() << endl;
+    }
+    cout << "P2's territories owned:" << endl;
+    for (Territory* t : p2->toDefend()) {
+        cout << t->getName() << endl;
+    }
+
+    cout << "P1's reinforcement pool:" << p1->getReinforcementPool() << endl;
+    cout << "Adding territory C to P1" << endl;
+    p1->addOwnedTerritory(territories.at(2)); p1->addOwnedTerritory(territories.at(1)); p1->addOwnedTerritory(territories.at(3));
+    cout << "P1's territories owned:" << endl;
+    for (Territory* t : p1->toDefend()) {
+        cout << t->getName() << endl;
+    }
+    game->mainGameLoop();
+    cout << "P1's reinforcement pool:" << p1->getReinforcementPool() << endl;
+
+    game->removePlayer(p2);
+    cout << "List of players:" << endl;
+    for (Player* p : game->players) {
+        cout << p->getName() << endl;
+    }
+
     game->end();
     game = NULL;
-    //delete logger;
-    //logger = NULL;
-    //game->Detach(); problematic for some reason
     return 0;
 }

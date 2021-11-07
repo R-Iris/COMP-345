@@ -131,7 +131,8 @@ void GameEngine::addPlayer(Player* player)
 
 void GameEngine::removePlayer(Player* player)
 {
-	// REMOVE PLAYER FROM players USING A FOR LOOP AND ERASE
+	players.erase(remove(players.begin(), players.end(), player), players.end());
+	//delete(player); MEMORY LEAK
 }
 
 bool GameEngine::checkState(string command)
@@ -155,12 +156,12 @@ bool GameEngine::changeState(string command)
 		{
 			currentState = transitions[i]->next;
 			cout << *currentState;
-			Notify(this);
+			//Notify(this);
 			return true;
 		}
 		else if (currentState->stateName == "win" && command == "end") return true;
 	}
-	Notify(this);
+	//Notify(this);
 	return false;
 }
 
@@ -324,8 +325,6 @@ void GameEngine::mainGameLoop() {
 	int numTotalTerritories = map->getTerritories().size(); // GET TERRITORIES CAUSES AN ERROR WHEN THERE IS NO MAP
 
 	do {
-	
-		// Add state changes and transitions for phases
 
 	    /*
 	    The main game loop also checks for any player that does not control at least one
@@ -339,12 +338,13 @@ void GameEngine::mainGameLoop() {
 				onePlayerOwnsAllTerritories = true;
 				// Announce this player as winner
 				// announceWinner(p);
-				
+				// break;
 	            // End game
 	        }
 	    }
 	
 	    // Reinforcement Phase
+		changeState("endexecorders");
 	    reinforcementPhase();
 
 	    /*
@@ -353,6 +353,7 @@ void GameEngine::mainGameLoop() {
 	    game engine. This must be implemented in a function/method named issueOrdersPhase() in the game
 	    engine.
 	    */
+		changeState("issueorder");
 	    issueOrdersPhase();
 
 	    /*
@@ -362,6 +363,7 @@ void GameEngine::mainGameLoop() {
 	    been executed, the main game loop goes back to the reinforcement phase. This must be implemented in
 	    a function/method named executeOrdersPhase() in the game engine.
 	    */
+		changeState("issueordersend");
 	    executeOrdersPhase();
 	} while (!onePlayerOwnsAllTerritories);
 }
@@ -375,8 +377,6 @@ void GameEngine::reinforcementPhase() {
 	are placed in the player�s reinforcement pool. This must be implemented in a function/method named
 	reinforcementPhase() in the game engine.
 	*/
-
-	//changeState("gamestart");
 
 	for (Player* p : players) {
 	    // Armies = # of territories owned divided by 3, rounded down : or 3 minimum
@@ -465,5 +465,3 @@ Player* GameEngine::getNeutralPlayer(){
     this->players.push_back(neutralPlayer);
     return neutralPlayer;
 }
-
-
