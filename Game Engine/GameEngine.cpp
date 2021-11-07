@@ -156,12 +156,12 @@ bool GameEngine::changeState(string command)
 		{
 			currentState = transitions[i]->next;
 			cout << *currentState;
-			//Notify(this);
+			Notify(this);
 			return true;
 		}
 		else if (currentState->stateName == "win" && command == "end") return true;
 	}
-	//Notify(this);
+	Notify(this);
 	return false;
 }
 

@@ -8,8 +8,13 @@ int main()
 {
     // Instantiate GameEngine object
     GameEngine* game = new GameEngine();
+    // Instantiate Observer object
+    Observer* _game_observer = new LogObserver();
+    // Attach gameEngine to observer
+    game->Attach(_game_observer);
     // Create a map from file and assign to this game instance
     string fileName = "C:/Users/Karim-480GB-SSD/Desktop/C++ VS/COMP-345/Map/Assets/test.map";
+    // string fileName = "C:/Other/Desk/Conc/COMP_345/Assignments/1/COMP-345/Game Engine/test.map";
     Map* map = MapLoader::createMapfromFile(fileName);
     //map->validate();
     game->setMap(map);
@@ -93,8 +98,15 @@ int main()
     for (Player* p : game->players) {
         cout << p->getName() << endl;
     }
-
+    // Detach the game from the observer
+    game->Detach();
+    // call end() which deletes game and prints a message
     game->end();
+    // fix dangling pointer
     game = NULL;
+    // deallocate observer object
+    delete _game_observer;
+    // fix dangling pointer
+    _game_observer = NULL;
     return 0;
 }
