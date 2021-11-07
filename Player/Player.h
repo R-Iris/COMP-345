@@ -25,6 +25,7 @@ public:
 	~Player(); // Destructor
 	Player& operator =(const Player& player); // Assignment operator
 	void addOwnedTerritory(Territory*);
+    void removeOwnedTerritory(Territory*);
 	vector<Territory*> toDefend();	// Returns a list of territories that are to be defended (owned territories)
 	vector<Territory*> toAttack();	// Returns a list of territories that are to be attacked
 	void issueOrder(Orders& order);	// Creates an Order object and puts it in the player's list of orders
@@ -36,6 +37,7 @@ public:
 	void setReinforcementPool(int);
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
     vector<Player*> cannotAttack;//Vector of players which cannot be attacked
+    void setOwnedTerritories(vector<Territory*>&);
 private:
 	string name;
 	Hand* hand; // Pointer to hand of cards

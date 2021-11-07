@@ -98,3 +98,19 @@ void Player::setReinforcementPool(int rP)
 ostream& operator<<(ostream& out, const Player& player) {
 	return out << player.name;
 }
+
+void Player::removeOwnedTerritory(Territory * territory) {
+    auto newOwnedTerritory = new vector<Territory*>();
+    for(auto it: territoriesOwned){
+        if(it == territory){}
+        else{
+            newOwnedTerritory->push_back(it);
+        }
+    }
+    setOwnedTerritories(*newOwnedTerritory);
+
+}
+
+void Player::setOwnedTerritories(vector<Territory *> & newVector) {
+    territoriesOwned = newVector;
+}
