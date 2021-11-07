@@ -188,7 +188,7 @@ void GameEngine::end()
 void GameEngine::startupPhase(CommandProcessor* cp)
 {
 	// Use the command list to get the commands, make sure to change states in between commands
-	for (Command* c : cp->getCommandList()) {
+	for (Command* c : cp->getValidCommandList()) {
 		string command = c->getCommandStr();
 
 		if (command == "loadmap") {
@@ -200,8 +200,12 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// We found a map file name from the commmand's effect!
 			if (std::regex_search(effect, match, extractionPattern)) {
 				string mapFileName = "Assets/" + (string)match[1];
-				setMap(MapLoader::createMapfromFile(mapFileName));
-				changeState("validatemap");
+				setMap(MapLoader::createMapfromFile(mapFileName)); // <-- TODO: Make sure this is an absolute path!
+				
+				// Transition to 'validatemap' state, Handle failure
+				if (!changeState("validatemap")) {
+					cout << "ERROR: Could not transition to 'validatemap' from current state." << endl;
+				}
 			}
 		}
 
@@ -211,7 +215,10 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			map->validate();
 
 			if (map->isValid()) {
-				changeState("addplayer");
+				// Transition to 'addplayer' state, handle failure
+				if (!changeState("addplayer")) {
+					cout << "ERROR: Could not to transition to 'addplayer' from current state." << endl;
+				}
 			}
 
 			else {
@@ -243,7 +250,11 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			if (players.size() >= 2) {
 				// Switch states
-				changeState("gamestart");
+
+				// Check if state changed successfully, otherwise handle failure.
+				if (!changeState("gamestart")) {
+					cout << "ERROR: Could not transition to 'gamestart' from current state." << endl;
+				}
 			}
 
 			else {
@@ -268,6 +279,12 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// Assign territories - TODO: Come up with a way to fairly distribute all countries between players
 			int neutralTerritories = map->getTerritories().size() % players.size();
 			int distrbutedTerritories = map->getTerritories().size() - neutralTerritories;
+
+			// 1) Randomly rearrange territories vector (similar to how Players rearranging is being handled.)
+
+			// 2) Define the number of territories each player will get (at this point, there should be just enough so that each player gets the same amount)
+
+			// 3) For each player, pass this number of territories out.
 
 			// TODO: Randomize the territories and then pass them out to each player
 			for (Player* p : players) {
