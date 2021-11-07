@@ -44,6 +44,8 @@ ostream& operator<<(ostream& out, const Transition& transition)
 // Members of GameEngine class
 
 GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()) {}
+GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()) { this->Attach(_obs); }
+
 GameEngine::~GameEngine()
 {
 	// use for loop first to delete pointer contents inside of vector
@@ -74,6 +76,8 @@ GameEngine::~GameEngine()
 	// Delete map
 	delete map;
 	map = nullptr;
+
+	this->Detach();
 }
 
 GameEngine::GameEngine(const GameEngine& gameEngine)
@@ -83,6 +87,7 @@ GameEngine::GameEngine(const GameEngine& gameEngine)
 	this->players = gameEngine.players;
 	this->map = new Map(*gameEngine.map);
 	this->deck = new Deck(*gameEngine.deck);
+	//this->Attach(gameEngine->_obs);
 }
 
 GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
@@ -92,6 +97,7 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
 	this->players = gameEngine.players;
 	this->map = new Map(*gameEngine.map);
 	this->deck = new Deck(*gameEngine.deck);
+	//this->Attach(gameEngine->_obs);
 	return *this;
 }
 

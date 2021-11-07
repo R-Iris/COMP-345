@@ -76,6 +76,8 @@ public:
 
 	// Default Constructor
 	GameEngine();
+	// Observer pattern constructor
+	GameEngine(Observer* _obs);
 	// Destructor
 	~GameEngine();
 	// Copy constructor

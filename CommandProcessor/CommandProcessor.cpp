@@ -6,9 +6,11 @@
 
 using namespace std;
 
-Command::Command(string commandstr) : commandstr(commandstr), effect("Invalid command"), commandNumber(-1) { }
+Command::Command(string commandstr, Observer* _obs) : commandstr(commandstr), effect("Invalid command"), commandNumber(-1){
+	this->Attach(_obs);
+}
 
-Command::Command(commandType command) : effect("Invalid command") {
+Command::Command(commandType command, Observer* _obs) : effect("Invalid command"){
 	switch (command) {
 	case commandType::loadmap:
 		commandstr = "loadmap";
@@ -35,6 +37,7 @@ Command::Command(commandType command) : effect("Invalid command") {
 		commandNumber = 5;
 		break;
 	}
+	this->Attach(_obs);
 }
 
 void Command::saveEffect(Command* command, string toAdd) {
@@ -58,6 +61,7 @@ void Command::saveEffect(Command* command, string toAdd) {
 		command->effect = "Quitting the game";
 		break;
 	}
+	Notify(this);
 }
 
 string Command::getCommandStr() {
@@ -72,6 +76,24 @@ string Command::getEffect() {
 	return effect;
 }
 
+string Command::stringToLog()
+{
+	string command = "Command issued: " + getCommandStr() 
+		+ "\nCommand's effect: " + getEffect();
+	return command;
+}
+
+CommandProcessor::CommandProcessor(Observer* _obs) : logger(_obs)
+{
+	this->Attach(_obs);
+}
+
+CommandProcessor::~CommandProcessor()
+{
+	this->Detach();
+	logger = nullptr;
+}
+
 Command* CommandProcessor::readCommand() {
 	string commandstr{};
 	int index{};
@@ -80,19 +102,19 @@ Command* CommandProcessor::readCommand() {
 
 	switch (getIndexCmdVector(commandstr)) {
 	case 0:
-		return new Command(Command::commandType::loadmap);
+		return new Command(Command::commandType::loadmap, logger);
 	case 1:
-		return new Command(Command::commandType::validatemap);
+		return new Command(Command::commandType::validatemap, logger);
 	case 2:
-		return new Command(Command::commandType::addplayer);
+		return new Command(Command::commandType::addplayer, logger);
 	case 3:
-		return new Command(Command::commandType::gamestart);
+		return new Command(Command::commandType::gamestart, logger);
 	case 4:
-		return new Command(Command::commandType::replay);
+		return new Command(Command::commandType::replay, logger);
 	case 5:
-		return new Command(Command::commandType::quit);
+		return new Command(Command::commandType::quit, logger);
 	default:
-		return new Command(commandstr);
+		return new Command(commandstr, logger);
 	}
 }
 
@@ -134,6 +156,7 @@ bool CommandProcessor::validate(Command* command, GameEngine* game) {
 
 void CommandProcessor::saveCommand(Command* command) {
 	commandList.push_back(command);
+	Notify(this);
 }
 
 void CommandProcessor::saveValidCommand(Command* command) {
@@ -158,6 +181,17 @@ int CommandProcessor::getIndexCmdVector(string commandstr) {
 
 bool CommandProcessor::getExitProgram() {
 	return exitProgram;
+}
+
+string CommandProcessor::stringToLog()
+{
+	string _string_commandList = "";
+	for (Command* c : commandList)
+	{
+		_string_commandList += "[Command: " + c->getCommandStr() + ", Effect: " + c->getEffect() + "]";
+		
+	}
+	return "Command List: " + _string_commandList;
 }
 
 ostream& operator<< (ostream& out, const vector<Command*> commandList) {

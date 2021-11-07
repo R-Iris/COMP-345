@@ -6,9 +6,12 @@
 using namespace std;
 
 int main() {
-	CommandProcessor* commandprocessor = new CommandProcessor();
+	// Instantiate Observer object
+	Observer* _observer = new LogObserver();
 
-	GameEngine* game = new GameEngine();
+	CommandProcessor* commandprocessor = new CommandProcessor(_observer);
+
+	GameEngine* game = new GameEngine(_observer);
 
 	State* start = game->newState("start");
 	State* map_loaded = game->newState("map_loaded");
@@ -38,6 +41,15 @@ int main() {
 
 	cout << "\nAll commands: " << commandprocessor->getCommandList();
 	cout << "\nValid commands: " << commandprocessor->getValidCommandList();
+
+	/// /////////////////
+	// delete game;
+	delete commandprocessor;
+	delete _observer;
+	// game = NULL;
+	commandprocessor = NULL;
+	_observer = NULL;
+	/// /////////////////
 
 	return 0;
 }
