@@ -588,7 +588,7 @@ Map* MapLoader::createMapfromFile(string mapFileName) {
 				}
 			}
 
-			cout << "Continents read!" << endl;
+			//cout << "Continents read!" << endl;
 		}
 
 		else if (currentLine == "[countries]") {
@@ -622,7 +622,7 @@ Map* MapLoader::createMapfromFile(string mapFileName) {
 				}
 			}
 
-			cout << "Countries read!" << endl;
+			//cout << "Countries read!" << endl;
 		}
 
 		else if (currentLine == "[borders]") {
@@ -659,7 +659,7 @@ Map* MapLoader::createMapfromFile(string mapFileName) {
 				}
 			}
 
-			cout << "Borders read!" << endl;
+			//cout << "Borders read!" << endl;
 		}
 	}
 
