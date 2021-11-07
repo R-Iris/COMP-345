@@ -1,3 +1,6 @@
+#include <iostream>
+#include <vector>
+
 #include "GameEngine.h"
 #include "../LoggingObserver/LoggingObserver.h"
 #include "../Map/Map.h"
@@ -6,10 +9,12 @@ int main()
 {
     // Instantiate GameEngine object
     GameEngine* game = new GameEngine();
-    Observer* logger = new LogObserver();
-    game->Attach(logger); // attaching to observer
+    //Observer* logger = new LogObserver();
+    //game->Attach(logger); // attaching to observer
     // Create a map from file and assign to this game instance
-    Map* map = MapLoader::createMapfromFile("Assets/solar.map");
+    string fileName = "test.map";
+    Map* map = MapLoader::createMapfromFile(fileName);
+    map->validate();
     game->setMap(map);
 
     // Add new players
@@ -22,8 +27,26 @@ int main()
     // Execute start phase
     // game->startupPhase();
 
+    vector<Territory*> territories = map->getTerritories();
+
+    for (Territory* t : territories) {
+        cout << t << endl;
+    }
+
+    //p1->addOwnedTerritory(territories.at(0));
+    //p2->addOwnedTerritory(territories.at(2));
+
     // Execute main game loop
     game->mainGameLoop();
+
+    cout << "P1's territories owned:" << endl;
+    for (Territory* t : p1->toDefend()) {
+        cout << t << endl;
+    }
+    cout << "P2's territories owned:" << endl;
+    for (Territory* t : p2->toDefend()) {
+        cout << t << endl;
+    }
 
     /*
     // Initializing states
@@ -75,8 +98,8 @@ int main()
 
     game->end();
     game = NULL;
-    delete logger;
-    logger = NULL;
+    //delete logger;
+    //logger = NULL;
     //game->Detach(); problematic for some reason
     return 0;
 }

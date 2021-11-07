@@ -43,16 +43,22 @@ void Player::addOwnedTerritory(Territory* territory) {
 	territoriesOwned.push_back(territory);
 }
 
-// PLACEHOLDER: Return a list of owned territories
+// Return a list of owned territories
 vector<Territory*> Player::toDefend() // Returns a list of territories that are to be defended
 {
 	return territoriesOwned;
 }
 
-// PLACEHOLDER: Return a list of territories to attack
+// Return a list of territories to attack
 vector<Territory*> Player::toAttack() // Returns a list of territories that are to be attacked
 {
-	return territoriesOwned;
+	vector<Territory*> adjacentTerritories;
+	for (Territory* t : territoriesOwned) {
+		for (Territory* a : t->getAdjacentTerritories()) {
+			adjacentTerritories.push_back(a);
+		}
+	}
+	return adjacentTerritories;
 }
 
 // Create a new order and add to order list

@@ -420,8 +420,8 @@ void GameEngine::issueOrdersPhase() {
 		// Deploy until no more reinforcements
 		// create deploy order obj
 		// input num armies to deploy
-		//Deploy(Player* orderOwner, int noOfArmies, Territory* target); //Parametrized Constructor.
-		// player->issueOrder(deployObj)
+		// Deploy(Player* orderOwner, int noOfArmies, Territory* target); //Parametrized Constructor.
+		// player->issueOrder(new Deploy(p, int noOfArmies, Territory* target))
 
 		// Advance
 		// advance obj
