@@ -34,12 +34,25 @@ int main() {
 
 	game->currentState = start;
 
-	cout << "Please enter a command" << '\n';
-	while (!(commandprocessor->getExitProgram())) {
-		commandprocessor->getCommand(game);
+
+	string answer;
+	string file;
+	cout << "Do you wish to accept commands from the console or read them from a file? " << '\n';
+
+	cin >> answer;
+
+	if (answer == "console") {
+		cout << "Please enter a command" << '\n';
+		while (!(commandprocessor->getExitProgram())) {
+			commandprocessor->getCommand(game);
+		}
+	}
+	else if (answer == "file") {
+		cout << "Which file do you wish to open? " << '\n';
+		cin >> file;
 	}
 
-	cout << "\nAll commands: " << commandprocessor->getCommandList();
+	cout << "\n\nAll commands: " << commandprocessor->getCommandList();
 	cout << "\nValid commands: " << commandprocessor->getValidCommandList();
 
 	/// /////////////////

@@ -15,6 +15,9 @@ class Player;
 class Map;
 class Deck;
 class CommandProcessor;
+class Observer;
+class ILoggable;
+class Subject;
 
 // A State holds a string
 class State

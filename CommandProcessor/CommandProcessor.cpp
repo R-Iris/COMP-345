@@ -49,7 +49,7 @@ void Command::saveEffect(Command* command, string toAdd) {
 		command->effect = toAdd + " has been validated";
 		break;
 	case 2:
-		command->effect = toAdd + " player has been added";
+		command->effect = "Player " + toAdd + " has been successfully added to the game";
 		break;
 	case 3:
 		command->effect = "The game has started";
@@ -203,4 +203,8 @@ ostream& operator<< (ostream& out, const vector<Command*> commandList) {
 	out << " \n]\n";
 
 	return out;
+}
+
+string FileLineReader::readLineFromFile() {
+
 }

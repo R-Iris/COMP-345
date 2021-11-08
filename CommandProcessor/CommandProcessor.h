@@ -9,6 +9,8 @@ using namespace std;
 
 class GameEngine;
 class Observer;
+class ILoggable;
+class Subject;
 
 class Command  : public ILoggable, public Subject  {
 public:
@@ -26,7 +28,7 @@ public:
 	string stringToLog();
 private:
 	string commandstr;
-	string effect; //Ask teacher about what the effect is
+	string effect;
 	int commandNumber{-1};
 };
 
@@ -64,7 +66,7 @@ public:
 	string readLineFromFile();
 };
 
-class FileCommandProcessorAdapter :Command {
+class FileCommandProcessorAdapter : Command {
 public:
 	virtual Command* readCommand();
 
