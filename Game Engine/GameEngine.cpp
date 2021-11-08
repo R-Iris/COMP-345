@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "../CommandProcessor/CommandProcessor.h"
+#include "../Player/Player.h"
 #include <regex>
 #include <math.h>
 // Members of State Class
@@ -197,15 +198,15 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 	for (Command* c : cp->getValidCommandList()) {
 		string command = c->getCommandStr();
 
-		if (command == "loadmap") {
+		if (command.find("loadmap") != std::string::npos) {
 			// Load the map (how to parse the filename from the command?)
 			string effect = c->getEffect();
-			std::regex extractionPattern(".*(.*\\.map).*");
+			std::regex extractionPattern("(.*.map)");
 			std::smatch match;
 
 			// We found a map file name from the commmand's effect!
 			if (std::regex_search(effect, match, extractionPattern)) {
-				string mapFileName = "Assets/" + (string)match[1];
+				string mapFileName = /*"Assets/" + */(string)match[1];
 				setMap(MapLoader::createMapfromFile(mapFileName)); // <-- TODO: Make sure this is an absolute path!
 				
 				// Transition to 'validatemap' state, Handle failure
@@ -233,15 +234,14 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			}
 		}
 
-		else if (command == "addplayer") {
+		else if (command.find("addplayer") != std::string::npos) {
 			// Add player (This part should loop so as to ensure that we have 2-6 players in the game.)
 			string effect = c->getEffect();
 
-			std::regex extractionPattern("(.*) player has been added");
+			std::regex extractionPattern("Player (.*) has");
 			std::smatch match;
 
 			// Check to see if we have 2-6 players in the game
-
 			if (players.size() < 6) {
 				if (std::regex_search(effect, match, extractionPattern)) {
 					addPlayer(new Player(match[1], new Hand));
@@ -270,6 +270,9 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 		}
 
 		else if (command == "gamestart") {
+			// Initialize random seed
+			srand(time(NULL));
+
 			/* Gamestart command does the following:
 			*  a) Evenly pass out territories to players (remainder goes to the neutral player).
 
@@ -277,7 +280,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			*  c) Give 50 armies to each player, which are placed in their respective reinforcement pool (new Player field)
 
-			*  d) Let each player draw 2 cards from the deck using Deck's draw() method (Call Player.getHand()->push_back(Deck.draw())?)
+			*  d) Let each player draw 2 cards from the deck using Deck's draw() method
 
 			*  e) Switch the game to the "play" state. (Call mainGameLoop())
 			*/
@@ -286,38 +289,59 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			int neutralTerritories = map->getTerritories().size() % players.size();
 			int distrbutedTerritories = map->getTerritories().size() - neutralTerritories;
 
-			// 1) Randomly rearrange territories vector (similar to how Players rearranging is being handled.)
+			// Randomize the territories and then pass them out to each player
+			int territoriesPerPlayer = distrbutedTerritories / players.size(); // Define the number of territories each player will get (at this point, there should be just enough so that each player gets the same amount)
 
-			// 2) Define the number of territories each player will get (at this point, there should be just enough so that each player gets the same amount)
+			// Keep track of which territories we've already handed out
+			vector<int> taken;
 
-			// 3) For each player, pass this number of territories out.
-
-			// TODO: Randomize the territories and then pass them out to each player
+			// For each player, pass this number of territories out.
 			for (Player* p : players) {
+				int i = 0;
+				
+				while (i < territoriesPerPlayer) {
+					// Generate the index of a random territory
+					int choose = rand() % (map->getTerritories().size() - 1);
 
+					// If it hasn't already been taken, then give it to the player.
+					if (!std::count(taken.begin(), taken.end(), choose)) {
+						p->addOwnedTerritory(map->getTerritories().at(choose));
+						i++;
+					}
+				}
 			}
+
+			// TODO: Assign unassigned territories to Neutral player (How to get neutral player?).
 
 			// Determine the turn order randomly - Re-arrange the players in the vector
 			
 			// Store randomly sorted arrangement of players
-			vector<Player*> tmp;
+			vector<Player*> tmpPlayers;
 
-			// Initialize random seed
-			srand(time(NULL));
+			// TODO: Randomly assign turn orders to players
+			for (Player* p : players) {
+				if (tmpPlayers.size() > 0) {
+					int choose = rand() % tmpPlayers.size();
 
-			while (players.size() > 0) {
-				// Generate a random number from 0 to the final index in the players vector
-				int choose = rand() % (players.size() - 1);
+					tmpPlayers.insert(tmpPlayers.begin() + choose, p);
+				}
 
-				// Place randomly selected player in new vector
-				tmp.push_back(players.at(choose));
-
-				// Exclude newly placed player from next choice
-				players.erase(players.begin()+choose);
+				else {
+					int choose = rand() % players.size();
+					tmpPlayers.push_back(players.at(choose));
+				}
 			}
 
+			// Avoid memory leaks
+			for (int j = 0; j < players.size(); j++) {
+				delete players.at(j);
+				players.at(j) = NULL;
+			}
+			players.clear();
+
+			players = tmpPlayers;
 			// Reset players vector
-			for (Player* player : tmp) {
+			for (Player* player : tmpPlayers) {
 				players.push_back(player);
 			}
 
@@ -332,7 +356,8 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			}
 
 			// Switch the game to the play phase
-			mainGameLoop();
+			
+			//mainGameLoop(); // TODO: Commented out for testing purposes. Re-enable when done.
 		}
 	}
 }

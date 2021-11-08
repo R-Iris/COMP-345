@@ -1,0 +1,7 @@
+loadmap C:/Users/jason/OneDrive/Desktop/School/COMP345/Assignment1/COMP-345/Map/Assets/solar.map
+validatemap
+addplayer player1
+addplayer player2
+gamestart
+gameend
+quit
