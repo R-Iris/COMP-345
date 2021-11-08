@@ -7,14 +7,15 @@
 
 using namespace std;
 
-Command::Command(string commandstr, Observer* _obs) : commandstr(commandstr), effect("Invalid command"), commandNumber(-1){
+Command::Command(string commandstr, Observer* _obs) : commandstr(commandstr) {
 	this->Attach(_obs);
 }
 
-Command::Command(commandType command, Observer* _obs) : effect("Invalid command"){
+Command::Command(commandType command, string toAdd, Observer* _obs) {
 	switch (command) {
 	case commandType::loadmap:
 		commandstr = "loadmap";
+		this->toAdd = toAdd;
 		commandNumber = 0;
 		break;
 	case commandType::validatemap:
@@ -23,6 +24,7 @@ Command::Command(commandType command, Observer* _obs) : effect("Invalid command"
 		break;
 	case commandType::addplayer:
 		commandstr = "addplayer";
+		this->toAdd = toAdd;
 		commandNumber = 2;
 		break;
 	case commandType::gamestart:
@@ -41,16 +43,16 @@ Command::Command(commandType command, Observer* _obs) : effect("Invalid command"
 	this->Attach(_obs);
 }
 
-void Command::saveEffect(Command* command, string toAdd) {
+void Command::saveEffect(Command* command) {
 	switch (command->commandNumber) {
 	case 0:
-		command->effect = toAdd + " has been successfully loaded";
+		command->effect = command->toAdd + " has been successfully loaded";
 		break;
 	case 1:
-		command->effect = toAdd + " has been validated";
+		command->effect = "The map has been validated";
 		break;
 	case 2:
-		command->effect = "Player " + toAdd + " has been successfully added to the game";
+		command->effect = "Player " + command->toAdd + " has been successfully added to the game";
 		break;
 	case 3:
 		command->effect = "The game has started";
@@ -69,16 +71,20 @@ string Command::getCommandStr() {
 	return commandstr;
 }
 
-void Command::setCommandStr(string commandStr) {
-	this->commandstr = this->commandstr + "<" + commandStr + ">";
+void Command::setCommandStr() {
+	this->commandstr = this->commandstr + "<" + this->toAdd + ">";
 }
 
 string Command::getEffect() {
 	return effect;
 }
 
+string Command::getToAdd() {
+	return toAdd;
+}
+
 string Command::stringToLog() {
-	string command = "Command issued: " + getCommandStr() 
+	string command = "Command issued: " + getCommandStr()
 		+ "\nCommand's effect: " + getEffect();
 	return command;
 }
@@ -95,29 +101,41 @@ CommandProcessor::~CommandProcessor()
 
 Command* CommandProcessor::readCommand() {
 	string commandstr{};
+	string toAdd{};
 	int index{};
 
 	cin >> commandstr;
 
+	if (commandstr == "loadmap") {
+		cout << "Which map do you wish to load? ";
+		cin >> toAdd;
+		cout << '\n';
+	}
+	else if (commandstr == "addplayer") {
+		cout << "Which player do you wish to add? ";
+		cin >> toAdd;
+		cout << '\n';
+	}
+
 	switch (getIndexCmdVector(commandstr)) {
 	case 0:
-		return new Command(Command::commandType::loadmap, logger);
+		return new Command(Command::commandType::loadmap, toAdd, logger);
 	case 1:
-		return new Command(Command::commandType::validatemap, logger);
+		return new Command(Command::commandType::validatemap, toAdd, logger);
 	case 2:
-		return new Command(Command::commandType::addplayer, logger);
+		return new Command(Command::commandType::addplayer, toAdd, logger);
 	case 3:
-		return new Command(Command::commandType::gamestart, logger);
+		return new Command(Command::commandType::gamestart, toAdd, logger);
 	case 4:
-		return new Command(Command::commandType::replay, logger);
+		return new Command(Command::commandType::replay, toAdd, logger);
 	case 5:
-		return new Command(Command::commandType::quit, logger);
+		return new Command(Command::commandType::quit, toAdd, logger);
 	default:
 		return new Command(commandstr, logger);
 	}
 }
 
-void CommandProcessor::getCommand(GameEngine* game) {
+void CommandProcessor::getCommand(GameEngine* game, CommandProcessor* cmd) {
 	Command* command = readCommand();
 
 	if (validate(command, game)) {
@@ -131,22 +149,16 @@ bool CommandProcessor::validate(Command* command, GameEngine* game) {
 	//Do not change state
 	if (game->changeState(command->getCommandStr())) {
 		if (command->getCommandStr() == "loadmap") {
-			cout << "Which map do you wish to load? ";
-			cin >> toAdd;
-			cout << '\n';
-			command->setCommandStr(toAdd);
+			command->setCommandStr();
 		}
 		else if (command->getCommandStr() == "addplayer") {
-			cout << "What is the name of the player? ";
-			cin >> toAdd;
-			cout << '\n';
-			command->setCommandStr(toAdd);
+			command->setCommandStr();
 		}
 		else if (command->getCommandStr() == "quit") {
 			cout << "Quitting the game.";
 			exitProgram = true;
 		}
-		command->saveEffect(command, toAdd);
+		command->saveEffect(command);
 		return true;
 	}
 
@@ -188,7 +200,7 @@ string CommandProcessor::stringToLog()
 	for (Command* c : commandList)
 	{
 		_string_commandList += "[Command: " + c->getCommandStr() + ", Effect: " + c->getEffect() + "]";
-		
+
 	}
 	return "Command List: " + _string_commandList;
 }
@@ -204,51 +216,85 @@ ostream& operator<< (ostream& out, const vector<Command*> commandList) {
 	return out;
 }
 
-string FileLineReader::readLineFromFile(string fileName) {
-	string fileContent;
-	string word;
+void FileLineReader::readLineFromFile(string fileName) {
+	vector<string> lines;
 	fileName = fileName + ".txt";
 	ifstream myfile(fileName);
 
 	if (myfile.is_open()) {
-		while (getline(myfile, fileContent)) { }
-		if (fileContent.find("loadmap")) {
-			new Command(Command::commandType::loadmap, logger);
+		string line;
+
+		while (getline(myfile, line)) {
+			lines.push_back(line);
 		}
 
 		myfile.close();
+
+		cout << lines;
+
+		fileContent = lines;
 	}
 	else {
 		cout << "Couldn't find the mentioned file." << '\n';
 	}
+}
 
+vector<string> FileLineReader::getFileContent() {
 	return fileContent;
 }
 
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(Observer* _obs) : CommandProcessor(_obs), logger(), flr() { }
+
+ostream& operator<< (ostream& out, const vector<string> lines) {
+	out << "\n[ ";
+	for (int i = 0; i < lines.size(); i++) {
+		out << "\n" + lines[i];
+		if (i != lines.size() - 1) out << ", ";
+	}
+	out << " \n]\n";
+
+	return out;
+}
+
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(FileLineReader* flr, Observer* _obs) : CommandProcessor(_obs), flr(flr), logger(_obs) { }
 
 FileLineReader* FileCommandProcessorAdapter::getFileLineReader() {
 	return flr;
 }
 
 Command* FileCommandProcessorAdapter::readCommand() {
-	string commandstr{};
-	int index{};
+	string toAdd{""};
+	for (string command : flr->getFileContent()) {
+		cout << command << '\n';
 
-	switch (getIndexCmdVector(commandstr)) {
-	case 0:
-		return new Command(Command::commandType::loadmap, logger);
-	case 1:
-		return new Command(Command::commandType::validatemap, logger);
-	case 2:
-		return new Command(Command::commandType::addplayer, logger);
-	case 3:
-		return new Command(Command::commandType::gamestart, logger);
-	case 4:
-		return new Command(Command::commandType::replay, logger);
-	case 5:
-		return new Command(Command::commandType::quit, logger);
-	default:
-		return new Command(commandstr, logger);
+		if (command.find("loadmap")) {
+			new Command(Command::commandType::loadmap, toAdd, logger);
+		}
+
 	}
+
+	//string commandstr{};
+	//int index{};
+
+	//cin >> commandstr;
+
+	//switch (getIndexCmdVector(commandstr)) {
+	//case 0:
+	//	return new Command(Command::commandType::loadmap, logger);
+	//case 1:
+	//	return new Command(Command::commandType::validatemap, logger);
+	//case 2:
+	//	return new Command(Command::commandType::addplayer, logger);
+	//case 3:
+	//	return new Command(Command::commandType::gamestart, logger);
+	//case 4:
+	//	return new Command(Command::commandType::replay, logger);
+	//case 5:
+	//	return new Command(Command::commandType::quit, logger);
+	//default:
+	//	return new Command(commandstr, logger);
+	//}
+
+	cout << "From the FileCommandProcessorAdapter";
+
+	return new Command(Command::commandType::loadmap, toAdd, logger);
 }

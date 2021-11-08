@@ -9,6 +9,8 @@ int main() {
 	// Instantiate Observer object
 	Observer* _observer = new LogObserver();
 
+	CommandProcessor* commandprocessor = new CommandProcessor(_observer);
+
 	GameEngine* game = new GameEngine(_observer);
 
 	State* start = game->newState("start");
@@ -41,11 +43,10 @@ int main() {
 	cin >> answer;
 
 	if (answer == "console") {
-		CommandProcessor* commandprocessor = new CommandProcessor(_observer);
 		cout << "\nPlease enter a command" << '\n';
 
 		while (!(commandprocessor->getExitProgram())) {
-			commandprocessor->getCommand(game);
+			commandprocessor->getCommand(game, commandprocessor);
 		}
 
 		cout << "\n\nAll commands: " << commandprocessor->getCommandList();
@@ -55,15 +56,24 @@ int main() {
 		commandprocessor = NULL;
 	}
 	else if (answer == "file") {
-		FileCommandProcessorAdapter* filecmd = new FileCommandProcessorAdapter(_observer);
 		cout << "\nWhich file do you wish to open? " << '\n';
 
 		cin >> fileName;
 
-		filecmd->getFileLineReader()->readLineFromFile(fileName);
+		FileLineReader* fileReader = new FileLineReader();
+		fileReader->readLineFromFile(fileName);
+
+		FileCommandProcessorAdapter* filecmd = new FileCommandProcessorAdapter(fileReader, _observer);
+		filecmd->readCommand();
+		
+		while (!(commandprocessor->getExitProgram())) {
+			commandprocessor->getCommand(game, filecmd);
+		}
 
 		delete filecmd;
+		delete fileReader;
 		filecmd = NULL;
+		fileReader = NULL;
 		
 	}
 
