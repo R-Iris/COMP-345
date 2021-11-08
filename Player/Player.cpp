@@ -61,6 +61,7 @@ vector<Territory*> Player::toAttack() // Returns a list of territories that are 
 	for (Territory* t : territoriesOwned) {
 		for (Territory* a : t->getAdjacentTerritories()) {
 			adjacentTerritories.push_back(a);
+			// Doesn't take care of copies/repeats in territories
 		}
 	}
 	return adjacentTerritories;
