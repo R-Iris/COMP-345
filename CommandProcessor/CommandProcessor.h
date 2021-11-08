@@ -16,8 +16,8 @@ class Command  : public ILoggable, public Subject  {
 public:
 	enum class commandType { loadmap, validatemap, addplayer, gamestart, replay, quit };
 	//If the command is invalid (gibberish), we still need to keep track of it, so let's make a constructor that only takes in the command's name
-	Command(string, Observer* _obs);
-	Command(commandType, Observer* _obs);
+	Command(string, Observer*);
+	Command(commandType, Observer*);
 	void saveEffect(Command*, string);
 	string getCommandStr();
 	void setCommandStr(string);
@@ -34,10 +34,10 @@ private:
 
 class CommandProcessor  : public ILoggable, public Subject  {
 public:
-	CommandProcessor(Observer* _obs);
+	CommandProcessor(Observer*);
 	~CommandProcessor();
 	virtual Command* readCommand();
-	void getCommand(GameEngine* game);
+	void getCommand(GameEngine*);
 	void saveCommand(Command*);
 	void saveValidCommand(Command*);
 	bool validate(Command*, GameEngine*);
@@ -63,13 +63,19 @@ private:
 
 class FileLineReader {
 public:
-	string readLineFromFile();
+	string readLineFromFile(string);
+private:
+	Observer* logger;
 };
 
-class FileCommandProcessorAdapter : Command {
+class FileCommandProcessorAdapter : public CommandProcessor {
 public:
-	virtual Command* readCommand();
+	FileCommandProcessorAdapter(Observer*);
+	//~FileCommandProcessorAdapter();
+	FileLineReader* getFileLineReader();
+	Command* readCommand();
 
 private:
-	FileLineReader flr;
+	Observer* logger;
+	FileLineReader* flr;
 };

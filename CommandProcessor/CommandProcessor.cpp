@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <istream>
+#include <fstream>
 #include "CommandProcessor.h"
 
 using namespace std;
@@ -76,15 +77,13 @@ string Command::getEffect() {
 	return effect;
 }
 
-string Command::stringToLog()
-{
+string Command::stringToLog() {
 	string command = "Command issued: " + getCommandStr() 
 		+ "\nCommand's effect: " + getEffect();
 	return command;
 }
 
-CommandProcessor::CommandProcessor(Observer* _obs) : logger(_obs)
-{
+CommandProcessor::CommandProcessor(Observer* _obs) : logger(_obs) {
 	this->Attach(_obs);
 }
 
@@ -205,6 +204,51 @@ ostream& operator<< (ostream& out, const vector<Command*> commandList) {
 	return out;
 }
 
-string FileLineReader::readLineFromFile() {
+string FileLineReader::readLineFromFile(string fileName) {
+	string fileContent;
+	string word;
+	fileName = fileName + ".txt";
+	ifstream myfile(fileName);
 
+	if (myfile.is_open()) {
+		while (getline(myfile, fileContent)) { }
+		if (fileContent.find("loadmap")) {
+			new Command(Command::commandType::loadmap, logger);
+		}
+
+		myfile.close();
+	}
+	else {
+		cout << "Couldn't find the mentioned file." << '\n';
+	}
+
+	return fileContent;
+}
+
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(Observer* _obs) : CommandProcessor(_obs), logger(), flr() { }
+
+FileLineReader* FileCommandProcessorAdapter::getFileLineReader() {
+	return flr;
+}
+
+Command* FileCommandProcessorAdapter::readCommand() {
+	string commandstr{};
+	int index{};
+
+	switch (getIndexCmdVector(commandstr)) {
+	case 0:
+		return new Command(Command::commandType::loadmap, logger);
+	case 1:
+		return new Command(Command::commandType::validatemap, logger);
+	case 2:
+		return new Command(Command::commandType::addplayer, logger);
+	case 3:
+		return new Command(Command::commandType::gamestart, logger);
+	case 4:
+		return new Command(Command::commandType::replay, logger);
+	case 5:
+		return new Command(Command::commandType::quit, logger);
+	default:
+		return new Command(commandstr, logger);
+	}
 }
