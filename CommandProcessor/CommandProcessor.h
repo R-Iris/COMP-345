@@ -11,6 +11,7 @@ class GameEngine;
 class Observer;
 class ILoggable;
 class Subject;
+class State;
 
 class Command : public ILoggable, public Subject {
 public:
@@ -60,6 +61,7 @@ private:
 	vector<Command*> commandList;
 	vector<Command*> validCommandList;
 	bool exitProgram = false;
+	State* internal_currentState;
 	vector<string> commandVector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit" };
 };
 
@@ -80,7 +82,7 @@ private:
 class FileCommandProcessorAdapter : public CommandProcessor {
 public:
 	FileCommandProcessorAdapter(FileLineReader*, Observer*);
-	//~FileCommandProcessorAdapter();
+	~FileCommandProcessorAdapter();
 	FileLineReader* getFileLineReader();
 	Command* readCommand();
 
@@ -89,4 +91,5 @@ public:
 private:
 	Observer* logger;
 	FileLineReader* flr;
+	int index{-1};
 };

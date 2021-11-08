@@ -64,11 +64,14 @@ int main() {
 		fileReader->readLineFromFile(fileName);
 
 		FileCommandProcessorAdapter* filecmd = new FileCommandProcessorAdapter(fileReader, _observer);
-		filecmd->readCommand();
+		//filecmd->readCommand();
 		
 		while (!(commandprocessor->getExitProgram())) {
 			commandprocessor->getCommand(game, filecmd);
 		}
+
+		cout << "\n\nAll commands: " << commandprocessor->getCommandList();
+		cout << "\nValid commands: " << commandprocessor->getValidCommandList();
 
 		delete filecmd;
 		delete fileReader;

@@ -136,7 +136,7 @@ Command* CommandProcessor::readCommand() {
 }
 
 void CommandProcessor::getCommand(GameEngine* game, CommandProcessor* cmd) {
-	Command* command = readCommand();
+	Command* command = cmd->readCommand();
 
 	if (validate(command, game)) {
 		saveValidCommand(command);
@@ -257,44 +257,51 @@ ostream& operator<< (ostream& out, const vector<string> lines) {
 
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(FileLineReader* flr, Observer* _obs) : CommandProcessor(_obs), flr(flr), logger(_obs) { }
 
+FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
+	flr = nullptr;
+	logger = nullptr;
+}
+
 FileLineReader* FileCommandProcessorAdapter::getFileLineReader() {
 	return flr;
 }
 
 Command* FileCommandProcessorAdapter::readCommand() {
 	string toAdd{""};
-	for (string command : flr->getFileContent()) {
-		cout << command << '\n';
+	string delimiter{ " " };
+	size_t pos{};
 
-		if (command.find("loadmap")) {
-			new Command(Command::commandType::loadmap, toAdd, logger);
+	string firstWord{ "" };
+	string secondWord{ "" };
+
+	vector<string> commands{ flr->getFileContent() }; 
+	index++;
+
+		if (commands[index].find(delimiter) != string::npos) {
+			pos = commands[index].find(delimiter);
+			string firstWord(commands[index].substr(0, pos));
+			string secondWord(commands[index].substr(pos + 1));
+			
+			if (firstWord == "loadmap") {
+				return new Command(Command::commandType::loadmap, secondWord, logger);
+			}
+			else if (firstWord == "addplayer") {
+				return new Command(Command::commandType::addplayer, secondWord, logger);
+			}
 		}
-
-	}
-
-	//string commandstr{};
-	//int index{};
-
-	//cin >> commandstr;
-
-	//switch (getIndexCmdVector(commandstr)) {
-	//case 0:
-	//	return new Command(Command::commandType::loadmap, logger);
-	//case 1:
-	//	return new Command(Command::commandType::validatemap, logger);
-	//case 2:
-	//	return new Command(Command::commandType::addplayer, logger);
-	//case 3:
-	//	return new Command(Command::commandType::gamestart, logger);
-	//case 4:
-	//	return new Command(Command::commandType::replay, logger);
-	//case 5:
-	//	return new Command(Command::commandType::quit, logger);
-	//default:
-	//	return new Command(commandstr, logger);
-	//}
-
-	cout << "From the FileCommandProcessorAdapter";
-
-	return new Command(Command::commandType::loadmap, toAdd, logger);
+		else if (commands[index] == "validatemap") {
+			return new Command(Command::commandType::validatemap, toAdd, logger);
+		}
+		else if (commands[index] == "gamestart") {
+			return new Command(Command::commandType::gamestart, toAdd, logger);
+		}
+		else if (commands[index] == "replay") {
+			return new Command(Command::commandType::replay, toAdd, logger);
+		}
+		else if (commands[index] == "quit") {
+			return new Command(Command::commandType::quit, toAdd, logger);
+		}
+		else {
+			return new Command(commands[index], logger);
+		}
 }
