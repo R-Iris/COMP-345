@@ -13,7 +13,7 @@
 using namespace std;
 
 int main() {
-	//cout << "Hello world!" << endl;
+	const int CARDS_IN_DECK = 52;
 
 	// Instantiate Observer object
 	Observer* _observer = new LogObserver();
@@ -21,6 +21,7 @@ int main() {
 	CommandProcessor* commandprocessor = new CommandProcessor(_observer);
 
 	GameEngine* game = new GameEngine(_observer);
+	game->setDeck(new Deck(CARDS_IN_DECK));
 
 	State* start = game->newState("start");
 	State* map_loaded = game->newState("map_loaded");
@@ -52,7 +53,7 @@ int main() {
 	if (answer == "console") {
 		cout << "Please enter a command" << '\n';
 		while (!(commandprocessor->getExitProgram())) {
-			commandprocessor->getCommand(game);
+			commandprocessor->getCommand(game, commandprocessor);
 		}
 	}
 	else if (answer == "file") {
@@ -60,11 +61,40 @@ int main() {
 		cin >> file;
 	}
 
-	//cout << "\n\nAll commands: " << commandprocessor->getCommandList();
-	//cout << "\nValid commands: " << commandprocessor->getValidCommandList();
-
 	// TESTING OF PART 2 BEGINS HERE
 	game->startupPhase(commandprocessor);
+
+	// Show effect of 'gamestart' command
+	// Show turn order
+	cout << endl;
+	cout << "TURN ORDER" << endl;
+	cout << "==========" << endl;
+
+	int i = 0;
+	for (Player* p : game->players) {
+		i++;
+		cout << i << ") " << p->getName() << endl;
+	}
+
+	// Show distribution of territories
+	cout << endl;
+	cout << "TERRITORY DISTRIBUTION" << endl;
+	cout << "======================" << endl;
+
+	for (Territory* t : game->map->getTerritories()) {
+		for (Player* p : game->players) {
+			if (p->ownsTerritory(t)) {
+				cout << "Territory " << t->getIndex() << " is owned by player " << p->getName() << endl;
+			}
+		}
+	}
+
+	cout << endl;
+
+	// Show number of cards and armies for each player
+	for (Player* p : game->players) {
+		cout << "Player " << p->getName() << " has " << p->getHand()->getCardsInHand().size() << " cards in their hand and " << p->getReinforcementPool() << " armies" << endl;
+	}
 
 	/// /////////////////
 	// delete game;

@@ -3,6 +3,7 @@
 #include "../Player/Player.h"
 #include <regex>
 #include <math.h>
+#include <random>
 // Members of State Class
 
 State::State() : stateName("none") {}
@@ -211,7 +212,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 				
 				// Transition to 'validatemap' state, Handle failure
 				if (!changeState("validatemap")) {
-					cout << "ERROR: Could not transition to 'validatemap' from current state." << endl;
+					cout << "ERROR: Could not transition to 'validatemap' from current state " << currentState->stateName << endl;
 				}
 			}
 		}
@@ -224,7 +225,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			if (map->isValid()) {
 				// Transition to 'addplayer' state, handle failure
 				if (!changeState("addplayer")) {
-					cout << "ERROR: Could not to transition to 'addplayer' from current state." << endl;
+					cout << "ERROR: Could not to transition to 'addplayer' from current state " << currentState->stateName << endl;
 				}
 			}
 
@@ -259,7 +260,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 				// Check if state changed successfully, otherwise handle failure.
 				if (!changeState("gamestart")) {
-					cout << "ERROR: Could not transition to 'gamestart' from current state." << endl;
+					cout << "ERROR: Could not transition to 'gamestart' from current state " << currentState->stateName << endl;
 				}
 			}
 
@@ -301,11 +302,12 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 				
 				while (i < territoriesPerPlayer) {
 					// Generate the index of a random territory
-					int choose = rand() % (map->getTerritories().size() - 1);
+					int choose = rand() % map->getTerritories().size();
 
 					// If it hasn't already been taken, then give it to the player.
 					if (!std::count(taken.begin(), taken.end(), choose)) {
 						p->addOwnedTerritory(map->getTerritories().at(choose));
+						taken.push_back(choose);
 						i++;
 					}
 				}
@@ -314,36 +316,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// TODO: Assign unassigned territories to Neutral player (How to get neutral player?).
 
 			// Determine the turn order randomly - Re-arrange the players in the vector
-			
-			// Store randomly sorted arrangement of players
-			vector<Player*> tmpPlayers;
-
-			// TODO: Randomly assign turn orders to players
-			for (Player* p : players) {
-				if (tmpPlayers.size() > 0) {
-					int choose = rand() % tmpPlayers.size();
-
-					tmpPlayers.insert(tmpPlayers.begin() + choose, p);
-				}
-
-				else {
-					int choose = rand() % players.size();
-					tmpPlayers.push_back(players.at(choose));
-				}
-			}
-
-			// Avoid memory leaks
-			for (int j = 0; j < players.size(); j++) {
-				delete players.at(j);
-				players.at(j) = NULL;
-			}
-			players.clear();
-
-			players = tmpPlayers;
-			// Reset players vector
-			for (Player* player : tmpPlayers) {
-				players.push_back(player);
-			}
+			std::shuffle(players.begin(), players.end(), std::random_device()); // This is not total randomization, given 'n' players this will produce the same shuffle order of those 'n' players.
 
 			// Give each player 50 armies to begin with and let them draw 2 cards from the deck
 			for (Player* p : players) {
@@ -486,31 +459,31 @@ void GameEngine::issueOrdersPhase() {
 		 * orders. */
 
 		 //Please test if this works properly
-		while (p->getReinforcementPool() > 0) {
-			cout << "Input the index of defending territory you want to deploy armies to :  (Use proper casing)";
-			int tIndex;
-			cin >> tIndex;
-			cout << endl;
-			if (p->ownsTerritory(tIndex)) {
-				cout << "Input how many armies you wish to deploy to that territory: ";
-				int deployNo;
-				cin >> deployNo;
-				cout << endl;
-				if (deployNo <= p->getReinforcementPool()) {
-					if (deployNo <= 0) { cout << "-_-" << endl; }
-					else {
-						p->issueOrder(new Deploy(p, deployNo, map->getTerritoryByIndex(tIndex)));
-						p->setReinforcementPool(p->getReinforcementPool() - deployNo);
-					}
-				}
-				else {
-					cout << "Wrong input, try again" << endl;
-				}
-			}
-			else {
-				cout << "Wrong input, try again" << endl;
-			}
-		}
+		//while (p->getReinforcementPool() > 0) {
+		//	cout << "Input the index of defending territory you want to deploy armies to :  (Use proper casing)";
+		//	int tIndex;
+		//	cin >> tIndex;
+		//	cout << endl;
+		//	if (p->ownsTerritory(tIndex)) { // Index is being passed here, it should take in a territory pointer.
+		//		cout << "Input how many armies you wish to deploy to that territory: ";
+		//		int deployNo;
+		//		cin >> deployNo;
+		//		cout << endl;
+		//		if (deployNo <= p->getReinforcementPool()) {
+		//			if (deployNo <= 0) { cout << "-_-" << endl; }
+		//			else {
+		//				p->issueOrder(new Deploy(p, deployNo, map->getTerritoryByIndex(tIndex))); // Order pointer is being passed when it should take in an order reference
+		//				p->setReinforcementPool(p->getReinforcementPool() - deployNo);
+		//			}
+		//		}
+		//		else {
+		//			cout << "Wrong input, try again" << endl;
+		//		}
+		//	}
+		//	else {
+		//		cout << "Wrong input, try again" << endl;
+		//	}
+		//}
 		//All deploy orders have been issued
 
 		//Now to issue advance orders
@@ -544,35 +517,35 @@ void GameEngine::issueOrdersPhase() {
 				int sourceIndex;
 				cin >> sourceIndex;
 				cout << endl;
-				if (p->ownsTerritory(sourceIndex)) {
-					cout << "Now input the territory index you want to advance TO: ";
-					int targetIndex;
-					cin >> targetIndex;
-					cout << endl;
-					if (p->ownsTerritory(targetIndex)) {
-						cout << "Finally, input the number of armies you wish to move: ";
-						int army;
-						cin >> army;
-						cout << endl;
-						Territory* source = map->getTerritoryByIndex(sourceIndex);
-						Territory* target = map->getTerritoryByIndex(targetIndex);
-						if (army <= source->getNumberOfArmies()) {
-							cout << "Adding advance order to ordersList" << endl;
-							cout << "Advance from " << source->getName() << " to "
-								<< target->getName() + " added successfully" << endl;
-							p->issueOrder(new Advance(p, army, source, target, deck));
-						}
-						else {
-							cout << "Wrong input, try again(Not enough army in source territory)" << endl;
-						}
-					}
-					else {
-						cout << "Wrong input, try again(You do not own target territory)" << endl;
-					}
-				}
-				else {
-					cout << "Wrong input, try again(You do not own source territory)" << endl;
-				}
+				//if (p->ownsTerritory(sourceIndex)) { // Index is being passed here, it should take in a territory pointer.
+				//	cout << "Now input the territory index you want to advance TO: ";
+				//	int targetIndex;
+				//	cin >> targetIndex;
+				//	cout << endl;
+				//	if (p->ownsTerritory(targetIndex)) { // Index is being passed here, it should take in a territory pointer.
+				//		cout << "Finally, input the number of armies you wish to move: ";
+				//		int army;
+				//		cin >> army;
+				//		cout << endl;
+				//		Territory* source = map->getTerritoryByIndex(sourceIndex);
+				//		Territory* target = map->getTerritoryByIndex(targetIndex);
+				//		if (army <= source->getNumberOfArmies()) {
+				//			cout << "Adding advance order to ordersList" << endl;
+				//			cout << "Advance from " << source->getName() << " to "
+				//				<< target->getName() + " added successfully" << endl;
+				//			p->issueOrder(new Advance(p, army, source, target, deck)); // Order pointer is being passed when it should take in an order reference
+				//		}
+				//		else {
+				//			cout << "Wrong input, try again(Not enough army in source territory)" << endl;
+				//		}
+				//	}
+				//	else {
+				//		cout << "Wrong input, try again(You do not own target territory)" << endl;
+				//	}
+				//}
+				//else {
+				//	cout << "Wrong input, try again(You do not own source territory)" << endl;
+				//}
 			}
 			else if (ans == 2) {
 				cout << "\nPrinting out " + p->getName() + "'s list of territories to attack" << endl;
@@ -583,37 +556,37 @@ void GameEngine::issueOrdersPhase() {
 				int sourceIndex;
 				cin >> sourceIndex;
 				cout << endl;
-				if (p->ownsTerritory(sourceIndex)) {
-					cout << "Now input the territory index you want to advance TO: ";
-					int targetIndex;
-					cin >> targetIndex;
-					cout << endl;
+				//if (p->ownsTerritory(sourceIndex)) { // Index is being passed here, it should take in a territory pointer.
+				//	cout << "Now input the territory index you want to advance TO: ";
+				//	int targetIndex;
+				//	cin >> targetIndex;
+				//	cout << endl;
 
-					bool targetCanBeAttacked = false;
+				//	bool targetCanBeAttacked = false;
 
-					Territory* target = map->getTerritoryByIndex(targetIndex);
+				//	Territory* target = map->getTerritoryByIndex(targetIndex);
 
-					for (auto it : p->toAttack()) { if (it == target) { targetCanBeAttacked = true; } }
-					if (targetCanBeAttacked) {
-						cout << "Finally, input the number of armies you wish to move: ";
-						int army;
-						cin >> army;
-						cout << endl;
-						Territory* source = map->getTerritoryByIndex(sourceIndex);
-						if (army <= source->getNumberOfArmies()) {
-							cout << "Adding advance order to ordersList" << endl;
-							cout << "Advance from " << source->getName() << " to "
-								<< target->getName() + "added successfully" << endl;
-							p->issueOrder(new Advance(p, army, source, target, deck));
-						}
-						else {
-							cout << "Wrong input, try again(Not enough army in source territory)" << endl;
-						}
-					}
-					else {
-						cout << "Wrong input, try again(Target territory not in toAttack() list)" << endl;
-					}
-				}
+				//	for (auto it : p->toAttack()) { if (it == target) { targetCanBeAttacked = true; } }
+				//	if (targetCanBeAttacked) {
+				//		cout << "Finally, input the number of armies you wish to move: ";
+				//		int army;
+				//		cin >> army;
+				//		cout << endl;
+				//		Territory* source = map->getTerritoryByIndex(sourceIndex);
+				//		if (army <= source->getNumberOfArmies()) {
+				//			cout << "Adding advance order to ordersList" << endl;
+				//			cout << "Advance from " << source->getName() << " to "
+				//				<< target->getName() + "added successfully" << endl;
+				//			//p->issueOrder(new Advance(p, army, source, target, deck)); // Order pointer is being passed when it should take in an order reference
+				//		}
+				//		else {
+				//			cout << "Wrong input, try again(Not enough army in source territory)" << endl;
+				//		}
+				//	}
+				//	else {
+				//		cout << "Wrong input, try again(Target territory not in toAttack() list)" << endl;
+				//	}
+				//}
 			}
 			else {
 				cout << "Wrong input, try again (Input only 1 or 2)" << endl;
@@ -661,7 +634,7 @@ void GameEngine::executeOrdersPhase() {
         for(Orders* o: p->getOrdersList()->ordersList){
             if(o->getName() == "Deploy"){
                 o->execute();
-                p->getOrdersList()->removeOrder(o);
+                //p->getOrdersList()->removeOrder(o); // This function does not exist yet
             }
         }
 	}
@@ -669,7 +642,7 @@ void GameEngine::executeOrdersPhase() {
         //Executing every other order next
         for(Orders* o: p->getOrdersList()->ordersList){
 			o->execute();
-			p->getOrdersList()->removeOrder(o);
+			//p->getOrdersList()->removeOrder(o); // This function does not exist yet
         }
     }
     //Something for the Negotiate order for Orders.cpp -- Abhay
