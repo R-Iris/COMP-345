@@ -29,8 +29,9 @@ public:
     void removeOwnedTerritory(Territory*);
 	vector<Territory*> toDefend();	// Returns a list of territories that are to be defended (owned territories)
 	vector<Territory*> toAttack();	// Returns a list of territories that are to be attacked
-	void issueOrder();	// Creates an Order object and puts it in the player's list of orders
+	void issueOrder(Orders*);	// Creates an Order object and puts it in the player's list of orders
 	bool ownsTerritory(Territory* t); // Whether player owns a territory in defend list
+	bool ownsTerritory(int index);
 	string getName(); // Name getter
 	Hand* getHand(); // Hand pointer getter
 	OrdersList* getOrdersList();
@@ -46,5 +47,4 @@ private:
 	vector<Territory*> territoriesOwned; // List of owned territories
 	OrdersList* ordersList;
 	int reinforcementPool; // Number of armies in the reinforcement pool
-    bool ownsTerritory(int index);
 };

@@ -57,19 +57,19 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player,Player* otherP
 	//Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
 	switch (enumToInt(playedCard->getCardTypeName())) {
 	case 0:
-		ordersList->addOrders(*new Bomb(player,target));
+		ordersList->addOrders(new Bomb(player,target));
 		break;
 	case 1:
-		ordersList->addOrders(*new Deploy(player, 10, target)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
+		ordersList->addOrders(new Deploy(player, 10, target)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
 		break;
 	case 2:
-		ordersList->addOrders(*new Blockade(player,target,gameEngine));
+		ordersList->addOrders(new Blockade(player,target,gameEngine));
 		break;
 	case 3:
-		ordersList->addOrders(*new Airlift(player, 10, start, target));
+		ordersList->addOrders(new Airlift(player, 10, start, target));
 		break;
 	case 4:
-		ordersList->addOrders(*new Negotiate(player,otherPlayer));
+		ordersList->addOrders(new Negotiate(player,otherPlayer));
 		break;
 	}
 

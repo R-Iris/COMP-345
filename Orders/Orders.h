@@ -54,7 +54,7 @@ public:
 	bool removeOrder(int index);
 	bool move(int i, int j);
 	friend ostream& operator << (ostream& strm, OrdersList& ordersList);
-	void addOrders(Orders& o);
+	void addOrders(Orders* o);
     void removeOrder(Orders* o);
 	/*
 	//******************

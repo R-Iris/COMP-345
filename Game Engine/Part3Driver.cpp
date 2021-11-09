@@ -7,9 +7,10 @@
 int main()
 {
     // Instantiate Observer object
-    Observer* _game_observer = new LogObserver();
+    //Observer* _game_observer = new LogObserver();
     // Instantiate GameEngine object
-    GameEngine* game = new GameEngine(_game_observer);
+    //GameEngine* game = new GameEngine(_game_observer);
+    GameEngine * game = new GameEngine();
     // Create a map from file and assign to this game instance
     string fileName = "C:/Users/Karim-480GB-SSD/Desktop/C++ VS/COMP-345/Map/Assets/test.map";
     Map* map = MapLoader::createMapfromFile(fileName);
@@ -42,8 +43,8 @@ int main()
     game->newTransition(win, start, "replay");
 
     // Add new players
-    Player* p1 = new Player("P1", new Hand());
-    Player* p2 = new Player("P2", new Hand());
+    Player* p1 = new Player("P1", new Hand(), game);
+    Player* p2 = new Player("P2", new Hand(), game);
 
     // Add players to game list
     game->addPlayer(p1); game->addPlayer(p2);
@@ -104,8 +105,8 @@ int main()
     // fix dangling pointer
     game = nullptr;
     // deallocate observer object
-    delete _game_observer;
+    //delete _game_observer;
     // fix dangling pointer
-    _game_observer = nullptr;
+    //_game_observer = nullptr;
     return 0;
 }

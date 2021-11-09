@@ -742,8 +742,8 @@ ostream &operator<<(ostream &strm, OrdersList &ordersList) {
     return strm << "END" << endl;
 }
 
-void OrdersList::addOrders(Orders& o) {
-    this->ordersList.push_back(&o);
+void OrdersList::addOrders(Orders* o) {
+    this->ordersList.push_back(o);
 }
 
 void OrdersList::removeOrder(Orders* o) {
