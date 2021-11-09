@@ -746,7 +746,7 @@ void OrdersList::addOrders(Orders& o) {
     this->ordersList.push_back(&o);
 }
 
-void OrdersList::removeOrder(Orders& o) {
+void OrdersList::removeOrder(Orders* o) {
     ordersList.erase(remove(ordersList.begin(),ordersList.end(),o),ordersList.end());
 }
 

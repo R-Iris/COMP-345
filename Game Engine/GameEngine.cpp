@@ -476,17 +476,15 @@ void GameEngine::executeOrdersPhase() {
         for(Orders* o: p->getOrdersList()->ordersList){
             if(o->getName() == "Deploy"){
                 o->execute();
-                p->getOrdersList()->removeOrder(*o);
+                p->getOrdersList()->removeOrder(o);
             }
         }
 	}
     for (Player* p : players) {
         //Executing every other order next
         for(Orders* o: p->getOrdersList()->ordersList){
-            if(o->getName() != "Deploy"){
-                o->execute();
-                p->getOrdersList()->removeOrder(*o);
-            }
+			o->execute();
+			p->getOrdersList()->removeOrder(o);
         }
     }
     //Something for the Negotiate order for Orders.cpp -- Abhay

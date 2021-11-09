@@ -12,7 +12,6 @@ int main()
     GameEngine* game = new GameEngine(_game_observer);
     // Create a map from file and assign to this game instance
     string fileName = "C:/Users/Karim-480GB-SSD/Desktop/C++ VS/COMP-345/Map/Assets/test.map";
-    // string fileName = "C:/Other/Desk/Conc/COMP_345/Assignments/1/COMP-345/Game Engine/test.map";
     Map* map = MapLoader::createMapfromFile(fileName);
     //map->validate();
     game->setMap(map);
@@ -83,7 +82,7 @@ int main()
 
     cout << "P1's reinforcement pool:" << p1->getReinforcementPool() << endl;
     cout << "Adding territory C to P1" << endl;
-    p1->addOwnedTerritory(territories.at(2)); p1->addOwnedTerritory(territories.at(1)); p1->addOwnedTerritory(territories.at(3));
+    p1->addOwnedTerritory(territories.at(2));
     cout << "P1's territories owned:" << endl;
     for (Territory* t : p1->toDefend()) {
         cout << t->getName() << endl;
@@ -91,18 +90,22 @@ int main()
     game->mainGameLoop();
     cout << "P1's reinforcement pool:" << p1->getReinforcementPool() << endl;
 
+    /*
     game->removePlayer(p2);
     cout << "List of players:" << endl;
     for (Player* p : game->players) {
         cout << p->getName() << endl;
     }
+    */
+
+
     // call end() which deletes game and prints a message
     game->end();
     // fix dangling pointer
-    game = NULL;
+    game = nullptr;
     // deallocate observer object
     delete _game_observer;
     // fix dangling pointer
-    _game_observer = NULL;
+    _game_observer = nullptr;
     return 0;
 }

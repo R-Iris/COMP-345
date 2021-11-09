@@ -21,7 +21,7 @@ class Player {
 public:
 	Player(Hand*); // Default constructor requires at least a hand
 	Player(string name, Hand*); // Constructor with player name and hand
-    Player(string name,Hand*,GameEngine*); //Please let me know if i shouldnt add this --Abhay
+    Player(string name,Hand*,GameEngine*);									//Please let me know if i shouldnt add this --Abhay
 	Player(const Player &player); // Copy constructor
 	~Player(); // Destructor
 	Player& operator =(const Player& player); // Assignment operator
@@ -37,7 +37,7 @@ public:
 	int getReinforcementPool();
 	void setReinforcementPool(int);
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
-    vector<Player*> cannotAttack;//Vector of players which cannot be attacked
+    vector<Player*> cannotAttack; //Vector of players which cannot be attacked
     void setOwnedTerritories(vector<Territory*>&);
 private:
 	string name;

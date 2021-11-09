@@ -28,7 +28,6 @@ Player::~Player()
 	delete hand; // Delete pointer to hand
     delete getOrdersList(); //Delete allocated ordersList in constructor
 	delete ordersList; // Delete pointer to ordersList
-    delete gameEngine;
 	// All cleared vectors need their content deleted, depending on how they are initialized (see driver)
 	territoriesOwned.clear();
 }
