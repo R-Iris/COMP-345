@@ -10,7 +10,7 @@ void Subject::Detach() {
 }
 
 void Subject::Notify(ILoggable* _loggable_object) {
-	_observer->Update(_loggable_object);
+	if (_observer != nullptr) _observer->Update(_loggable_object);
 }
 
 void LogObserver::Update(ILoggable* _loggable_object)

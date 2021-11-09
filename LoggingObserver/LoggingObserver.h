@@ -32,5 +32,5 @@ public:
 	void Detach();
 	void Notify(ILoggable* _loggable_object);
 private:
-	Observer* _observer;
+	Observer* _observer = nullptr;
 };
