@@ -46,7 +46,7 @@ ostream& operator<<(ostream& out, const Transition& transition)
 // Members of GameEngine class
 
 GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()) {}
-GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()) { this->Attach(_obs); }
+GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()), _observer(_obs) { this->Attach(_obs); }
 
 GameEngine::~GameEngine()
 {
@@ -78,6 +78,9 @@ GameEngine::~GameEngine()
 	// Delete map
 	delete map;
 	map = nullptr;
+
+	// Set _observer to nullptr
+	_observer = nullptr;
 
 	this->Detach();
 }
