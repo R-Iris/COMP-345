@@ -80,6 +80,54 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player,Player* otherP
 	deck->addCard(playedCard);
 }
 
+//Another version of Cards::play()
+/*
+void Card::play(Player* p,Deck* deck,int index) {
+    //Validating that the index the user inputted is correct
+    while (!validateIndex(p->getHand()->getCardsInHand(), index)) {
+        cout << "\nYour hand only contains " << p->getHand()->getCardsInHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
+        cout << "\nInput another index: ";
+        cin >> index;cout << endl;
+    }
+
+    //Temporary pointer to the card played
+    Card* playedCard = p->getHand()->getCardInHand(index);
+    cout << "\nThe " << playedCard->cardTypeName << " card has been played." << '\n';
+
+
+    switch (enumToInt(playedCard->getCardTypeName())) {
+        case 0:
+            cout << "Enter your target "
+            ordersList->addOrders(*new Bomb(player,target));
+            break;
+        case 1:
+            ordersList->addOrders(*new Deploy(player, 10, target)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
+            break;
+        case 2:
+            ordersList->addOrders(*new Blockade(player,target,gameEngine));
+            break;
+        case 3:
+            ordersList->addOrders(*new Airlift(player, 10, start, target));
+            break;
+        case 4:
+            ordersList->addOrders(*new Negotiate(player,otherPlayer));
+            break;
+    }
+
+    //Creates a pointer to an order of the card's type
+    //Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
+
+    //Removes card played from the hand
+    p->getHand()->removeCard(index);
+
+    //Adds the card played to the deck
+    deck->addCard(playedCard);
+
+}
+
+
+
+*/
 //Overloading the output stream operator for vectors containing pointers to card objects
 ostream& operator<< (ostream& out, const vector<Card*> cards) {
 	out << "[ ";

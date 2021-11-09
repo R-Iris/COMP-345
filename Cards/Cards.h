@@ -36,6 +36,7 @@ public:
 
 private:
 	string cardTypeName;
+    string play(Player *p, Deck *deck, int index);
 };
 
 class Deck {

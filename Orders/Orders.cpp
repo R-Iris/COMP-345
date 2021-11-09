@@ -123,8 +123,8 @@ void Deploy::execute() {
         setExecuted(true);
     }
     else {
-        cout << "The deploy call failed to execute" << endl;
-        setEffect("The deploy call failed to execute");
+        setEffect("The deploy call failed to execute\n");
+        cout << getEffect();
     }
     Notify(this);
 }
@@ -306,7 +306,8 @@ void Advance::execute() {
         setExecuted(true);
     }
     else{
-        cout << "The advance call was not executed since it was invalid" << endl;
+        setEffect("The advance call was not executed since it was invalid\n");
+        cout << getEffect() << endl;
     }
     Notify(this);
 }
@@ -401,7 +402,8 @@ void Bomb::execute() {
             setExecuted(true);
     }
     else{
-        cout << "The bomb order was not executed since it was invalid" << endl;
+        setEffect("The bomb order was not executed since it was invalid\n");
+        cout << getEffect() << endl;
     }
     Notify(this);
 }
@@ -491,7 +493,8 @@ void Blockade::execute() {
         setExecuted(true);
     }
     else{
-        cout << "The blockade order was not executed" << endl;
+        setEffect("The blockade order was not executed\n");
+        cout << getEffect() << endl;
     }
     Notify(this);
 }
@@ -598,7 +601,8 @@ void Airlift::execute() {
         setExecuted(true);
     }
     else{
-        cout << "Airlift order has not been executed" <<endl;
+        setEffect("Airlift order has not been executed\n");
+        cout << getEffect() << endl;
     }
     Notify(this);
 }
@@ -681,11 +685,10 @@ void Negotiate::execute() {
         setEffect("Attacking between " + orderOwner->getName() + " and " + otherPlayer->getName() + " has been prevented until the end of the turn\n");
         cout << getEffect();
         setExecuted(true);
-
-
     }
     else{
-        cout << "Airlift order has not been executed" << endl;
+        setEffect("Airlift order has not been executed\n");
+        cout << getEffect() << endl;
     }
     Notify(this);
 }

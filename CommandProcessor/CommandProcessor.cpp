@@ -230,7 +230,7 @@ void FileLineReader::readLineFromFile(string fileName) {
 
 		myfile.close();
 
-		cout << lines;
+		//cout << lines;
 
 		fileContent = lines;
 	}
