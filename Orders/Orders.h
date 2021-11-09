@@ -6,7 +6,7 @@
 #include "../Cards/Cards.h"
 #include "../Game Engine/GameEngine.h"
 #include "../Player/Player.h"
-//#include "../LoggingObserver/LoggingObserver.h"
+#include "../LoggingObserver/LoggingObserver.h"
 
 using namespace std;
 
@@ -16,11 +16,12 @@ class Deck;
 class GameEngine;
 
 //----------------------Orders class------------------
-class Orders {
+class Orders : public ILoggable, public Subject{
 private:
 	bool executed = false;
 	string effect;
 public:
+
 	Orders();
 	//Copy constructor
 	Orders(const Orders& o);
@@ -34,16 +35,17 @@ public:
 	bool getExecuted() const;
 	void setEffect(string eff);
 	string getEffect();
-	/*
+	
 	//****************** Should this be implemented in each individual order class instead??
 	// stringToLog Implementation for ILoggable
-	ostream& stringToLog(ostream &os);
-	*/
+	string stringToLog();
+	
 };
 
 // ------------OrdersList class-----------------------
-class OrdersList {
+class OrdersList : public ILoggable, public Subject {
 private:
+
     Player* ordersListOwner;
 public:
 	explicit OrdersList(Player* ordersListOwner,vector<Orders*> ordersList); //Parameterised constructor
@@ -56,22 +58,23 @@ public:
 	friend ostream& operator << (ostream& strm, OrdersList& ordersList);
 	void addOrders(Orders* o);
     void removeOrder(Orders* o);
-	/*
+	
 	//******************
 	// stringToLog Implementation for ILoggable
-	ostream& stringToLog(ostream &os);
-	*/
+	string stringToLog();
+	
 };
 
 //---------Deploy class-------------------
 class Deploy : public Orders {
 private:
+	GameEngine* game;
 	Player* orderOwner;
 	string name = "Deploy";
 	int noOfArmies;
 	Territory* target;
 public:
-	Deploy(Player* orderOwner, int noOfArmies, Territory* target); //Parametrized Constructor.
+	Deploy(Player* orderOwner, int noOfArmies, Territory* target, GameEngine* game); //Parametrized Constructor.
 	Deploy(const Deploy& deploy); //Copy constructor
 	Deploy& operator = (const Deploy& deploy); //Assignment operator
 	~Deploy(); //Destructor
@@ -89,14 +92,14 @@ public:
 
 class Advance : public Orders {
 private:
+	GameEngine* game;
 	Player* orderOwner;
 	string name = "Advance";
 	int noOfArmies;
 	Territory* source;
 	Territory* target;
-    Deck* deck;
 public:
-	Advance(Player* orderOwner, int noOfArmies, Territory* source, Territory* target, Deck* deck); //Parametrized Constructor.
+	Advance(Player* orderOwner, int noOfArmies, Territory* source, Territory* target, GameEngine* game); //Parametrized Constructor.
 	//Copy constructor
 	Advance(const Advance& advance);
 	Advance& operator = (const Advance& advance); //Assignment operator
@@ -117,11 +120,12 @@ public:
 
 class Bomb : public Orders {
 private:
+	GameEngine* game;
 	Player* orderOwner;
 	string name = "Bomb";
 	Territory* target;
 public:
-	explicit Bomb(Player* orderOwner, Territory* target);
+	explicit Bomb(Player* orderOwner, Territory* target, GameEngine* game);
 	//Copy constructor
 	Bomb(const Bomb& bomb);
 	~Bomb();
@@ -138,10 +142,10 @@ public:
 
 class Blockade : public Orders {
 private:
+	GameEngine* game;
 	Player* orderOwner;
 	string name = "Blockade";
 	Territory* target;
-    GameEngine* gameEngine;
 public:
 	Blockade(Player* orderOwner,Territory* target,GameEngine* gameEngine1);
 	//Copy constructor
@@ -160,13 +164,14 @@ public:
 
 class Airlift : public Orders {
 private:
+	GameEngine* game;
 	Player* orderOwner;
 	string name = "Airlift";
 	int noOfArmies;
 	Territory* source;
 	Territory* target;
 public:
-	Airlift(Player* orderOwner, int noOfArmies, Territory* source, Territory* target);
+	Airlift(Player* orderOwner, int noOfArmies, Territory* source, Territory* target, GameEngine* game);
 	//Copy constructor
 	Airlift(const Airlift& airlift);
 	~Airlift();
@@ -187,11 +192,12 @@ public:
 
 class Negotiate : public Orders {
 private:
+	GameEngine* game;
 	Player* orderOwner;
     Player* otherPlayer;
 	string name = "Negotiate";
 public:
-	Negotiate(Player* orderOwner,Player* otherPlayer);
+	Negotiate(Player* orderOwner,Player* otherPlayer, GameEngine* game);
 	//Copy constructor
 	Negotiate(const Negotiate& negotiate);
 	~Negotiate();

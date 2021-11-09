@@ -6,7 +6,8 @@ int main(){
 
     cout << "Part 4: Order Execution Implementation\n" << endl;
 
-    auto* gameEngine = new GameEngine();
+    Observer* _obs = new LogObserver();
+    auto* gameEngine = new GameEngine(_obs);
 
     Card* card = new Card(Card::cardType::Blockade);
 
@@ -14,10 +15,10 @@ int main(){
 
     hand->addHand(card);
 
-    auto* p1 = new Player("Player 1", nullptr);
-    auto* p2 = new Player("Player 2", hand);
-    auto* p3 = new Player("Player 3", nullptr);
-    auto* p4 = new Player("Player 4", nullptr);
+    auto* p1 = new Player("Player 1", nullptr, gameEngine);
+    auto* p2 = new Player("Player 2", hand, gameEngine);
+    auto* p3 = new Player("Player 3", nullptr, gameEngine);
+    auto* p4 = new Player("Player 4", nullptr, gameEngine);
 
     Deck* deck = new Deck(10);
 
@@ -47,28 +48,29 @@ int main(){
     t3->setAdjacentTerritories({t4});
     t4->setAdjacentTerritories({t3});
 
-    auto* deploy = new Deploy(p1,10,t1);
+    auto* deploy = new Deploy(p1,10,t1, gameEngine);
+    
     //Attack between p1 and p2 -- P2 should win and t1 ownership should be transferred to p2
-    auto* advance = new Advance(p2,30,t2,t1,deck);
+    auto* advance = new Advance(p2,30,t2,t1, gameEngine);
     //Should be invalid
-    auto* airlift = new Airlift(p3,10,t1,t3);
-    auto* bomb = new Bomb(p4,t1);
+    auto* airlift = new Airlift(p3,10,t1,t3, gameEngine);
+    auto* bomb = new Bomb(p4,t1, gameEngine);
     //Number of armies of t4 should be doubled and ownership of t4 should be transferred to neutral player
     //Since there is no neutral player, another player should be created when this order executes
     auto* blockade = new Blockade(p4,t4,gameEngine);
     //No attacks should be valid between p3 and p4 till the remainder of the turn
-    auto* negotiate = new Negotiate(p3,p4);
+    auto* negotiate = new Negotiate(p3,p4, gameEngine);
     //Used to test the negotiate method above
-    auto* advance1 = new Advance(p3,10,t3,t4,deck);
+    auto* advance1 = new Advance(p3,10,t3,t4,gameEngine);
 
 
-    p1->getOrdersList()->ordersList.push_back(deploy);
-    p2->getOrdersList()->ordersList.push_back(advance);
-    p3->getOrdersList()->ordersList.push_back(airlift);
-    p4->getOrdersList()->ordersList.push_back(bomb);
-    p4->getOrdersList()->ordersList.push_back(blockade);
-    p3->getOrdersList()->ordersList.push_back(negotiate);
-    p3->getOrdersList()->ordersList.push_back(advance1);
+    p1->getOrdersList()->addOrders(deploy);
+    p2->getOrdersList()->addOrders(advance);
+    p3->getOrdersList()->addOrders(airlift);
+    p4->getOrdersList()->addOrders(bomb);
+    p4->getOrdersList()->addOrders(blockade);
+    p3->getOrdersList()->addOrders(negotiate);
+    p3->getOrdersList()->addOrders(advance1);
 
 
     cout << *(p1->getOrdersList()) << endl;
@@ -137,7 +139,7 @@ int main(){
 
     cout << "The game engine can also take care of executing each player's orders too" << endl;
 
-    gameEngine->executeOrdersPhase();
+    //gameEngine->executeOrdersPhase();
 
     cout << "\nEND" << endl;
 
@@ -147,7 +149,7 @@ int main(){
 
     delete p1,delete p2,delete p3,delete p4;
     delete t1,delete t2,delete t3,delete t4;
-    delete deploy,delete advance,delete airlift,delete blockade,delete negotiate,delete advance1;
-    delete gameEngine,delete deck;
-    delete hand;
+    // deploy,delete advance,delete airlift,delete blockade,delete negotiate,delete advance1;
+    // delete deck;
+    // delete hand;
 }

@@ -10,7 +10,7 @@ ostream& operator <<(ostream &strm, Orders& o){
     return strm << "Order has been called";
 }
 
-Orders::Orders()= default;
+Orders::Orders() = default;
 
 bool Orders::getExecuted() const {
     return executed;
@@ -21,6 +21,10 @@ void Orders::setExecuted(bool exec) {
 
 string Orders::getEffect() {
     return this->effect;
+}
+string Orders::stringToLog()
+{
+    return "Order: " + getName() + ", Effect: " + getEffect();
 }
 void Orders::setEffect(string eff) {
     effect = eff;
@@ -40,19 +44,12 @@ Orders::Orders(const Orders &o) = default; //Copy constructor
 Orders::~Orders() = default; //Destructor
 Orders& Orders::operator= (const Orders& orders)= default; //Assignment operator overload
 
-/*
-//*********************
-// method from ILoggable
-ostream& Orders::stringToLog(ostream& os)
-{
-    os << this;
-    return os;
-}
-*/
 
 //------------------Deploy class--------------------
 
-Deploy::Deploy(Player* orderOwner,int noOfArmies, Territory* target) {
+Deploy::Deploy(Player* orderOwner,int noOfArmies, Territory* target, GameEngine* game) {
+    this->game = game;
+    this->Attach(game->_observer);
     this->orderOwner = orderOwner;
     this->noOfArmies = noOfArmies;
     this->target = target;
@@ -88,6 +85,8 @@ ostream& operator <<(ostream &strm, Deploy& deploy){
 //Assignment operator overload
 Deploy& Deploy::operator = (const Deploy& deploy){
     //Intentionally shallow copying data members of deploy class since no new members are being created
+    this->game = deploy.game;
+    this->Attach(deploy.game->_observer);
     this->orderOwner = deploy.orderOwner;
     this->noOfArmies = deploy.noOfArmies;
     this->target = deploy.target;
@@ -125,27 +124,36 @@ void Deploy::execute() {
     }
     else {
         cout << "The deploy call failed to execute" << endl;
+        setEffect("The deploy call failed to execute");
     }
+    Notify(this);
 }
 //Copy constructor
 Deploy::Deploy(const Deploy &deploy) {
     //Intentionally shallow copying data members of deploy class since no new members are being created
+    this->game = deploy.game;
+    this->Attach(deploy.game->_observer);
     this->orderOwner = deploy.orderOwner;
     this->target = deploy.target;
     this->noOfArmies = deploy.noOfArmies;
 }
 
 //Destructor is default since no new data members being created in the class
-Deploy::~Deploy()= default;
+Deploy::~Deploy() { 
+    game = nullptr;
+    this->Detach();
+};
 
 //------------------------------Advance class---------------------
 
-Advance::Advance(Player* orderOwner,int n, Territory *s, Territory *t,Deck* deck) {
+Advance::Advance(Player* orderOwner,int n, Territory *s, Territory *t, GameEngine* game) {
+    this->game = game;
+    this->Attach(game->_observer);
     this->orderOwner = orderOwner;
     this->noOfArmies = n;
     this->source = s;
     this->target = t;
-    this->deck = deck;
+
 }
 
 int Advance::getNoOfArmies() const {
@@ -217,7 +225,6 @@ bool Advance::validate() {
 }
 //If valid, checking if target is owner territory or enemy territory before executing
 void Advance::execute() {
-
     if(validate()){
         //If the source and target territory both belong to the player that issued the order, the army units are moved
         //from the source to the target territory.
@@ -280,7 +287,7 @@ void Advance::execute() {
                     orderOwner->addOwnedTerritory(target);
                     //A player receives a card at the end of his turn if
                     //they successfully conquered at least one territory during their turn.
-                    orderOwner->getHand()->addHand(deck->draw());
+                    orderOwner->getHand()->addHand(game->deck->draw());
                     setEffect(orderOwner->getName() + " won battle against "
                     + enemy->getName() + "and takes " + target->getName() + " territory\n");
                     break;
@@ -301,33 +308,41 @@ void Advance::execute() {
     else{
         cout << "The advance call was not executed since it was invalid" << endl;
     }
+    Notify(this);
 }
 //Assignment operator overload
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Advance &Advance::operator=(const Advance &advance) {
+    this->game = advance.game;
+    this->Attach(advance.game->_observer);
     this->orderOwner = advance.orderOwner;
     this->target = advance.target;
     this->source = advance.source;
     this->noOfArmies = advance.noOfArmies;
-    this->deck = advance.deck;
     return *this;
 }
 
 //Intentionally shallow copying data members of deploy class since no new members are being created
-Advance::Advance(const Advance &advance) {
+Advance::Advance(const Advance &advance){
+    this->game = advance.game;
+    this->Attach(advance.game->_observer);
     this->orderOwner = advance.orderOwner;
     this->target = advance.target;
     this->source = advance.source;
     this->noOfArmies = advance.noOfArmies;
-    this->deck = advance.deck;
 }
 
 //Destructor is default since no new data members being created in the class
-Advance::~Advance() = default;
+Advance::~Advance() {
+    game = nullptr;
+    this->Detach();
+};
 
 //------------------------------Bomb class---------------------
 
-Bomb::Bomb(Player* orderOwner, Territory *target) {
+Bomb::Bomb(Player* orderOwner, Territory *target, GameEngine* game) {
+    this->game = game;
+    this->Attach(game->_observer);
     this->orderOwner = orderOwner;
     this->target = target;
 }
@@ -388,10 +403,13 @@ void Bomb::execute() {
     else{
         cout << "The bomb order was not executed since it was invalid" << endl;
     }
+    Notify(this);
 }
 //Assignment operator overload
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Bomb &Bomb::operator=(const Bomb &bomb) {
+    this->game = bomb.game;
+    this->Attach(bomb.game->_observer);
     this->orderOwner = bomb.orderOwner;
     this->target = bomb.target;
     return *this;
@@ -399,19 +417,26 @@ Bomb &Bomb::operator=(const Bomb &bomb) {
 
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Bomb::Bomb(const Bomb &bomb) {
+    this->game = bomb.game;
+    this->Attach(bomb.game->_observer);
     this->orderOwner = bomb.orderOwner;
     this->target = bomb.target;
 }
 
 //Destructor is default since no new data members being created in the class
-Bomb::~Bomb() = default;
+Bomb::~Bomb() {
+    game = nullptr;
+    this->Detach();
+};
 
 //------------------------------Blockade class---------------------
 
 Blockade::Blockade(Player* orderOwner, Territory *target,GameEngine* gameEngine1) {
+    this->game = gameEngine1;
+    this->Attach(gameEngine1->_observer);
     this->orderOwner = orderOwner;
     this->target = target;
-    this->gameEngine = gameEngine1;
+
 }
 
 void Blockade::setTarget(Territory *t) {
@@ -458,7 +483,7 @@ void Blockade::execute() {
         target->setNumberOfArmies(target->getNumberOfArmies() * 2);
         //Ownership of the territory is transferred to the Neutral player, which must be created if it
         //does not already exist.
-        target->setOwner(gameEngine->getNeutralPlayer());
+        target->setOwner(game->getNeutralPlayer());
         orderOwner->removeOwnedTerritory(target);
         setEffect("Successfully doubled the number of armies in " + target->getName() + " territory" +
         " and ownership changed to neutral player\n");
@@ -468,31 +493,39 @@ void Blockade::execute() {
     else{
         cout << "The blockade order was not executed" << endl;
     }
+    Notify(this);
 }
 
 //Assignment operator overload
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Blockade &Blockade::operator=(const Blockade &blockade) {
+    this->game = blockade.game;
+    this->Attach(blockade.game->_observer);
     this->orderOwner = blockade.orderOwner;
     this->target = blockade.target;
-    this->gameEngine = blockade.gameEngine;
     return *this;
 }
 
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Blockade::Blockade(const Blockade &blockade) {
+    this->game = blockade.game;
+    this->Attach(blockade.game->_observer);
     this->orderOwner = blockade.orderOwner;
     this->target = blockade.target;
-    this->gameEngine = blockade.gameEngine;
 }
 
 //Destructor is default since no new data members being created in the class
-Blockade::~Blockade() = default;
+Blockade::~Blockade() {
+    game = nullptr;
+    this->Detach();
+};
 
 
 //------------------------------Airlift class---------------------
 
-Airlift::Airlift(Player* orderOwner,int n, Territory *s, Territory *t) {
+Airlift::Airlift(Player* orderOwner,int n, Territory *s, Territory *t, GameEngine* game) {
+    this->game = game;
+    this->Attach(game->_observer);
     this->orderOwner = orderOwner;
     this->noOfArmies = n;
     this->source = s;
@@ -567,11 +600,14 @@ void Airlift::execute() {
     else{
         cout << "Airlift order has not been executed" <<endl;
     }
+    Notify(this);
 }
 
 //Assignment operator overload
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Airlift &Airlift::operator=(const Airlift &airlift) {
+    this->game = airlift.game;
+    this->Attach(airlift.game->_observer);
     this->orderOwner = airlift.orderOwner;
     this->source = airlift.source;
     this->target = airlift.target;
@@ -581,6 +617,8 @@ Airlift &Airlift::operator=(const Airlift &airlift) {
 
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Airlift::Airlift(const Airlift &airlift) {
+    this->game = game;
+    this->Attach(airlift.game->_observer);
     this->orderOwner = airlift.orderOwner;
     this->source = airlift.source;
     this->target = airlift.target;
@@ -588,11 +626,16 @@ Airlift::Airlift(const Airlift &airlift) {
 }
 
 //Destructor is default since no new data members being created in the class
-Airlift::~Airlift() = default;
+Airlift::~Airlift() {
+    game = nullptr;
+    this->Detach();
+};
 
 //--------------------------Negotiate class------------------
 
-Negotiate::Negotiate(Player *orderOwner,Player* otherPlayer) {
+Negotiate::Negotiate(Player *orderOwner,Player* otherPlayer, GameEngine* game){
+    this->game = game;
+    this->Attach(game->_observer);
     this->orderOwner = orderOwner;
     this->otherPlayer = otherPlayer;
 }
@@ -644,18 +687,26 @@ void Negotiate::execute() {
     else{
         cout << "Airlift order has not been executed" << endl;
     }
+    Notify(this);
 }
 //Intentionally shallow copying data members of deploy class since no new members are being created
-Negotiate::Negotiate(const Negotiate &negotiate) {
+Negotiate::Negotiate(const Negotiate &negotiate){
+    this->game = negotiate.game;
+    this->Attach(negotiate.game->_observer);
     this->orderOwner = negotiate.orderOwner;
     this->otherPlayer = negotiate.otherPlayer;
 }
 
 //Destructor is default since no new data members being created in the class
-Negotiate::~Negotiate() = default;
+Negotiate::~Negotiate() {
+    game = nullptr;
+    this->Detach();
+};
 
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Negotiate &Negotiate::operator=(const Negotiate &negotiate) {
+    this->game = negotiate.game;
+    this->Attach(negotiate.game->_observer);
     this->orderOwner = negotiate.orderOwner;
     this->otherPlayer = negotiate.otherPlayer;
     return *this;
@@ -670,6 +721,7 @@ string Negotiate::getName() {return name;}
 OrdersList::OrdersList(Player* ordersListOwner,vector<Orders *> ordersList) {
     this->ordersListOwner = ordersListOwner;
     this->ordersList = ordersList;
+    this->Attach(ordersListOwner->getGameEngine()->_observer);
 }
 
 void OrdersList::setOrdersList(vector<Orders*> orderList) {
@@ -722,6 +774,7 @@ OrdersList::~OrdersList() {
         delete it;
     }
     ordersList.clear();
+    this->Detach();
 }
 //New order is created and put in the list but the data members of the order are still a shallow copy since no new members needed to be created
 OrdersList::OrdersList(const OrdersList& ol){
@@ -731,6 +784,7 @@ OrdersList::OrdersList(const OrdersList& ol){
         newOrdersList.push_back(newOrder);
     }
     this->ordersList = newOrdersList;
+    this->Attach(ol.ordersListOwner->getGameEngine()->_observer);
 }
 
 //Stream insertion operator overload --> Printing all orders(name only)
@@ -744,6 +798,7 @@ ostream &operator<<(ostream &strm, OrdersList &ordersList) {
 
 void OrdersList::addOrders(Orders* o) {
     this->ordersList.push_back(o);
+    Notify(this);
 }
 
 void OrdersList::removeOrder(Orders* o) {
@@ -751,15 +806,16 @@ void OrdersList::removeOrder(Orders* o) {
 }
 
 
-/*
 //*********************
 // method from ILoggable
-ostream& OrdersList::stringToLog(ostream& os)
+string OrdersList::stringToLog()
 {
-    os << this;
-    return os;
+    string out = "Inserted ";
+    Orders* o = ordersList.back();
+    out += "Order: " + o->getName() + "";
+    out += " into the list.";
+    return out;
 }
-*/
 //End of OrdersList class implementation
 
 /*Neutral player pointer return method*/

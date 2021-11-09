@@ -78,7 +78,7 @@ public:
 	Deck* deck;
 
 	// Observer pointer
-	Observer* _observer;
+	Observer* _observer = nullptr;
 
 	// Default Constructor
 	GameEngine();

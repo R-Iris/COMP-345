@@ -27,9 +27,11 @@ Player::~Player()
 {
 	delete hand; // Delete pointer to hand
     delete getOrdersList(); //Delete allocated ordersList in constructor
-	delete ordersList; // Delete pointer to ordersList
+	//delete ordersList; // Delete pointer to ordersList
+	this->ordersList = nullptr;
 	// All cleared vectors need their content deleted, depending on how they are initialized (see driver)
 	territoriesOwned.clear();
+	gameEngine = nullptr;
 }
 
 // Assignment operator
@@ -105,7 +107,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 			if (deployNo <= getReinforcementPool()) {
 				if (deployNo <= 0) { cout << "-_-" << endl; }
 				else {
-					ordersList->addOrders(new Deploy(this, deployNo, gameEngine->getMap()->getTerritoryByIndex(tIndex))); // Order pointer is being passed when it should take in an order reference
+					ordersList->addOrders(new Deploy(this, deployNo, gameEngine->getMap()->getTerritoryByIndex(tIndex), gameEngine)); // Order pointer is being passed when it should take in an order reference
 					setReinforcementPool(getReinforcementPool() - deployNo);
 				}
 			}
@@ -166,7 +168,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 						cout << "Adding advance order to ordersList" << endl;
 						cout << "Advance from " << source->getName() << " to "
 							<< target->getName() + " added successfully" << endl;
-						ordersList->addOrders(new Advance(this, army, source, target, gameEngine->getDeck())); // Order pointer is being passed when it should take in an order reference
+						ordersList->addOrders(new Advance(this, army, source, target, gameEngine)); // Order pointer is being passed when it should take in an order reference
 					}
 					else {
 						cout << "Wrong input, try again(Not enough army in source territory)" << endl;
@@ -210,7 +212,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 						cout << "Adding advance order to ordersList" << endl;
 						cout << "Advance from " << source->getName() << " to "
 							<< target->getName() + "added successfully" << endl;
-						ordersList->addOrders(new Advance(this, army, source, target, gameEngine->getDeck())); // Order pointer is being passed when it should take in an order reference
+						ordersList->addOrders(new Advance(this, army, source, target , gameEngine)); // Order pointer is being passed when it should take in an order reference
 					}
 					else {
 						cout << "Wrong input, try again(Not enough army in source territory)" << endl;
@@ -287,6 +289,16 @@ void Player::setReinforcementPool(int rP)
 	reinforcementPool = rP;
 }
 
+void Player::setGameEngine(GameEngine* game)
+{
+	this->gameEngine = game;
+}
+
+GameEngine* Player::getGameEngine()
+{
+	return gameEngine;
+}
+
 // Stream insertion operator, returns player's name
 ostream& operator<<(ostream& out, const Player& player) {
 	return out << player.name;
@@ -312,4 +324,5 @@ Player::Player(string name, Hand * hand, GameEngine* gameEngine) {
     this->name = name;
     this->hand = hand;
     this->gameEngine = gameEngine;
+	this->ordersList = new OrdersList(this, *new vector<Orders*>);
 }

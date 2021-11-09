@@ -37,6 +37,8 @@ public:
 	OrdersList* getOrdersList();
 	int getReinforcementPool();
 	void setReinforcementPool(int);
+	void setGameEngine(GameEngine* game);
+	GameEngine* getGameEngine();
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
     vector<Player*> cannotAttack; //Vector of players which cannot be attacked
     void setOwnedTerritories(vector<Territory*>&);

@@ -45,8 +45,8 @@ ostream& operator<<(ostream& out, const Transition& transition)
 
 // Members of GameEngine class
 
-GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()) {}
-GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()), _observer(_obs) { this->Attach(_obs); }
+GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()), map(new Map()) {}
+GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()), _observer(_obs), map(new Map()) { this->Attach(_obs); }
 
 GameEngine::~GameEngine()
 {
@@ -92,7 +92,7 @@ GameEngine::GameEngine(const GameEngine& gameEngine)
 	this->players = gameEngine.players;
 	this->map = new Map(*gameEngine.map);
 	this->deck = new Deck(*gameEngine.deck);
-	//this->Attach(gameEngine->_obs);
+	this->Attach(gameEngine._observer);
 }
 
 GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
@@ -102,7 +102,7 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
 	this->players = gameEngine.players;
 	this->map = new Map(*gameEngine.map);
 	this->deck = new Deck(*gameEngine.deck);
-	//this->Attach(gameEngine->_obs);
+	this->Attach(gameEngine._observer);
 	return *this;
 }
 
@@ -485,7 +485,7 @@ Player* GameEngine::getNeutralPlayer(){
             return it;
         }
     }
-    Player* neutralPlayer = new Player("NEUTRAL", nullptr);
+    Player* neutralPlayer = new Player("NEUTRAL", nullptr, this);
     this->players.push_back(neutralPlayer);
     return neutralPlayer;
 }
