@@ -206,6 +206,12 @@ bool Advance::validate() {
         cout << "Target territory (" + getTarget()->getName() + ") not adjacent to source territory(" + source->getName() + ")" << endl;
         return false;
     }
+    //If source territory does not have enough armies
+    if(source->getNumberOfArmies() < getNoOfArmies()){
+        cout << "Advance order invalid" << endl;
+        cout << "Not enough armies from source to advance to target territory" << endl;
+        return false;
+    }
     cout << "Advance order valid" << endl;
     return true;
 }
@@ -671,7 +677,7 @@ void OrdersList::setOrdersList(vector<Orders*> orderList) {
 }
 
 //Removing order by index --> invalid indexes checked
-bool OrdersList::remove(int index) {
+bool OrdersList::removeOrder(int index) {
     cout << "Trying to remove order " + ordersList.at(index)->getName() + " from the list" << endl;
     if(index < 0 || index >= ordersList.size()){
         cout << "Index specified not in range of vector size" << endl;
@@ -738,6 +744,10 @@ ostream &operator<<(ostream &strm, OrdersList &ordersList) {
 
 void OrdersList::addOrders(Orders& o) {
     this->ordersList.push_back(&o);
+}
+
+void OrdersList::removeOrder(Orders& o) {
+    ordersList.erase(remove(ordersList.begin(),ordersList.end(),o),ordersList.end());
 }
 
 

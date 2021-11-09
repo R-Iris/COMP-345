@@ -465,28 +465,30 @@ void GameEngine::issueOrdersPhase() {
 	*/
 
 	for (Player* p : players) {
-		// Deploy until no more reinforcements
-		// create deploy order obj
-		// input num armies to deploy
-		// Deploy(Player* orderOwner, int noOfArmies, Territory* target); //Parametrized Constructor.
-		// player->issueOrder(new Deploy(p, int noOfArmies, Territory* target))
-
-		// Advance
-		// advance obj
-		// player->issueOrder(
-
-		// Card
-		// show user their hand
-		// choose a card to "play"
-		// play adds an order to the player's order list
+		p->issueOrder();
 	}
 }
 
 void GameEngine::executeOrdersPhase() {
 	for (Player* p : players) {
 		// for each p, get order list, top to bottom, order->execute (validation done by execute)
-
+        //Executing deploys first
+        for(Orders* o: p->getOrdersList()->ordersList){
+            if(o->getName() == "Deploy"){
+                o->execute();
+                p->getOrdersList()->removeOrder(*o);
+            }
+        }
 	}
+    for (Player* p : players) {
+        //Executing every other order next
+        for(Orders* o: p->getOrdersList()->ordersList){
+            if(o->getName() != "Deploy"){
+                o->execute();
+                p->getOrdersList()->removeOrder(*o);
+            }
+        }
+    }
     //Something for the Negotiate order for Orders.cpp -- Abhay
     for(auto it : players){
         it->cannotAttack.clear();

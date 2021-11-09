@@ -1,22 +1,27 @@
 #include "Orders.h"
 
 int main(){
+
+    srand((int)time(nullptr));
+
     cout << "Part 4: Order Execution Implementation\n" << endl;
 
     auto* gameEngine = new GameEngine();
 
+    Card* card = new Card(Card::cardType::Blockade);
+
     Hand* hand = new Hand(1);
+
+    hand->addHand(card);
 
     auto* p1 = new Player("Player 1", nullptr);
     auto* p2 = new Player("Player 2", hand);
     auto* p3 = new Player("Player 3", nullptr);
     auto* p4 = new Player("Player 4", nullptr);
 
-    vector<Player*> players = {p1,p2,p3,p4};
-
     Deck* deck = new Deck(10);
 
-    gameEngine->players = players;
+    gameEngine->players = {p1,p2,p3,p4};
     gameEngine->deck = deck;
 
     auto* t1 = new Territory();
@@ -57,13 +62,13 @@ int main(){
     auto* advance1 = new Advance(p3,10,t3,t4,deck);
 
 
-    p1->issueOrder(*deploy);
-    p2->issueOrder(*advance);
-    p3->issueOrder(*airlift);
-    p4->issueOrder(*bomb);
-    p4->issueOrder(*blockade);
-    p3->issueOrder(*negotiate);
-    p3->issueOrder(*advance1);
+    p1->getOrdersList()->ordersList.push_back(deploy);
+    p2->getOrdersList()->ordersList.push_back(advance);
+    p3->getOrdersList()->ordersList.push_back(airlift);
+    p4->getOrdersList()->ordersList.push_back(bomb);
+    p4->getOrdersList()->ordersList.push_back(blockade);
+    p3->getOrdersList()->ordersList.push_back(negotiate);
+    p3->getOrdersList()->ordersList.push_back(advance1);
 
 
     cout << *(p1->getOrdersList()) << endl;
@@ -130,7 +135,12 @@ int main(){
 
     cout << "Owner of t4 territory is now " << t4->getOwner()->getName() << endl;
 
+    cout << "The game engine can also take care of executing each player's orders too" << endl;
+
+    gameEngine->executeOrdersPhase();
+
     cout << "\nEND" << endl;
+
 
     gameEngine->end();
 

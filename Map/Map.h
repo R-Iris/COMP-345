@@ -138,7 +138,7 @@ public:
 	*
 	*/
 struct InvalidMapException : std::exception {
-	const enum MAP_ERRORS {
+	enum MAP_ERRORS {
 		ISOLATED_NODE = 1,
 		DISCONNECTED_SUBGRAPH = 2,
 		EMPTY_CONTINENT = 3
@@ -202,6 +202,8 @@ public:
 	int calculateContinentBonus(Player* player);
 
 	static bool territoryExists(vector<Territory> collection, Territory toFind);
+
+    Territory* getTerritoryByIndex(int index);
 
 	// DESTRUCTOR
 	~Map();

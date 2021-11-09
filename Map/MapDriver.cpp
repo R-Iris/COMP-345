@@ -4,7 +4,7 @@
  * @author Jason Patel
  * @version 8/10/2021
  */
-
+/*
 #include <iostream>
 #include "Map.h"
 #include "../Player/Player.h"
@@ -63,3 +63,4 @@ int main()
 	delete testMap;
 	delete p;
 }
+*/

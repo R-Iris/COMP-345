@@ -1,3 +1,4 @@
+/*
 #include "GameEngine.h"
 int main()
 {
@@ -53,3 +54,4 @@ int main()
     game = NULL;
     return 0;
 }
+ */

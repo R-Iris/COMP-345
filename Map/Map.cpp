@@ -534,6 +534,16 @@ Map::~Map() {
 	countries.clear();
 }
 
+//Method for Player class
+Territory* Map::getTerritoryByIndex(int index) {
+    for(auto it: getTerritories()){
+        if(it->getIndex() == index){
+            return it;
+        }
+    }
+    return nullptr;
+}
+
 // **************************************
 // MAPLOADER IMPLEMENTATION
 // **************************************
