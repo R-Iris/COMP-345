@@ -22,7 +22,7 @@ int main()
     string fileName = "C:/Other/Desk/Conc/COMP_345/Assignments/1/COMP-345/Game Engine/test.map";
     Map* map = MapLoader::createMapfromFile(fileName);
     //map->validate();
-    //game->setMap(map);
+    game->setMap(map);
 
     // Initializing states
     State* start = game->newState("start");
@@ -62,24 +62,34 @@ int main()
     p1->addOwnedTerritory(territory1);
     p2->addOwnedTerritory(territory2);
     territory1->setNumberOfArmies(20);
+    territory2->setNumberOfArmies(20);
 
 
-
-    cout << "Adding deploy order..." << endl;
+    cout << "Adding orders..." << endl;
     auto* deploy = new Deploy(p1, 10, territory1, game);
     auto* advance = new Advance(p1, 20, territory1, territory2, game);
+    auto* bomb = new Bomb(p2, territory2, game);
+    auto* blockade = new Blockade(p2, territory1, game);
+    auto* negotiate = new Negotiate(p1, p2, game);
+    auto* airlift = new Airlift(p1, 20, territory1, territory2, game);
 
-    cout << "Adding deploy to orderList..." << endl;
+
+    cout << "Adding orders to orderList..." << endl;
     p1->getOrdersList()->addOrders(deploy);
     p1->getOrdersList()->addOrders(advance);
+    p2->getOrdersList()->addOrders(bomb);
+    p2->getOrdersList()->addOrders(blockade);
+    p2->getOrdersList()->addOrders(negotiate);
+    p2->getOrdersList()->addOrders(airlift);
+    
 
     cout << "Executing order..." << endl;
     deploy->execute();    
-
-    cout << "Showing orderList.." << endl;
-    cout << *p1->getOrdersList() << endl;
-
-    
+    advance->execute();
+    bomb->execute();
+    blockade->execute();
+    negotiate->execute();
+    airlift->execute();    
 
     cout << "Setting game players..." << endl;
     // Add players to game list
@@ -96,7 +106,8 @@ int main()
     game->changeState("gamestart");
 
 
-
+    delete map;
+    map = nullptr;
     // call end() which deletes game and prints a message
     game->end();
     // delete game
