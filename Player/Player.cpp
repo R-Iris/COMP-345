@@ -6,9 +6,9 @@ Player::Player(Hand* hand) : name("Unnamed"), hand(hand), reinforcementPool(0) {
 }
 
 // Constructor with player name and hand
-Player::Player(string name, Hand* hand) : name(name), hand(hand), reinforcementPool(0) {
-    this->ordersList = new OrdersList(this,*new vector<Orders*>);
-}
+//Player::Player(string name, Hand* hand) : name(name), hand(hand), reinforcementPool(0) {
+//    this->ordersList = new OrdersList(this,*new vector<Orders*>);
+//}
 
 
 // Copy constructor

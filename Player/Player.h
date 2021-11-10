@@ -20,7 +20,7 @@ class OrdersList;
 class Player {
 public:
 	Player(Hand*); // Default constructor requires at least a hand
-	Player(string name, Hand*); // Constructor with player name and hand
+	// Player(string name, Hand*); // Constructor with player name and hand
     Player(string name,Hand*,GameEngine*);									//Please let me know if i shouldnt add this --Abhay
 	Player(const Player &player); // Copy constructor
 	~Player(); // Destructor
