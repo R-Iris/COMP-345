@@ -196,13 +196,7 @@ bool CommandProcessor::getExitProgram() {
 
 string CommandProcessor::stringToLog()
 {
-	string _string_commandList = "";
-	for (Command* c : commandList)
-	{
-		_string_commandList += "[Command: " + c->getCommandStr() + ", Effect: " + c->getEffect() + "]";
-
-	}
-	return "Command List: " + _string_commandList;
+	return "Inserted command: " + commandList.back()->getCommandStr() + " into the list.";
 }
 
 ostream& operator<< (ostream& out, const vector<Command*> commandList) {
