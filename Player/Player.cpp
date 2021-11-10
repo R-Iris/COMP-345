@@ -254,10 +254,21 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 	/////////////////////////////////////////
 	//Need to rewrite Card::play() method
 	int index; cin >> index; cout << endl;
-	if (index >= 0 || index < getHand()->getSize()) {
-		cout << "You have chosen card " + getHand()->getCardInHand(index)->getCardTypeName();
-		//hand->getCardInHand(index).play();
-	}
+    while(index<0 ||index > hand->getSize()){
+        cout << "Wrong index selected, please input another index : ";
+        cin >> index;cout<< endl;
+    }
+    Card* cardToBePlayed = getHand()->getCardInHand(index);
+    if(cardToBePlayed->getCardTypeName() == "Bomb"){
+        cout << "Bomb card selected, which territory index do you wish to bomb? Select from toAttack() list: " << endl;
+        int territoryIndex; cin >> index; cout << endl;
+        Territory* target = gameEngine->getMap()->getTerritoryByIndex(index);
+        cout << "Playing bomb card" << endl;
+        cardToBePlayed->play(getHand(),index,getGameEngine()->getDeck(),this, nullptr, this->ordersList, nullptr,target,getGameEngine());
+        cout << "Bomb card successfully played";
+    }
+    // ^ Same thing can be done for every card type -- > Just something I thought up instead of changing the play method
+    //---Abhay
 }
 
 bool Player::ownsTerritory(Territory* territory) {
