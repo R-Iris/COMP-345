@@ -22,7 +22,18 @@ int main(){
 
     Deck* deck = new Deck(10);
 
+    cout << "Adding players to the game engine" << endl;
+
     gameEngine->players = {p1,p2,p3,p4};
+
+    cout << "\nPrinting the names of the players at the start of the game" << endl;
+
+    for(auto it : gameEngine->players){
+        cout << it->getName() << "-->";
+    }
+
+    cout << "END\n" << endl;
+
     gameEngine->deck = deck;
 
     auto* t1 = new Territory();
@@ -135,13 +146,17 @@ int main(){
 
     cout << "\nNow testing transfer of ownership to neutral player" << endl;
 
-    cout << "Owner of t4 territory is now " << t4->getOwner()->getName() << endl;
+    cout << "Owner of t4 territory is now " << t4->getOwner()->getName() << endl << endl;
 
-    cout << "The game engine can also take care of executing each player's orders too" << endl;
+    cout << "Printing the new list of player's in the game (after blockade order is executed)\n" << endl;
 
-    //gameEngine->executeOrdersPhase();
+    for(auto it : gameEngine->players){
+        cout << it->getName() << "-->";
+    }
 
-    cout << "\nEND" << endl;
+    cout << "END" << endl;
+
+    cout << "\nEnd of Part 4 Driver" << endl;
 
 
     gameEngine->end();
