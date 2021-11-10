@@ -244,7 +244,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// Check to see if we have 2-6 players in the game
 			if (players.size() < 6) {
 				if (std::regex_search(effect, match, extractionPattern)) {
-					addPlayer(new Player(match[1], new Hand));
+					addPlayer(new Player(match[1], new Hand, this));
 				}
 			}
 
