@@ -85,11 +85,13 @@ ostream& operator <<(ostream &strm, Deploy& deploy){
 //Assignment operator overload
 Deploy& Deploy::operator = (const Deploy& deploy){
     //Intentionally shallow copying data members of deploy class since no new members are being created
-    this->game = deploy.game;
-    this->Attach(deploy.game->_observer);
-    this->orderOwner = deploy.orderOwner;
-    this->noOfArmies = deploy.noOfArmies;
-    this->target = deploy.target;
+    if(&deploy!= this){
+        this->game = deploy.game;
+        this->Attach(deploy.game->_observer);
+        this->orderOwner = deploy.orderOwner;
+        this->noOfArmies = deploy.noOfArmies;
+        this->target = deploy.target;
+    }
     return *this;
 }
 
@@ -139,7 +141,9 @@ Deploy::Deploy(const Deploy &deploy) {
 }
 
 //Destructor is default since no new data members being created in the class
-Deploy::~Deploy() { 
+Deploy::~Deploy() {
+    orderOwner = nullptr;
+    target = nullptr;
     game = nullptr;
     this->Detach();
 };
@@ -314,12 +318,14 @@ void Advance::execute() {
 //Assignment operator overload
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Advance &Advance::operator=(const Advance &advance) {
-    this->game = advance.game;
-    this->Attach(advance.game->_observer);
-    this->orderOwner = advance.orderOwner;
-    this->target = advance.target;
-    this->source = advance.source;
-    this->noOfArmies = advance.noOfArmies;
+    if(&advance!= this){
+        this->game = advance.game;
+        this->Attach(advance.game->_observer);
+        this->orderOwner = advance.orderOwner;
+        this->target = advance.target;
+        this->source = advance.source;
+        this->noOfArmies = advance.noOfArmies;
+    }
     return *this;
 }
 
@@ -335,6 +341,9 @@ Advance::Advance(const Advance &advance){
 
 //Destructor is default since no new data members being created in the class
 Advance::~Advance() {
+    orderOwner = nullptr;
+    target = nullptr;
+    source = nullptr;
     game = nullptr;
     this->Detach();
 };
@@ -427,6 +436,8 @@ Bomb::Bomb(const Bomb &bomb) {
 
 //Destructor is default since no new data members being created in the class
 Bomb::~Bomb() {
+    orderOwner = nullptr;
+    target = nullptr;
     game = nullptr;
     this->Detach();
 };
@@ -502,10 +513,12 @@ void Blockade::execute() {
 //Assignment operator overload
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Blockade &Blockade::operator=(const Blockade &blockade) {
-    this->game = blockade.game;
-    this->Attach(blockade.game->_observer);
-    this->orderOwner = blockade.orderOwner;
-    this->target = blockade.target;
+    if(&blockade!=this){
+        this->game = blockade.game;
+        this->Attach(blockade.game->_observer);
+        this->orderOwner = blockade.orderOwner;
+        this->target = blockade.target;
+    }
     return *this;
 }
 
@@ -519,6 +532,8 @@ Blockade::Blockade(const Blockade &blockade) {
 
 //Destructor is default since no new data members being created in the class
 Blockade::~Blockade() {
+    orderOwner = nullptr;
+    target = nullptr;
     game = nullptr;
     this->Detach();
 };
@@ -610,18 +625,20 @@ void Airlift::execute() {
 //Assignment operator overload
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Airlift &Airlift::operator=(const Airlift &airlift) {
-    this->game = airlift.game;
-    this->Attach(airlift.game->_observer);
-    this->orderOwner = airlift.orderOwner;
-    this->source = airlift.source;
-    this->target = airlift.target;
-    this->noOfArmies = airlift.noOfArmies;
+    if(&airlift!=this){
+        this->game = airlift.game;
+        this->Attach(airlift.game->_observer);
+        this->orderOwner = airlift.orderOwner;
+        this->source = airlift.source;
+        this->target = airlift.target;
+        this->noOfArmies = airlift.noOfArmies;
+    }
     return *this;
 }
 
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Airlift::Airlift(const Airlift &airlift) {
-    this->game = game;
+    this->game = airlift.game;
     this->Attach(airlift.game->_observer);
     this->orderOwner = airlift.orderOwner;
     this->source = airlift.source;
@@ -631,6 +648,9 @@ Airlift::Airlift(const Airlift &airlift) {
 
 //Destructor is default since no new data members being created in the class
 Airlift::~Airlift() {
+    orderOwner = nullptr;
+    source = nullptr;
+    target = nullptr;
     game = nullptr;
     this->Detach();
 };
@@ -702,16 +722,20 @@ Negotiate::Negotiate(const Negotiate &negotiate){
 
 //Destructor is default since no new data members being created in the class
 Negotiate::~Negotiate() {
+    orderOwner = nullptr;
+    otherPlayer = nullptr;
     game = nullptr;
     this->Detach();
 };
 
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Negotiate &Negotiate::operator=(const Negotiate &negotiate) {
-    this->game = negotiate.game;
-    this->Attach(negotiate.game->_observer);
-    this->orderOwner = negotiate.orderOwner;
-    this->otherPlayer = negotiate.otherPlayer;
+    if(&negotiate !=this){
+        this->game = negotiate.game;
+        this->Attach(negotiate.game->_observer);
+        this->orderOwner = negotiate.orderOwner;
+        this->otherPlayer = negotiate.otherPlayer;
+    }
     return *this;
 }
 
@@ -721,13 +745,13 @@ string Negotiate::getName() {return name;}
 
 //Start of OrdersList class implementation
 
-OrdersList::OrdersList(Player* ordersListOwner,vector<Orders *> ordersList) {
+OrdersList::OrdersList(Player* ordersListOwner,vector<Orders *>& ordersList) {
     this->ordersListOwner = ordersListOwner;
     this->ordersList = ordersList;
     this->Attach(ordersListOwner->getGameEngine()->_observer);
 }
 
-void OrdersList::setOrdersList(vector<Orders*> orderList) {
+void OrdersList::setOrdersList(vector<Orders*>& orderList) {
     this->ordersList = orderList;
 }
 
@@ -773,7 +797,7 @@ bool OrdersList::move(int i, int j) {
 
 //Destructor for ordersList, deleting each order pointer before clearing the vector
 OrdersList::~OrdersList() {
-    for(auto & it : ordersList){
+    for(auto it : ordersList){
         delete it;
     }
     ordersList.clear();

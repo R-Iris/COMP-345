@@ -48,10 +48,10 @@ private:
 
     Player* ordersListOwner;
 public:
-	explicit OrdersList(Player* ordersListOwner,vector<Orders*> ordersList); //Parameterised constructor
+	explicit OrdersList(Player* ordersListOwner,vector<Orders*>& ordersList); //Parameterised constructor
 	OrdersList(const OrdersList& ol);
 	~OrdersList();
-	void setOrdersList(vector<Orders*> ordersList);
+	void setOrdersList(vector<Orders*>& ordersList);
     vector<Orders*> ordersList;
 	bool removeOrder(int index);
 	bool move(int i, int j);
