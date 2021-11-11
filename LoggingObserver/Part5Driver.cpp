@@ -18,31 +18,6 @@ int main()
     // Create a map from file and assign to this game instance
     string fileName = "COMP-345/Map/Assets/test.map";
 
-    //// Initializing states
-    //State* start = game->newState("start");
-    //State* map_loaded = game->newState("map_loaded");
-    //State* map_validated = game->newState("map_validated");
-    //State* players_added = game->newState("players_added");
-    //State* assign_reinforcement = game->newState("assign_reinforcement");
-    //State* issue_orders = game->newState("issue_orders");
-    //State* execute_orders = game->newState("execute_orders");
-    //State* win = game->newState("win");
-
-    //// Connecting states together
-    //game->newTransition(start, map_loaded, "loadmap");
-    //game->newTransition(map_loaded, map_loaded, "loadmap");
-    //game->newTransition(map_loaded, map_validated, "validatemap");
-    //game->newTransition(map_validated, players_added, "addplayer");
-    //game->newTransition(players_added, players_added, "addplayer");
-    //game->newTransition(players_added, assign_reinforcement, "gamestart");
-    //game->newTransition(assign_reinforcement, issue_orders, "issueorder");
-    //game->newTransition(issue_orders, issue_orders, "issueorder");
-    //game->newTransition(issue_orders, execute_orders, "issueordersend");
-    //game->newTransition(execute_orders, execute_orders, "execorder");
-    //game->newTransition(execute_orders, assign_reinforcement, "endexecorders");
-    //game->newTransition(execute_orders, win, "win");
-    //game->newTransition(win, start, "replay");
-
     State* start = game->newState("start");
     State* map_loaded = game->newState("map_loaded");
     State* map_validated = game->newState("map_validated");
