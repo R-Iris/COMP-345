@@ -161,6 +161,33 @@ int main()
     cout << "Testing instantiation of game players..." << endl;
     // Add players to game list
     game->players = {p1, p2};
-    
+
+
+    cout << "Testing state change for GameEngine...." << endl;
+
+    // replaying the game
+    game->changeState("replay");
+
+    cout << "Artificially changing game states to show Notify()/stringToLog() output.." << endl;
+    // artificially changing game states
+    // changing state to loadmap
+    game->changeState("loadmap");
+    // changing state to validatemap
+    game->changeState("validatemap");
+    // changing state to addplayer
+    game->changeState("addplayer");
+
+
+
+
+    game->end();
+    game = nullptr;
+
+    delete commandprocessor;
+    commandprocessor = nullptr;
+
+    delete _obs;
+    _obs = nullptr;
+
     return 0;
 }
