@@ -74,80 +74,114 @@ vector<Territory*> Player::toAttack() // Returns a list of territories that are 
 // Create a new order and add to order list
 void Player::issueOrder() // Creates an Order object and puts it in the playerï¿½s list of orders
 {
-	cout << "\nPrinting out " + getName() + "'s list of territories to attack" << endl;
+	
+	// Intro message for each player
+	cout << "\nIssuing orders for player " << getName() << ":" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
 
-	for (auto it : toAttack()) {
-		cout << it->getIndex() << " : " + it->getName() << endl;
-	}
+	/*
+	The player issues deploy orders on its own territories that are in the list returned by toDefend(). As long
+	as the player has armies still to deploy (see startup phase and reinforcement phase), it will issue a deploy
+	order and no other order. Once it has deployed all its available armies, it can proceed with other kinds of
+	orders. 
+	*/
 
-	cout << "\nNow printing out " + getName() + "'s list of territories to defend" << endl;
+	cout << "#--- Deploying Phase ---#" << endl;
 
+	// List of territories to defend
+	cout << "\nTerritories to defend: (Index : Name)" << endl;
 	for (auto it : toDefend()) {
 		cout << it->getIndex() << " : " + it->getName() << endl;
 	}
-
 	cout << endl;
-
-	/*The player issues deploy orders on its own territories that are in the list returned by toDefend(). As long
-	 * as the player has armies still to deploy (see startup phase and reinforcement phase), it will issue a deploy
-	 * order and no other order. Once it has deployed all its available armies, it can proceed with other kinds of
-	 * orders. */
-
-	 //Please test if this works properly
+	
+	// While the player still has armies to deploy (reinforcement pool is not empty)
 	while (getReinforcementPool() > 0) {
-		cout << "Input the index of defending territory you want to deploy armies to :  (Use proper casing)";
+
+		// Announce how big the reinforcement pool is
+		cout << "Player " << getName() << "'s number of armies left in the reinforcement pool: " << getReinforcementPool() << endl << endl;
+
+		// Choose index of territory to defend
+		cout << "Input the index of the defending territory you want to deploy armies to: ";
 		int tIndex;
 		cin >> tIndex;
 		cout << endl;
-		if (ownsTerritory(tIndex)) { // Index is being passed here, it should take in a territory pointer.
+
+		// If player owns territory (found by index)
+		if (ownsTerritory(tIndex)) {
+
+			// Input number of armies to deploy
 			cout << "Input how many armies you wish to deploy to that territory: ";
 			int deployNo;
 			cin >> deployNo;
 			cout << endl;
+
 			if (deployNo <= getReinforcementPool()) {
-				if (deployNo <= 0) { cout << "-_-" << endl; }
+				
+				// Negative input
+				if (deployNo <= 0) {
+					cout << "Cannot input a negative number!" << endl; 
+				}
+
+				// Non-negative input that is less or equal to number of armies available
 				else {
-					ordersList->addOrders(new Deploy(this, deployNo, gameEngine->getMap()->getTerritoryByIndex(tIndex), gameEngine)); // Order pointer is being passed when it should take in an order reference
+					ordersList->addOrders(new Deploy(this, deployNo, gameEngine->getMap()->getTerritoryByIndex(tIndex), gameEngine));
 					setReinforcementPool(getReinforcementPool() - deployNo);
+					cout << deployNo << " armies have been deployed!" << endl;
 				}
 			}
 			else {
-				cout << "Wrong input, try again" << endl;
+				cout << "Insufficient number of armies available in reinforcement pool, you can deploy at most " << getReinforcementPool() << " armies!" << endl;
 			}
 		}
+
+		// If player does not own territory or it does not exist
 		else {
-			cout << "Wrong input, try again" << endl;
+			cout << "Wrong input: You do not own this territory or it does not exist" << endl;
 		}
 	}
-	//All deploy orders have been issued
 
-	//Now to issue advance orders
+	cout << "\n#--- Deploying Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
 
-	cout << "We are now done with the deploy orders, do you wish to issue any advance orders?" << endl
-		<< "Reply with yes if you wish to do so, else any other input will be assumed to be a no :";
+	// All deploy orders have been issued at this point!
+
+	// Now issuing advance orders
+
+	cout << "\n#--- Advancing Phase ---#" << endl;
+
+	// Advance orders are optional, ask user whether they want to issue any
+	cout << "Do you wish to issue any advance orders?" << endl
+		<< "Reply with \"y\" if you wish to do so, any other input will be assumed to be a no : ";
 
 	string answer;
 	cin >> answer;
 	cout << endl;
 
-	while (answer == "yes") {
+	// "y" as input
+	while (answer == "y") {
+
+		// Two options to choose from
 		cout << "Do you wish to :" << endl;
-		cout << "1. Move armies from one of its own territory to the other in order to defend them" << endl;
+		cout << "1. (DEFENSE) : Move armies from their own territories to defend another?" << endl;
 		cout << "OR" << endl;
-		cout << "2. Move armies from one of its territories to a neighboring enemy territory to attack them" << endl;
+		cout << "2. (ATTACK) : Move armies from their own territories to a neighboring enemy territory to attack?" << endl;
 		cout << "Reply with either number 1 or 2 : ";
 		int ans;
 		cin >> ans;
 		cout << endl;
-		if (ans == 1) {
-			cout << "\nPrinting out " + getName() + "'s list of territories to defend" << endl;
 
+		// Option 1
+		if (ans == 1) {
+
+			// List of territories to defend
+			cout << "\nTerritories to defend: (Index : Name)" << endl;
 			for (auto it : toDefend()) {
 				cout << it->getIndex() << " : " + it->getName() << endl;
 			}
-
 			cout << endl;
 
+			// ?
 			cout << "Input the territory index you want to advance FROM: ";
 			int sourceIndex;
 			cin >> sourceIndex;
@@ -182,11 +216,18 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 				cout << "Wrong input, try again(You do not own source territory)" << endl;
 			}
 		}
-		else if (ans == 2) {
-			cout << "\nPrinting out " + getName() + "'s list of territories to attack" << endl;
 
-			for (auto it : toAttack()) { cout << it->getIndex() << " : " + it->getName() << endl; }
+		// Option 2
+		else if (ans == 2) {
+			
+			// List of territories to attack
+			cout << "\nTerritories to attack: (Index : Name)" << endl;
+			for (auto it : toAttack()) {
+				cout << it->getIndex() << " : " + it->getName() << endl;
+			}
 			cout << endl;
+			
+			// ?
 			cout << "Input the territory index you want to advance FROM: ";
 			int sourceIndex;
 			cin >> sourceIndex;
@@ -223,16 +264,23 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 				}
 			}
 		}
+
+		// Wrong input (not 1 or 2)
 		else {
 			cout << "Wrong input, try again (Input only 1 or 2)" << endl;
 		}
+
+		// Issue another advance order
 		cout << "\nDo you wish to issue another advance order? " << endl;
-		cout << "Reply with yes if you wish to do so, else any other input will be assumed to be a no : ";
+		cout << "Reply with \"y\" if you wish to do so, any other input will be assumed to be a no : ";
 		cin >> answer;
 		cout << endl;
 	}
 
-	//All advance orders dealt with ^^^^
+	cout << "\n#--- Advancing Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
+	// All advance orders are done
 
 	cout << "Now that all advance orders are dealt with, moving to card orders " << endl;
 

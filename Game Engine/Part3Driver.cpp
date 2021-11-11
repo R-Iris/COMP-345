@@ -12,7 +12,7 @@ int main()
     //GameEngine* game = new GameEngine(_game_observer);
     GameEngine * game = new GameEngine();
     // Create a map from file and assign to this game instance
-    string fileName = "C:/Users/Karim-480GB-SSD/Desktop/C++ VS/COMP-345/Map/Assets/test.map";
+    string fileName = "COMP-345/Map/Assets/test.map";
     Map* map = MapLoader::createMapfromFile(fileName);
     //map->validate();
     game->setMap(map);
