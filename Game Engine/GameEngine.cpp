@@ -45,8 +45,8 @@ ostream& operator<<(ostream& out, const Transition& transition)
 
 // Members of GameEngine class
 
-GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()) {}
-GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()), _observer(_obs) { this->Attach(_obs); }
+GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()), cmd_currentState(nullptr) {}
+GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()), _observer(_obs), cmd_currentState(nullptr) { this->Attach(_obs); }
 
 GameEngine::~GameEngine()
 {
@@ -70,6 +70,8 @@ GameEngine::~GameEngine()
 
 	// Calls delete on every element inside of the vector
 	currentState = nullptr;
+
+	cmd_currentState = nullptr;
 
 	// Delete deck
 	delete deck;
@@ -146,11 +148,13 @@ bool GameEngine::checkState(string command)
 {
 	for (int i = 0; i < transitions.size(); i++)
 	{
-		if (currentState->stateName == transitions[i]->current->stateName && command == transitions[i]->command)
+		if (cmd_currentState->stateName == transitions[i]->current->stateName && command == transitions[i]->command)
 		{
+			cmd_currentState = transitions[i]->next;
+			cout << *cmd_currentState;
 			return true;
 		}
-		else if (currentState->stateName == "win" && command == "end") return true;
+		else if (cmd_currentState->stateName == "win" && command == "end") return true;
 	}
 	return false;
 }
@@ -329,6 +333,8 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			// Switch the game to the play phase
 			
+			// Command processor setter for bool
+
 			//mainGameLoop(); // TODO: Commented out for testing purposes. Re-enable when done.
 		}
 	}
@@ -358,6 +364,7 @@ void GameEngine::mainGameLoop() {
 				onePlayerOwnsAllTerritories = true;
 				// Announce this player as winner
 				// announceWinner(p);
+				// CommandProcessor bool gameend = true
 				// break;
 	            // End game
 	        }

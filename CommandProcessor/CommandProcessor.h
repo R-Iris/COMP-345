@@ -12,6 +12,7 @@ class Observer;
 class ILoggable;
 class Subject;
 class State;
+class Transition;
 
 class Command : public ILoggable, public Subject {
 public:
@@ -49,6 +50,10 @@ public:
 	vector<Command*> getValidCommandList();
 	int getIndexCmdVector(string);
 	bool getExitProgram();
+	void setGameStart();
+	void setGameEnd();
+	bool getGameStart();
+	bool getGameEnd();
 
 	//******************
 	// stringToLog Implementation for ILoggable
@@ -61,7 +66,8 @@ private:
 	vector<Command*> commandList;
 	vector<Command*> validCommandList;
 	bool exitProgram = false;
-	State* internal_currentState;
+	bool gameStart = false;
+	bool gameEnd = false;
 	vector<string> commandVector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit" };
 };
 

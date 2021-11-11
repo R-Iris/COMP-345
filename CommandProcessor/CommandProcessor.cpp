@@ -116,6 +116,12 @@ Command* CommandProcessor::readCommand() {
 		cin >> toAdd;
 		cout << '\n';
 	}
+	else if (commandstr == "gamestart") {
+		setGameStart();
+	}
+	else if (commandstr == "win") {
+		getGameEnd();
+	}
 
 	switch (getIndexCmdVector(commandstr)) {
 	case 0:
@@ -147,7 +153,7 @@ void CommandProcessor::getCommand(GameEngine* game, CommandProcessor* cmd) {
 
 bool CommandProcessor::validate(Command* command, GameEngine* game) {
 	//Do not change state
-	if (game->changeState(command->getCommandStr())) {
+	if (game->checkState(command->getCommandStr())) {
 		if (command->getCommandStr() == "loadmap") {
 			command->setCommandStr();
 		}
@@ -192,6 +198,22 @@ int CommandProcessor::getIndexCmdVector(string commandstr) {
 
 bool CommandProcessor::getExitProgram() {
 	return exitProgram;
+}
+
+void CommandProcessor::setGameStart() {
+	gameStart = true;
+}
+
+void CommandProcessor::setGameEnd() {
+	gameEnd = true;
+}
+
+bool CommandProcessor::getGameStart() {
+	return gameStart;
+}
+
+bool CommandProcessor::getGameEnd() {
+	return gameEnd;
 }
 
 string CommandProcessor::stringToLog()

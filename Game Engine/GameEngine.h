@@ -69,6 +69,7 @@ public:
 	vector<State*> states;
 	// Current State
 	State* currentState;
+	State* cmd_currentState;
 
 	// Vector of pointers to players
 	vector<Player*> players; // 2 - 6 Players
