@@ -200,6 +200,10 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 {
 	// Use the command list to get the commands, make sure to change states in between commands
 	for (Command* c : cp->getValidCommandList()) {
+		// Display the current state
+		cout << endl;
+		cout << "Current state: " << currentState->stateName << endl << endl;
+
 		string command = c->getCommandStr();
 
 		if (command.find("loadmap") != std::string::npos) {

@@ -1,8 +1,8 @@
 /**
  * COMP 345: Advanced Program Design with C++
- * @file MapDriver.cpp
+ * @file Part2Driver.cpp
  * @author Jason Patel
- * @version 8/10/2021
+ * @version 12/11/2021
  */
 
 #include <iostream>
@@ -98,10 +98,10 @@ int main() {
 	}
 
 	/// /////////////////
-	// delete game;
+	delete game;
 	delete commandprocessor;
 	delete _observer;
-	// game = NULL;
+	game = NULL;
 	commandprocessor = NULL;
 	_observer = NULL;
 	/// /////////////////
