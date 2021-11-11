@@ -66,7 +66,7 @@ int main()
     }
     */
 
-    p1->addOwnedTerritory(territories.at(0));
+    p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(2));
     p2->addOwnedTerritory(territories.at(1));
 
     // Execute main game loop

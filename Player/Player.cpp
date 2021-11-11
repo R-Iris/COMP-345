@@ -52,23 +52,28 @@ void Player::addOwnedTerritory(Territory* territory) {
     territory->setOwner(this);
 }
 
-// Return a list of owned territories
-vector<Territory*> Player::toDefend() // Returns a list of territories that are to be defended
+// Return a list of owned territories (to be defended)
+vector<Territory*> Player::toDefend()
 {
 	return territoriesOwned;
 }
 
 // Return a list of territories to attack
-vector<Territory*> Player::toAttack() // Returns a list of territories that are to be attacked
+vector<Territory*> Player::toAttack()
 {
-	vector<Territory*> adjacentTerritories;
+	vector<Territory*> attackableTerritories;
+
 	for (Territory* t : territoriesOwned) {
 		for (Territory* a : t->getAdjacentTerritories()) {
-			adjacentTerritories.push_back(a);
-			// Doesn't take care of copies/repeats in territories
+			// Excluding owned territories
+			if (!ownsTerritory(a)) {
+				// Add territory to attack list
+				attackableTerritories.push_back(a);
+			}
 		}
 	}
-	return adjacentTerritories;
+
+	return attackableTerritories;
 }
 
 // Create a new order and add to order list
@@ -91,7 +96,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 	// List of territories to defend
 	cout << "\nTerritories to defend: (Index : Name)" << endl;
 	for (auto it : toDefend()) {
-		cout << it->getIndex() << " : " + it->getName() << endl;
+		cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
 	}
 	cout << endl;
 	
@@ -171,97 +176,145 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 		cin >> ans;
 		cout << endl;
 
-		// Option 1
+		// Option 1 (DEFENSE)
 		if (ans == 1) {
 
 			// List of territories to defend
 			cout << "\nTerritories to defend: (Index : Name)" << endl;
 			for (auto it : toDefend()) {
-				cout << it->getIndex() << " : " + it->getName() << endl;
+				cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
 			}
 			cout << endl;
 
-			// ?
-			cout << "Input the territory index you want to advance FROM: ";
+			// Accept input for source territory's index (where armies originate)
+			cout << "Input the souce territory's index: ";
 			int sourceIndex;
 			cin >> sourceIndex;
 			cout << endl;
-			if (ownsTerritory(sourceIndex)) { // Index is being passed here, it should take in a territory pointer.
-				cout << "Now input the territory index you want to advance TO: ";
+
+			// Check if player owns this territory or if it doesn't exist
+			if (ownsTerritory(sourceIndex)) {
+
+				// Accept input for target territory's index (where armies go to)
+				cout << "Input the target territory's index: ";
 				int targetIndex;
 				cin >> targetIndex;
 				cout << endl;
-				if (ownsTerritory(targetIndex)) { // Index is being passed here, it should take in a territory pointer.
+
+				// Check if player owns this territory or if it doesn't exist
+				if (ownsTerritory(targetIndex)) {
+
+					// Accept input for number of armies to move
 					cout << "Finally, input the number of armies you wish to move: ";
 					int army;
 					cin >> army;
 					cout << endl;
+
+					// Convert the territory index's to territory pointers
 					Territory* source = gameEngine->getMap()->getTerritoryByIndex(sourceIndex);
 					Territory* target = gameEngine->getMap()->getTerritoryByIndex(targetIndex);
+
+					// Check if input is valid (source territory has enough armies)
 					if (army <= source->getNumberOfArmies()) {
-						cout << "Adding advance order to ordersList" << endl;
-						cout << "Advance from " << source->getName() << " to "
-							<< target->getName() + " added successfully" << endl;
-						ordersList->addOrders(new Advance(this, army, source, target, gameEngine)); // Order pointer is being passed when it should take in an order reference
+						cout << "Advancing from " << source->getName() << " to "
+							<< target->getName() << " " << army << " armies!" << endl;
+						ordersList->addOrders(new Advance(this, army, source, target, gameEngine));
 					}
+
+					// Input number of armies to move is bigger than number of armies in source territory
 					else {
-						cout << "Wrong input, try again(Not enough army in source territory)" << endl;
+						cout << "Wrong input: You do not have this many armies in the source territory!" << endl;
 					}
 				}
+
+				// Player does not own this territory or it does not exist
 				else {
-					cout << "Wrong input, try again(You do not own target territory)" << endl;
+					cout << "Wrong input: You do not own this territory or it does not exist!" << endl;
 				}
 			}
+
+			// Player does not own this territory or it does not exist
 			else {
-				cout << "Wrong input, try again(You do not own source territory)" << endl;
+				cout << "Wrong input: You do not own this territory or it does not exist!" << endl;
 			}
 		}
 
-		// Option 2
+		// Option 2 (ATTACK)
 		else if (ans == 2) {
 			
+			// List of territories to defend
+			cout << "\nTerritories to defend: (Index : Name)" << endl;
+			for (auto it : toDefend()) {
+				cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+			}
+			cout << endl;
+
 			// List of territories to attack
 			cout << "\nTerritories to attack: (Index : Name)" << endl;
 			for (auto it : toAttack()) {
-				cout << it->getIndex() << " : " + it->getName() << endl;
+				cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
 			}
 			cout << endl;
 			
-			// ?
-			cout << "Input the territory index you want to advance FROM: ";
+			// Accept input for source territory's index (where armies originate)
+			cout << "Input the souce territory's index: ";
 			int sourceIndex;
 			cin >> sourceIndex;
 			cout << endl;
-			if (ownsTerritory(sourceIndex)) { // Index is being passed here, it should take in a territory pointer.
-				cout << "Now input the territory index you want to advance TO: ";
+
+			// Check if player owns this territory or if it doesn't exist
+			if (ownsTerritory(sourceIndex)) {
+
+
+				// Accept input for target territory's index (where armies go to)
+				cout << "Input the target territory's index: ";
 				int targetIndex;
 				cin >> targetIndex;
 				cout << endl;
 
-				bool targetCanBeAttacked = false;
-
+				// Convert source and targer territories from index to a territory pointer
+				Territory* source = gameEngine->getMap()->getTerritoryByIndex(sourceIndex);
 				Territory* target = gameEngine->getMap()->getTerritoryByIndex(targetIndex);
 
-				for (auto it : toAttack()) { if (it == target) { targetCanBeAttacked = true; } }
+				// Check if target is adjacent to any of the player's owned territories
+				bool targetCanBeAttacked = false;
+				for (auto it : toAttack()) {
+					if (it == target) {
+						targetCanBeAttacked = true; 
+					} 
+				}
+
+				// If the target territory can be attacked
 				if (targetCanBeAttacked) {
+
+					// Accept input for number of armies to move
 					cout << "Finally, input the number of armies you wish to move: ";
 					int army;
 					cin >> army;
 					cout << endl;
-					Territory* source = gameEngine->getMap()->getTerritoryByIndex(sourceIndex);
+
+					// Check if input is valid (source territory has enough armies)
 					if (army <= source->getNumberOfArmies()) {
-						cout << "Adding advance order to ordersList" << endl;
-						cout << "Advance from " << source->getName() << " to "
-							<< target->getName() + "added successfully" << endl;
-						ordersList->addOrders(new Advance(this, army, source, target , gameEngine)); // Order pointer is being passed when it should take in an order reference
+						cout << "Advancing from " << source->getName() << " to "
+							<< target->getName() << " " << army << " armies!" << endl;
+						ordersList->addOrders(new Advance(this, army, source, target , gameEngine));
 					}
+
+					// Input number of armies to move is bigger than number of armies in source territory
 					else {
-						cout << "Wrong input, try again(Not enough army in source territory)" << endl;
+						cout << "Wrong input: You do not have this many armies in the source territory!" << endl;
 					}
 				}
+
+				// Target territory cannot be attacked
 				else {
-					cout << "Wrong input, try again(Target territory not in toAttack() list)" << endl;
+					cout << "Wrong input: The target territory is not adjacent to one you own or it does not exist!" << endl;
 				}
+			}
+
+			// Player does not own this territory or it does not exist
+			else {
+				cout << "Wrong input: You do not own this territory or it does not exist!" << endl;
 			}
 		}
 
@@ -288,35 +341,35 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 
 	//Need to test if the cards are properly displayed
 
-	cout << getHand(); //Printing number of cards in hand
+	//cout << getHand(); //Printing number of cards in hand
 
 
-	//Need to ask Iris about how index in hand works(Does it start with zero?)
+	////Need to ask Iris about how index in hand works(Does it start with zero?)
 
-	for (int i = 0; i < getHand()->getSize(); i++) {
-		cout << "Card index : " << i << endl << getHand()->getCardInHand(i);
-	}
+	//for (int i = 0; i < getHand()->getSize(); i++) {
+	//	cout << "Card index : " << i << endl << getHand()->getCardInHand(i);
+	//}
 
-	cout << "Select the index of the card you want to use : ";
+	//cout << "Select the index of the card you want to use : ";
 
-	/////////////////////////////////////////
-	//Need to rewrite Card::play() method
-	int index; cin >> index; cout << endl;
-    while(index<0 ||index > hand->getSize()){
-        cout << "Wrong index selected, please input another index : ";
-        cin >> index;cout<< endl;
-    }
-    Card* cardToBePlayed = getHand()->getCardInHand(index);
-    if(cardToBePlayed->getCardTypeName() == "Bomb"){
-        cout << "Bomb card selected, which territory index do you wish to bomb? Select from toAttack() list: " << endl;
-        int territoryIndex; cin >> index; cout << endl;
-        Territory* target = gameEngine->getMap()->getTerritoryByIndex(index);
-        cout << "Playing bomb card" << endl;
-        cardToBePlayed->play(getHand(),index,getGameEngine()->getDeck(),this, nullptr, this->ordersList, nullptr,target,getGameEngine());
-        cout << "Bomb card successfully played";
-    }
-    // ^ Same thing can be done for every card type -- > Just something I thought up instead of changing the play method
-    //---Abhay
+	///////////////////////////////////////////
+	////Need to rewrite Card::play() method
+	//int index; cin >> index; cout << endl;
+ //   while(index<0 ||index > hand->getSize()){
+ //       cout << "Wrong index selected, please input another index : ";
+ //       cin >> index;cout<< endl;
+ //   }
+ //   Card* cardToBePlayed = getHand()->getCardInHand(index);
+ //   if(cardToBePlayed->getCardTypeName() == "Bomb"){
+ //       cout << "Bomb card selected, which territory index do you wish to bomb? Select from toAttack() list: " << endl;
+ //       int territoryIndex; cin >> index; cout << endl;
+ //       Territory* target = gameEngine->getMap()->getTerritoryByIndex(index);
+ //       cout << "Playing bomb card" << endl;
+ //       cardToBePlayed->play(getHand(),index,getGameEngine()->getDeck(),this, nullptr, this->ordersList, nullptr,target,getGameEngine());
+ //       cout << "Bomb card successfully played";
+ //   }
+ //   // ^ Same thing can be done for every card type -- > Just something I thought up instead of changing the play method
+ //   //---Abhay
 }
 
 bool Player::ownsTerritory(Territory* territory) {
