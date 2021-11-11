@@ -119,9 +119,6 @@ Command* CommandProcessor::readCommand() {
 	else if (commandstr == "gamestart") {
 		setGameStart();
 	}
-	else if (commandstr == "win") {
-		getGameEnd();
-	}
 
 	switch (getIndexCmdVector(commandstr)) {
 	case 0:

@@ -334,6 +334,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// Switch the game to the play phase
 			
 			// Command processor setter for bool
+			//cmd_game pointer points to win state
 
 			//mainGameLoop(); // TODO: Commented out for testing purposes. Re-enable when done.
 		}
