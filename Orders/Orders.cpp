@@ -1,7 +1,8 @@
 #include "Orders.h"
 #include <iostream>
 #include <algorithm>
-#include <stdlib.h>
+#include <utility>
+#include <cstdlib>
 
 using namespace std;
 
@@ -27,7 +28,7 @@ string Orders::stringToLog()
     return "Order: " + getName() + ", Effect: " + getEffect();
 }
 void Orders::setEffect(string eff) {
-    effect = eff;
+    effect = std::move(eff);
 }
 
 //Implemented in other child classes -- Virtual function
@@ -97,6 +98,10 @@ Deploy& Deploy::operator = (const Deploy& deploy){
 
 //Validate method checking if orderOwner owns target territory and number of armies is valid
 bool Deploy::validate() {
+    if(target== nullptr){
+        cout << "Target territory points to NULL" << endl;
+        return false;
+    }
     if(getExecuted()){
         cout << "Order already executed" << endl;
         return false;
@@ -131,7 +136,7 @@ void Deploy::execute() {
     Notify(this);
 }
 //Copy constructor
-Deploy::Deploy(const Deploy &deploy) {
+Deploy::Deploy(const Deploy &deploy){
     //Intentionally shallow copying data members of deploy class since no new members are being created
     this->game = deploy.game;
     this->Attach(deploy.game->_observer);
@@ -196,6 +201,10 @@ ostream& operator <<(ostream &strm, Advance& advance){
 
 //Advance order valid only if target is neighbour of source
 bool Advance::validate() {
+    if(source== nullptr||target==nullptr){
+        cout << "Either source or target territory points to NULL" << endl;
+        return false;
+    }
     if(getExecuted()){
         cout << "Order already executed" << endl;
         return false;
@@ -377,6 +386,10 @@ ostream& operator <<(ostream &strm, Bomb& bomb){
 }
 
 bool Bomb::validate() {
+    if(target == nullptr){
+        cout << "Target territory points to NULL" << endl;
+        return false;
+    }
     if(getExecuted()){
         cout << "Order already executed" << endl;
         return false;
@@ -476,6 +489,10 @@ ostream& operator <<(ostream &strm, Blockade& blockade){
 //double the number of armies on the territory and to transfer the ownership of the territory to the Neutral player.
 //The blockade order can only be created by playing the blockade card.
 bool Blockade::validate() {
+    if(getTarget()== nullptr){
+        cout << "Target territory points to NULL" << endl;
+        return false;
+    }
     if(getExecuted()){
         cout << "Order already executed" << endl;
         return false;
@@ -585,6 +602,10 @@ ostream& operator <<(ostream &strm, Airlift& airlift){
 }
 //Airlift order valid if source territory is owned by OrderOwner
 bool Airlift::validate() {
+    if(getTarget()== nullptr||getSource()== nullptr){
+        cout << "Either target territory or source territory points to NULL" << endl;
+        return false;
+    }
     if(getExecuted()){
         cout << "Order already executed" << endl;
         return false;
@@ -678,6 +699,9 @@ ostream& operator <<(ostream &strm, Negotiate& negotiate){
 //the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
 //order can only be created by playing the diplomacy card.
 bool Negotiate::validate() {
+    if(otherPlayer== nullptr){
+        cout << "Target Player points to NULL" << endl;
+    }
     if(getExecuted()){
         cout << "Order already executed" << endl;
         return false;
