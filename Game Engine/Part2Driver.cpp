@@ -42,6 +42,7 @@ int main() {
 	game->newTransition(win, start, "replay");
 	game->newTransition(win, end_game, "quit");
 
+	game->cmd_currentState = start;
 	game->currentState = start;
 
 	string answer;

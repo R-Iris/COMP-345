@@ -214,8 +214,8 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 				setMap(MapLoader::createMapfromFile(mapFileName)); // <-- TODO: Make sure this is an absolute path!
 				
 				// Transition to 'validatemap' state, Handle failure
-				if (!changeState("validatemap")) {
-					cout << "ERROR: Could not transition to 'validatemap' from current state " << currentState->stateName << endl;
+				if (!changeState("loadmap")) {
+					cout << "ERROR: Could not transition to 'loadmap' from current state " << currentState->stateName << endl;
 				}
 			}
 		}
@@ -227,8 +227,8 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			if (map->isValid()) {
 				// Transition to 'addplayer' state, handle failure
-				if (!changeState("addplayer")) {
-					cout << "ERROR: Could not to transition to 'addplayer' from current state " << currentState->stateName << endl;
+				if (!changeState("validatemap")) {
+					cout << "ERROR: Could not to transition to 'validatemap' from current state " << currentState->stateName << endl;
 				}
 			}
 
@@ -262,8 +262,8 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 				// Switch states
 
 				// Check if state changed successfully, otherwise handle failure.
-				if (!changeState("gamestart")) {
-					cout << "ERROR: Could not transition to 'gamestart' from current state " << currentState->stateName << endl;
+				if (!changeState("addplayer")) {
+					cout << "ERROR: Could not transition to 'addplayer' from current state " << currentState->stateName << endl;
 				}
 			}
 
@@ -336,7 +336,13 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// Command processor setter for bool
 			//cmd_game pointer points to win state
 
-			//mainGameLoop(); // TODO: Commented out for testing purposes. Re-enable when done.
+			if (!changeState("gamestart")) {
+				cout << "ERROR: Could not transition to 'gamestart' from current state " << currentState->stateName << endl;
+			}
+
+			else {
+				//mainGameLoop(); // TODO: Commented out for testing purposes. Re-enable when done.
+			}
 		}
 	}
 }
