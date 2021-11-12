@@ -68,8 +68,9 @@ public:
 	Hand& operator= (const Hand&);
 	void addHand(Card*);
 	Card* getCardInHand(int);
-	void setSize(int);
 	int getSize();
+	void setMaxSize(int);
+	int getMaxSize();
 	vector<Card*> getCardsInHand();
 	//Change name of this
 	void removeCard(int);
@@ -82,34 +83,6 @@ public:
 	friend ostream& operator<< (ostream&, const Hand&);
 
 private:
-	int sizeHand{};
+	int maxSizeHand;
 	vector<Card*> cardsInHand;
 };
-
-/*
-
-//--- The following classes are only for the implementation of Assignemnt 1, they'll be removed in the future ---
-class Player {
-public:
-	Player();
-	void issueOrder(class Order*);
-	vector<class Order*> getOrders();
-	~Player();
-
-private:
-	string name;
-	vector<class Order*> orders;
-};
-
-class Order {
-public:
-	Order(string);
-
-	//Output stream operator for vectors containing pointers to order objects
-	friend ostream& operator<< (ostream&, const vector<Order*>);
-
-private:
-	string name;
-};
-
-*/

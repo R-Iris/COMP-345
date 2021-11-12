@@ -1,15 +1,14 @@
 #include "Player.h" // Including the appropriate header file
 
-// Default constructor requires a hand
-Player::Player(Hand* hand) : name("Unnamed"), hand(hand), reinforcementPool(0) {
-    this->ordersList = new OrdersList(this,*new vector<Orders*>);
+// Default constructor with hand, and game
+Player::Player(Hand* hand, GameEngine* game) : name("Unnamed"), hand(hand), reinforcementPool(0), gameEngine(game) {
+	this->ordersList = new OrdersList(this,*new vector<Orders*>);
 }
 
-// Constructor with player name and hand
-//Player::Player(string name, Hand* hand) : name(name), hand(hand), reinforcementPool(0) {
-//    this->ordersList = new OrdersList(this,*new vector<Orders*>);
-//}
-
+// Constructor with name, hand, and game
+Player::Player(string name, Hand* hand, GameEngine* game) : name(name), hand(hand), reinforcementPool(0), gameEngine(game) {
+	this->ordersList = new OrdersList(this, *new vector<Orders*>);
+}
 
 // Copy constructor
 Player::Player(const Player& player)
@@ -333,43 +332,196 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 	cout << "\n#--- Advancing Phase OVER ---#" << endl;
 	cout << "/*-------------------------------------------------------------------*/" << endl;
 
-	// All advance orders are done
+	// All advance orders have been issued at this point!
 
-	cout << "Now that all advance orders are dealt with, moving to card orders " << endl;
+	// Now playing a card, Player plays one card per turn
 
-	cout << "Printing all the cards in player's hand" << endl;
+	cout << "\n#--- Card Playing Phase ---#" << endl << endl;
 
-	//Need to test if the cards are properly displayed
+	// Check if player has any cards in hand
+	if (getHand()->getSize() > 0) {
 
-	//cout << getHand(); //Printing number of cards in hand
+		// Print the player's hand
+		cout << "Printing all the cards in player's hand" << endl;
+		if (getHand()->getSize() > 0) {
+			for (int i = 0; i < getHand()->getSize(); i++) {
+				cout << "Card index : " << i << ", Type: " << getHand()->getCardInHand(i)->getCardTypeName() << endl;
+			}
+		}
+
+		// Ask input for the index of the card to play
+		cout << "Select the index of the card you want to use : ";
+
+		int cardIndex;
+		cin >> cardIndex;
+		cout << endl;
+
+		// If input index is wrong, ask for input again
+	    while(cardIndex < 0 || cardIndex >= hand->getSize()){
+	        cout << "Wrong index selected, please input another index : ";
+	        cin >> cardIndex;
+			cout<< endl;
+	    }
+
+		// Convert input index to a card pointer
+	    Card* card = getHand()->getCardInHand(cardIndex);
+
+		string cardName = card->getCardTypeName();
+
+		// Aliases
+		GameEngine* game = getGameEngine();
+		Hand* hand = getHand();
+		Deck* deck = game->getDeck();
+		OrdersList* orders = this->getOrdersList();
+		
+
+		// Cases for each type of card to be played and its required input
+	    if(cardName == "Bomb") {
+	        cout << "Bomb card selected:" << endl;
+
+			cout << "Which territory should be bombed? Input the index from the list: " << endl;
+
+			// List of territories to attack
+			cout << "\nTerritories to attack: (Index : Name)" << endl;
+			for (auto it : toAttack()) {
+				cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+			}
+			cout << endl;
+
+			// Input enemy territory index
+	        int territoryIndex;
+			cin >> territoryIndex;
+			cout << endl;
+
+			// Convert territory index to territory pointer
+	        Territory* enemyT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex);
+
+			card->play(hand, cardIndex, deck, this, nullptr, orders, nullptr, enemyT, game);
+
+	        cout << "Bomb order will be issued!";
+	    }
+		else if (cardName == "Reinforcement") {
+			cout << "Reinforcement card selected:" << endl;
+
+			cout << "Which territory should receive a reinforcement of 10 armies? Input the index from the list: " << endl;
+
+			// List of territories to defend
+			cout << "\nTerritories to defend: (Index : Name)" << endl;
+			for (auto it : toDefend()) {
+				cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+			}
+			cout << endl;
+
+			// Input enemy territory index
+			int territoryIndex;
+			cin >> territoryIndex;
+			cout << endl;
+
+			// Convert territory index to territory pointer
+			Territory* ownT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex);
+
+			card->play(hand, cardIndex, deck, this, nullptr, orders, nullptr, ownT, game);
+
+			cout << "Reinforcement order will be issued!";
+		}
+		else if (cardName == "Blockade") {
+			cout << "Blockade card selected:" << endl;
+
+			cout << "Which territory should receive a blockade? Input the index from the list: " << endl;
+
+			// List of territories to defend
+			cout << "\nTerritories to defend: (Index : Name)" << endl;
+			for (auto it : toDefend()) {
+				cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+			}
+			cout << endl;
+
+			// Input enemy territory index
+			int territoryIndex;
+			cin >> territoryIndex;
+			cout << endl;
+
+			// Convert territory index to territory pointer
+			Territory* ownT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex);
+
+			card->play(hand, cardIndex, deck, this, nullptr, orders, nullptr, ownT, game);
+
+			cout << "Blockade order will be issued!";
+		}
+		else if (cardName == "Airlift") {
+			cout << "Airlift card selected:" << endl;
+
+			cout << "Where should the airlift start? Input the index from the list: " << endl;
+
+			// List of territories to defend
+			cout << "\nTerritories to defend: (Index : Name)" << endl;
+			for (auto it : toDefend()) {
+				cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+			}
+			cout << endl;
+
+			// Input enemy territory index
+			int territoryIndex;
+			cin >> territoryIndex;
+			cout << endl;
+
+			// Convert territory index to territory pointer
+			Territory* ownT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex);
+
+			cout << "Where should the airlift head to? Input the index from the list: " << endl;
+
+			// List of territories to defend
+			cout << "\nTerritories to defend: (Index : Name)" << endl;
+			for (auto it : toDefend()) {
+				cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+			}
+			cout << endl;
+
+			// Input enemy territory index
+			int territoryIndex2;
+			cin >> territoryIndex2;
+			cout << endl;
+
+			// Convert territory index to territory pointer
+			Territory* otherOwnT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex2);
 
 
-	////Need to ask Iris about how index in hand works(Does it start with zero?)
+			card->play(hand, cardIndex, deck, this, nullptr, orders, ownT, otherOwnT, game);
 
-	//for (int i = 0; i < getHand()->getSize(); i++) {
-	//	cout << "Card index : " << i << endl << getHand()->getCardInHand(i);
-	//}
+			cout << "Airlift order will be issued!";
+		}
+		else if (cardName == "Diplomacy") {
+			cout << "Diplomacy card selected:" << endl;
 
-	//cout << "Select the index of the card you want to use : ";
+			cout << "Who should Diplomacy be used on? Input the index from the list: " << endl;
 
-	///////////////////////////////////////////
-	////Need to rewrite Card::play() method
-	//int index; cin >> index; cout << endl;
- //   while(index<0 ||index > hand->getSize()){
- //       cout << "Wrong index selected, please input another index : ";
- //       cin >> index;cout<< endl;
- //   }
- //   Card* cardToBePlayed = getHand()->getCardInHand(index);
- //   if(cardToBePlayed->getCardTypeName() == "Bomb"){
- //       cout << "Bomb card selected, which territory index do you wish to bomb? Select from toAttack() list: " << endl;
- //       int territoryIndex; cin >> index; cout << endl;
- //       Territory* target = gameEngine->getMap()->getTerritoryByIndex(index);
- //       cout << "Playing bomb card" << endl;
- //       cardToBePlayed->play(getHand(),index,getGameEngine()->getDeck(),this, nullptr, this->ordersList, nullptr,target,getGameEngine());
- //       cout << "Bomb card successfully played";
- //   }
- //   // ^ Same thing can be done for every card type -- > Just something I thought up instead of changing the play method
- //   //---Abhay
+			// List of players in the game
+			cout << "\nList of players in the game: (Index : Name)" << endl;
+			for (int i = 0; i < game->players.size(); i++) {
+				cout << i << " : " + game->players.at(i)->getName() << endl;
+			}
+			cout << endl;
+
+			// Input other player's index
+			int playerIndex;
+			cin >> playerIndex;
+			cout << endl;
+
+			Player* otherP = game->players.at(playerIndex);
+
+			card->play(hand, cardIndex, deck, this, otherP, orders, nullptr, nullptr, game);
+
+			cout << "Diplomacy order will be issued!";
+		}
+	}
+
+	// Player has no cards in their hand
+	else {
+		cout << "This player has no cards in their hand, skipping the card playing phase!" << endl;
+	}
+
+	cout << "\n#--- Card Playing Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
 }
 
 bool Player::ownsTerritory(Territory* territory) {
@@ -430,11 +582,4 @@ void Player::removeOwnedTerritory(Territory * territory) {
 
 void Player::setOwnedTerritories(vector<Territory *> & newVector) {
     territoriesOwned = newVector;
-}
-
-Player::Player(string name, Hand * hand, GameEngine* gameEngine) {
-    this->name = name;
-    this->hand = hand;
-    this->gameEngine = gameEngine;
-	this->ordersList = new OrdersList(this, *new vector<Orders*>);
 }
