@@ -45,8 +45,13 @@ ostream& operator<<(ostream& out, const Transition& transition)
 
 // Members of GameEngine class
 
-GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()), cmd_currentState(nullptr), map(nullptr) {}
-GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()), _observer(_obs), cmd_currentState(nullptr), map(nullptr) { this->Attach(_obs); }
+GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()), cmd_currentState(nullptr), map(nullptr) {
+    players.push_back(new Player("NEUTRAL",new Hand(),this));
+}
+GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()), _observer(_obs), cmd_currentState(nullptr), map(nullptr) {
+    this->Attach(_obs);
+    players.push_back(new Player("NEUTRAL",new Hand(),this));
+}
 
 GameEngine::~GameEngine()
 {
@@ -433,26 +438,32 @@ void GameEngine::reinforcementPhase() {
 void GameEngine::issueOrdersPhase() {
 	// Issue orders for each player in the players list
 	for (Player* p : players) {
-		p->issueOrder();
+        if(p->getName()!="NEUTRAL"){
+            p->issueOrder();
+        }
 	}
 }
 
 void GameEngine::executeOrdersPhase() {
 	for (Player* p : players) {
         //Executing deploys first
-        for(Orders* o: p->getOrdersList()->ordersList){
-            if(o->getName() == "Deploy"){
-                o->execute();
-                p->getOrdersList()->removeOrder(o);
+        if(p->getName()!="NEUTRAL"){
+            for(Orders* o: p->getOrdersList()->ordersList){
+                if(o->getName() == "Deploy"){
+                    o->execute();
+                    p->getOrdersList()->removeOrder(o);
+                }
             }
         }
 	}
     for (Player* p : players) {
         //Executing every other order next
-        for(Orders* o: p->getOrdersList()->ordersList){
-			cout << o->getName() << endl;
-			o->execute();
-			p->getOrdersList()->removeOrder(o);
+        if(p->getName()!="NEUTRAL"){
+            for(Orders* o: p->getOrdersList()->ordersList){
+                cout << o->getName() << endl;
+                o->execute();
+                p->getOrdersList()->removeOrder(o);
+            }
         }
     }
     //Something for the Negotiate order for Orders.cpp
