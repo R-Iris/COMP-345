@@ -14,9 +14,10 @@ class Subject;
 class State;
 class Transition;
 
+// Command class - object containing the information the user has written
 class Command : public ILoggable, public Subject {
 public:
-	enum class commandType { loadmap, validatemap, addplayer, gamestart, replay, quit };
+	enum class commandType { loadmap, validatemap, addplayer, gamestart, replay, quit, gameend};
 
 	// If the command is invalid (gibberish), we still need to keep track of it, so let's make a constructor that only takes in the command's name
 	Command(string, Observer*);
@@ -31,13 +32,21 @@ public:
 
 	// stringToLog Implementation for ILoggable
 	string stringToLog();
+
+	friend ostream& operator<< (ostream&, const Command&);
+
 private:
 	string commandstr;
 	string effect{ "Invalid Command" };
+
+	// Additional string to add for commands such as loadmap and addplayer to get an output such as loadmap <map name>
 	string toAdd{ "" };
+
+	// Integer ID to idenfity the different types of commands. By default this is -1 for invalid commands
 	int commandNumber{ -1 };
 };
 
+// CommandProcessor class - reads the console
 class CommandProcessor : public ILoggable, public Subject {
 public:
 	CommandProcessor(Observer*);
@@ -63,13 +72,24 @@ public:
 
 private:
 	Observer* logger;
+
+	// Vector of all commands written in the console
 	vector<Command*> commandList;
+
+	// Vector of all valid commands written in the console
 	vector<Command*> validCommandList;
+
+	// Boolean to see if the program should exit
 	bool exitProgram = false;
+
+	// Boolean to see if the commandProcessor should pause
 	bool cmdProPause = false;
-	vector<string> commandVector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit" };
+
+	// Vector of valid commands
+	vector<string> commandVector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit", "gameend"};
 };
 
+// FileLineReader class - reads from a file
 class FileLineReader {
 public:
 	FileLineReader();
@@ -84,6 +104,7 @@ private:
 	vector<string> fileContent;
 };
 
+// FileCommandProcessorAdapter class - adapts the content read from a file for the CommandProcessor to understand
 class FileCommandProcessorAdapter : public CommandProcessor {
 public:
 	FileCommandProcessorAdapter(FileLineReader*, Observer*);
@@ -98,6 +119,10 @@ public:
 private:
 	Observer* logger;
 	FileLineReader* flr;
+
+	// Index representing each line read by the file. Starts at -1 since the readCommand() method increases it by one every time it is called.
 	int index{ -1 };
+
+	// Vector of all commands read from the file
 	vector<string> commands{};
 };

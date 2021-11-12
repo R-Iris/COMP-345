@@ -12,6 +12,7 @@ Command::Command(string commandstr, Observer* _obs) : commandstr(commandstr) {
 	this->Attach(_obs);
 }
 
+// Constructors assigning a enum type for commands that are valid
 Command::Command(commandType command, string toAdd, Observer* _obs) {
 	switch (command) {
 	case commandType::loadmap:
@@ -40,6 +41,10 @@ Command::Command(commandType command, string toAdd, Observer* _obs) {
 		commandstr = "quit";
 		commandNumber = 5;
 		break;
+	case commandType::gameend:
+		commandstr = "gameend";
+		commandNumber = 6;
+		break;
 	}
 	this->Attach(_obs);
 }
@@ -59,6 +64,8 @@ Command& Command::operator= (const Command& command) {
 
 // Savesa string effect depending on which type of command it is
 void Command::saveEffect(Command* command) {
+
+	// Switch chase to save the effect of valid commands
 	switch (command->commandNumber) {
 	case 0:
 		command->effect = command->toAdd + " has been successfully loaded";
@@ -77,6 +84,9 @@ void Command::saveEffect(Command* command) {
 		break;
 	case 5:
 		command->effect = "Quitting the game";
+		break;
+	case 6:
+		command->effect = "Command for testing purposes that skips the main game loop";
 		break;
 	}
 	Notify(this);
@@ -107,6 +117,11 @@ string Command::stringToLog() {
 	string command = "Command issued: " + getCommandStr()
 		+ "\nCommand's effect: " + getEffect();
 	return command;
+}
+
+// Overloading the output operator
+ostream& operator<< (ostream& out, const Command& command) {
+	return out << "Command: " << command.commandstr << command.toAdd << " | Effect: " << command.effect << '\n';
 }
 
 // Default constructor
@@ -151,6 +166,7 @@ Command* CommandProcessor::readCommand() {
 
 	cin >> commandstr;
 
+	// When the commandProcessor reads the following commands, it prompts the user to give more information
 	if (commandstr == "loadmap") {
 		cout << "Which map do you wish to load? ";
 		cin >> toAdd;
@@ -165,6 +181,7 @@ Command* CommandProcessor::readCommand() {
 		setcmdProPause(true);
 	}
 
+	// Switch case to decide which command object to create based on the user's input
 	switch (getIndexCmdVector(commandstr)) {
 	case 0:
 		return new Command(Command::commandType::loadmap, toAdd, logger);
@@ -178,7 +195,11 @@ Command* CommandProcessor::readCommand() {
 		return new Command(Command::commandType::replay, toAdd, logger);
 	case 5:
 		return new Command(Command::commandType::quit, toAdd, logger);
+	case 6:
+		return new Command(Command::commandType::gameend, toAdd, logger);
 	default:
+
+		// If none of the valid commands are read then the default constructor with the user's input is called
 		return new Command(commandstr, logger);
 	}
 }
@@ -187,6 +208,7 @@ Command* CommandProcessor::readCommand() {
 void CommandProcessor::getCommand(GameEngine* game, CommandProcessor* cmd) {
 	Command* command = cmd->readCommand();
 
+	// If the command is valid we save it in both the valid commands vector and the general vector
 	if (validate(command, game)) {
 		saveValidCommand(command);
 	}
@@ -196,7 +218,11 @@ void CommandProcessor::getCommand(GameEngine* game, CommandProcessor* cmd) {
 
 // Validates the method
 bool CommandProcessor::validate(Command* command, GameEngine* game) {
+
+	// Checks if the command can be called in the current state
 	if (game->checkState(command->getCommandStr())) {
+
+		// If the commands are the following then we add the toAdd string to get an output such as loadmap <map name>
 		if (command->getCommandStr() == "loadmap") {
 			command->setCommandStr();
 		}
@@ -205,8 +231,12 @@ bool CommandProcessor::validate(Command* command, GameEngine* game) {
 		}
 		else if (command->getCommandStr() == "quit") {
 			cout << "Quitting the game.";
+
+			// Setting the exitProgram boolean to true in order to stop the program
 			exitProgram = true;
 		}
+
+		// Save the effect if the commands are valid
 		command->saveEffect(command);
 		return true;
 	}
@@ -256,6 +286,7 @@ void CommandProcessor::setcmdProPause(bool isPaused) {
 	cmdProPause = isPaused;
 }
 
+// Gets the bool cmdProPause
 bool CommandProcessor::getcmdProPause() {
 	return cmdProPause;
 }
@@ -301,15 +332,19 @@ void FileLineReader::readLineFromFile(string fileName) {
 	fileName = fileName + ".txt";
 	ifstream myfile(fileName);
 
+	// If the file is open we can read from it
 	if (myfile.is_open()) {
 		string line;
 
+		// While the file contains something we add each line to the lines vector
 		while (getline(myfile, line)) {
 			lines.push_back(line);
 		}
 
+		// Closing the file
 		myfile.close();
 
+		// Copying the lines vector into the fileContent vector
 		for (int i = 0; i < lines.size(); i++) {
 			fileContent.push_back(lines[i]);
 		}
@@ -378,16 +413,25 @@ FileLineReader* FileCommandProcessorAdapter::getFileLineReader() {
 // readCommand method adapter
 Command* FileCommandProcessorAdapter::readCommand() {
 	string toAdd{ "" };
+	
+	// Using a space delimiter when reading from a file for lines such as "loadmap mapname"
 	string delimiter{ " " };
+
+	// The position of the delimiter
 	size_t pos{};
 
+	// The word before the delimiter
 	string firstWord{ "" };
+
+	// The word after the delimiter
 	string secondWord{ "" };
 
+	// Increasing the index of the line
 	index++;
-	cout << commands.size() << index << '\n';
 
+	// If the delimiter is found and is not at the end of the string
 	if (commands[index].find(delimiter) != string::npos) {
+
 		// Separating every line at the delimiter " " into two words
 		pos = commands[index].find(delimiter);
 		string firstWord(commands[index].substr(0, pos));
@@ -400,6 +444,8 @@ Command* FileCommandProcessorAdapter::readCommand() {
 			return new Command(Command::commandType::addplayer, secondWord, logger);
 		}
 	}
+
+	// If the delimiter is not found then we can read the line normally
 	else if (commands[index] == "validatemap") {
 		return new Command(Command::commandType::validatemap, toAdd, logger);
 	}
@@ -413,10 +459,10 @@ Command* FileCommandProcessorAdapter::readCommand() {
 	else if (commands[index] == "quit") {
 		return new Command(Command::commandType::quit, toAdd, logger);
 	}
+	else if (commands[index] == "gameend") {
+		return new Command(Command::commandType::gameend, toAdd, logger);
+	}
 	else {
-		if (commands[index] == "gameend") {
-			setcmdProPause(false);
-		}
 		return new Command(commands[index], logger);
 	}
 }
