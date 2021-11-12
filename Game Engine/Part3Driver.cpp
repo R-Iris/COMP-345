@@ -11,11 +11,6 @@ int main()
     srand((int)time(nullptr));
 
     GameEngine * game = new GameEngine();
-    // Create a map from file and assign to this game instance
-    string fileName = "COMP-345/Map/Assets/test.map";
-    Map* map = MapLoader::createMapfromFile(fileName);
-    map->validate();
-    game->setMap(map);
 
     // Initializing states
     State* start = game->newState("start");
@@ -35,12 +30,27 @@ int main()
     game->newTransition(players_added, players_added, "addplayer");
     game->newTransition(players_added, assign_reinforcement, "gamestart");
     game->newTransition(assign_reinforcement, issue_orders, "issueorder");
+    game->newTransition(assign_reinforcement, win, "win"); // Used for demonstration
     game->newTransition(issue_orders, issue_orders, "issueorder");
     game->newTransition(issue_orders, execute_orders, "issueordersend");
     game->newTransition(execute_orders, execute_orders, "execorder");
     game->newTransition(execute_orders, assign_reinforcement, "endexecorders");
     game->newTransition(execute_orders, win, "win");
     game->newTransition(win, start, "replay");
+
+    // Initializing currentState
+    game->currentState = players_added;
+    game->cmd_currentState = players_added;
+    // Announce current state
+    cout << *game->currentState;
+
+    // Create a map from file and assign to this game instance
+    string fileName = "COMP-345/Map/Assets/test.map";
+    Map* map = MapLoader::createMapfromFile(fileName);
+    map->validate();
+    game->setMap(map);
+
+    vector<Territory*> territories = map->getTerritories();
 
     // Add new players
     Player* p1 = new Player("P1", new Hand(), game);
@@ -49,63 +59,99 @@ int main()
     // Add players to game list
     game->addPlayer(p1); game->addPlayer(p2);
 
-    // Initializing currentState
-    game->currentState = players_added;
-    game->cmd_currentState = players_added;
-    // Announce current state
-    cout << *game->currentState;
+    // Accept input for startup scenario
+    cout << "Scenario 0: P1/P2 have 1 territory, no cards" << endl;
+    cout << "Scenario 1: P1 has a continent (+20), P2 has 1 territory, no cards" << endl;
+    cout << "Scenario 2: P1/P2 have 2 territories, 2 cards each" << endl;
+    cout << "Scenario 3: P1 wins with all 4 territories, no cards" << endl;
+    cout << "Scenario 4: P1/P2 have 2 territories, no cards" << endl;
+    cout << "Pick a scenario:" << endl;
+    int scenario = 0;
+    cin >> scenario;
+    cout << endl;
 
-    // Set player's reinforcement pools to 50
-    p1->setReinforcementPool(50);
-    p2->setReinforcementPool(5);
+    switch (scenario) {
+    case 0:
+        // Add territories to players
+        p1->addOwnedTerritory(territories.at(0));
+        p2->addOwnedTerritory(territories.at(1));
 
-    // Draw 2 cards for each player
-    //p1->getHand()->addHand(game->getDeck()->draw());
-    //p1->getHand()->addHand(game->getDeck()->draw());
-    //p2->getHand()->addHand(game->getDeck()->draw());
-    //p2->getHand()->addHand(game->getDeck()->draw());
-    //p1->getHand()->addHand(new Card(Card::cardType::Blockade));
+        // Set player's reinforcement pools to 50
+        p1->setReinforcementPool(50);
+        p2->setReinforcementPool(50);
 
-    // Execute start phase
-    // game->startupPhase();
-    game->changeState("gamestart");
+        game->changeState("gamestart");
 
-    vector<Territory*> territories = map->getTerritories();
+        // Execute main game loop
+        game->mainGameLoop();
+        break;
+    case 1:
+        // Add territories to players
+        p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(1)); p1->addOwnedTerritory(territories.at(2));
+        p2->addOwnedTerritory(territories.at(3));
 
-    /*
-    for (Territory* t : territories) {
-        cout << t << endl;
+        // Set player's reinforcement pools to 50
+        p1->setReinforcementPool(50);
+        p2->setReinforcementPool(5);
+
+        game->changeState("gamestart");
+
+        // Execute main game loop
+        game->mainGameLoop();
+        break;
+    case 2:
+        // Add territories to players
+        p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(2));
+        p2->addOwnedTerritory(territories.at(1)); p2->addOwnedTerritory(territories.at(3));
+
+        // Set player's reinforcement pools to 50
+        p1->setReinforcementPool(50);
+        p2->setReinforcementPool(50);
+
+        // Draw 2 cards for each player
+        p1->getHand()->addHand(game->getDeck()->draw());
+        p1->getHand()->addHand(game->getDeck()->draw());
+        p2->getHand()->addHand(game->getDeck()->draw());
+        p2->getHand()->addHand(game->getDeck()->draw());
+
+        game->changeState("gamestart");
+
+        // Execute main game loop
+        game->mainGameLoop();
+        break;
+    case 3:
+        // Add territories to players
+        p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(1));
+        p1->addOwnedTerritory(territories.at(2)); p1->addOwnedTerritory(territories.at(3));
+
+        // Set player's reinforcement pools to 50
+        p1->setReinforcementPool(50);
+        p2->setReinforcementPool(50);
+
+        game->changeState("gamestart");
+
+        // Execute main game loop
+        game->mainGameLoop();
+        break;
+    case 4:
+        // Add territories to players
+        p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(2));
+        p2->addOwnedTerritory(territories.at(1)); p2->addOwnedTerritory(territories.at(3));
+
+        // Set player's reinforcement pools to 50
+        p1->setReinforcementPool(50);
+        p2->setReinforcementPool(50);
+
+        game->changeState("gamestart");
+
+        // Execute main game loop
+        game->mainGameLoop();
+        break;
     }
-    */
 
-    p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(2)); p1->addOwnedTerritory(territories.at(1));
-    /*p2->addOwnedTerritory(territories.at(1))*/; p2->addOwnedTerritory(territories.at(3));
-
-    // Execute main game loop
-    game->mainGameLoop();
-
-    /*cout << "P1's territories owned:" << endl;
-
-    cout << "P1's reinforcement pool:" << p1->getReinforcementPool() << endl;
-    cout << "Adding territory C to P1" << endl;
-    p1->addOwnedTerritory(territories.at(2));
-    cout << "P1's territories owned:" << endl;
-    for (Territory* t : p1->toDefend()) {
-        cout << t->getName() << endl;
-    }*/
-
-    /*
-    game->removePlayer(p2);
-    cout << "List of players:" << endl;
-    for (Player* p : game->players) {
-        cout << p->getName() << endl;
-    }
-    */
-
-
-    // call end() which deletes game and prints a message
+    // Call end() which deletes game and prints a message
     game->end();
-    // fix dangling pointer
+    // Delete dangling pointer
     game = nullptr;
 
     return 0;

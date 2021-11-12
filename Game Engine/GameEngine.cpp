@@ -393,7 +393,7 @@ void GameEngine::mainGameLoop() {
 	    for (Player* p : players) {
 
 			// If player owns no territories, remove from game
-	        if (p->toDefend().empty()) {
+	        if (p->toDefend().empty() && p->getName() != "NEUTRAL") {
 				cout << "Player " << p->getName() << " has no more territories! Removing player " << p->getName() << " from the game!" << endl;
 				removePlayer(p);
 	        }
@@ -408,24 +408,32 @@ void GameEngine::mainGameLoop() {
 				cout << "The winner is: " << p->getName() << "!" << endl;
 				
 				changeState("win");
-				// CommandProcessor bool gameend = true
-				// break;
-	            // End game
+
+				cout << "Input \"replay\" to restart the game, or \"quit\" (or anything else) to quit the program:" << endl;
+				string userInput;
+				cin >> userInput;
+				cout << endl;
+				if (userInput == "replay") {
+					changeState("replay");
+					cout << "Restarting the game!" << endl;
+				}
+				return;
 	        }
 	    }
 	
-	    // Reinforcement Phase
-		changeState("endexecorders");
-	    reinforcementPhase();
+		if (!onePlayerOwnsAllTerritories) {
+			// Reinforcement Phase
+			changeState("endexecorders");
+			reinforcementPhase();
 
-		// Issue Orders Phase
-		changeState("issueorder");
-	    issueOrdersPhase();
+			// Issue Orders Phase
+			changeState("issueorder");
+			issueOrdersPhase();
 
-		// Execute Orders Phase
-		changeState("issueordersend");
-	    executeOrdersPhase();
-
+			// Execute Orders Phase
+			changeState("issueordersend");
+			executeOrdersPhase();
+		}
 	} while (!onePlayerOwnsAllTerritories);
 }
 
