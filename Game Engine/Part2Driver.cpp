@@ -47,6 +47,9 @@ int main() {
 
 	string answer;
 	string file;
+
+	cout << "Here, we read the commands that will be executed by startupPhase()" << endl;
+	cout << "==================================================================" << endl << endl;
 	cout << "Do you wish to accept commands from the console or read them from a file? " << '\n';
 
 	cin >> answer;
@@ -68,13 +71,15 @@ int main() {
 	// Show effect of 'gamestart' command
 	// Show turn order
 	cout << endl;
-	cout << "TURN ORDER" << endl;
-	cout << "==========" << endl;
+	cout << "TURN ORDER (Shows that 'gamestart' command randomizes the turn order of players and the effect of the 'addplayer' command)" << endl;
+	cout << "==========================================================================================================================" << endl;
 
 	int i = 0;
 	for (Player* p : game->players) {
-		i++;
-		cout << i << ") " << p->getName() << endl;
+		if (p->getName() != game->getNeutralPlayer()->getName()) {
+			i++;
+			cout << i << ") " << p->getName() << endl;
+		}
 	}
 
 	// Show distribution of territories
@@ -99,9 +104,25 @@ int main() {
 	cout << endl;
 
 	// Show number of cards and armies for each player
+	cout << "This next section shows that each player gets 50 armies and 2 cards from the deck." << endl;
+	cout << "==================================================================================" << endl;
+
 	for (Player* p : game->players) {
-		cout << "Player " << p->getName() << " has " << p->getHand()->getCardsInHand().size() << " cards in their hand and " << p->getReinforcementPool() << " armies" << endl;
+		if (p->getName() != game->getNeutralPlayer()->getName()) {
+			cout << endl;
+			cout << "Player " << p->getName() << " has " << p->getHand()->getCardsInHand().size() << " cards in their hand and " << p->getReinforcementPool() << " armies" << endl;
+			cout << p->getName() << "'s cards are: " << endl;
+			for (Card* c : p->getHand()->getCardsInHand()) {
+				cout << "* " << c->getCardTypeName() << endl;
+			}
+		}
 	}
+
+	cout << endl;
+
+	cout << "At the end of the startup phase, the game switches to first state in the play phase: assign_reinforcements." << endl;
+	cout << "===========================================================================================================" << endl;
+	cout << "Current state: " << game->currentState->stateName << endl;
 
 	/// /////////////////
 	delete game;

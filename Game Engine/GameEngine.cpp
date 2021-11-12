@@ -220,7 +220,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			// We found a map file name from the commmand's effect!
 			if (std::regex_search(effect, match, extractionPattern)) {
-				string mapFileName = /*"Assets/" + */(string)match[1];
+				string mapFileName = (string)match[1];
 				setMap(MapLoader::createMapfromFile(mapFileName)); // <-- TODO: Make sure this is an absolute path!
 				
 				// Transition to 'validatemap' state, Handle failure
@@ -299,34 +299,39 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			*  e) Switch the game to the "play" state. (Call mainGameLoop())
 			*/
 			
-			// Assign territories - TODO: Come up with a way to fairly distribute all countries between players
+			// Assign territories - Come up with a way to fairly distribute all countries between players
 			int neutralTerritories = map->getTerritories().size() % players.size();
 			int distrbutedTerritories = map->getTerritories().size() - neutralTerritories;
 
 			// Randomize the territories and then pass them out to each player
-			int territoriesPerPlayer = distrbutedTerritories / players.size(); // Define the number of territories each player will get (at this point, there should be just enough so that each player gets the same amount)
+			// ===============================================================
+
+			// Define the number of territories each player will get (remove from denominator, since the neutral player shouldn't get its own territories yet.)
+			int territoriesPerPlayer = distrbutedTerritories / (players.size() - 1);
 
 			// Keep track of which territories we've already handed out
 			vector<int> taken;
 
 			// For each player, pass this number of territories out.
 			for (Player* p : players) {
-				int i = 0;
-				
-				while (i < territoriesPerPlayer) {
-					// Generate the index of a random territory
-					int choose = rand() % map->getTerritories().size();
+				if (p->getName() != getNeutralPlayer()->getName()) {
+					int i = 0;
 
-					// If it hasn't already been taken, then give it to the player.
-					if (!std::count(taken.begin(), taken.end(), choose)) {
-						p->addOwnedTerritory(map->getTerritories().at(choose));
-						taken.push_back(choose);
-						i++;
+					while (i < territoriesPerPlayer) {
+						// Generate the index of a random territory
+						int choose = rand() % map->getTerritories().size();
+
+						// If it hasn't already been taken, then give it to the player.
+						if (!std::count(taken.begin(), taken.end(), choose)) {
+							p->addOwnedTerritory(map->getTerritories().at(choose));
+							taken.push_back(choose);
+							i++;
+						}
 					}
 				}
 			}
 
-			// TODO: Assign unassigned territories to Neutral player (How to get neutral player?).
+			// Assign unassigned territories to Neutral player (How to get neutral player?).
 			for (Territory* t : map->getTerritories()) {
 				bool owned = false;
 
@@ -347,12 +352,14 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			// Give each player 50 armies to begin with and let them draw 2 cards from the deck
 			for (Player* p : players) {
-				// Give 50 armies
-				p->setReinforcementPool(50);
+				if (p->getName() != getNeutralPlayer()->getName()) {
+					// Give 50 armies
+					p->setReinforcementPool(50);
 
-				// Draw 2 cards for the player
-				p->getHand()->addHand(deck->draw());
-				p->getHand()->addHand(deck->draw());
+					// Draw 2 cards for the player
+					p->getHand()->addHand(deck->draw());
+					p->getHand()->addHand(deck->draw());
+				}
 			}
 
 			// Switch the game to the play phase
@@ -362,10 +369,6 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			if (!changeState("gamestart")) {
 				cout << "ERROR: Could not transition to 'gamestart' from current state " << currentState->stateName << endl;
-			}
-
-			else {
-				//mainGameLoop(); // TODO: Commented out for testing purposes. Re-enable when done.
 			}
 		}
 	}
