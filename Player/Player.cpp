@@ -72,6 +72,10 @@ vector<Territory*> Player::toAttack()
 		}
 	}
 
+	// Remove duplicates
+	for (Territory* t : attackableTerritories) {
+		attackableTerritories.erase(unique(attackableTerritories.begin(), attackableTerritories.end()), attackableTerritories.end());
+	}
 	return attackableTerritories;
 }
 

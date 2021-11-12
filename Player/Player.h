@@ -1,6 +1,7 @@
 #pragma once // Should be included in all header files to avoid redundant inclusions. Dealt by preprocessor
 #include <iostream> // Used for cout and stream insertion operator
 #include <vector> // Used for lists instead of arrays
+#include <algorithm> // Used for binary search
 #include "../Cards/Cards.h"
 #include "../Orders/Orders.h"
 #include "../Map/Map.h"

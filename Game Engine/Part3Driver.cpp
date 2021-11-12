@@ -60,10 +60,11 @@ int main()
     p2->setReinforcementPool(50);
 
     // Draw 2 cards for each player
-    p1->getHand()->addHand(game->getDeck()->draw());
-    p1->getHand()->addHand(game->getDeck()->draw());
-    p2->getHand()->addHand(game->getDeck()->draw());
-    p2->getHand()->addHand(game->getDeck()->draw());
+    //p1->getHand()->addHand(game->getDeck()->draw());
+    //p1->getHand()->addHand(game->getDeck()->draw());
+    //p2->getHand()->addHand(game->getDeck()->draw());
+    //p2->getHand()->addHand(game->getDeck()->draw());
+    p1->getHand()->addHand(new Card(Card::cardType::Blockade));
 
     // Execute start phase
     // game->startupPhase();
@@ -78,7 +79,7 @@ int main()
     */
 
     p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(2));
-    p2->addOwnedTerritory(territories.at(1)); p2->addOwnedTerritory(territories.at(3));
+    p2->addOwnedTerritory(territories.at(1)); //p2->addOwnedTerritory(territories.at(3));
 
     // Execute main game loop
     game->mainGameLoop();
