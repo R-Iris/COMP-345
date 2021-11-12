@@ -164,7 +164,4 @@ int main(){
 
     delete p1,delete p2,delete p3,delete p4;
     delete t1,delete t2,delete t3,delete t4;
-    // deploy,delete advance,delete airlift,delete blockade,delete negotiate,delete advance1;
-    // delete deck;
-    // delete hand;
 }
