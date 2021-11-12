@@ -45,8 +45,8 @@ ostream& operator<<(ostream& out, const Transition& transition)
 
 // Members of GameEngine class
 
-GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()), cmd_currentState(nullptr) {}
-GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()), _observer(_obs), cmd_currentState(nullptr) { this->Attach(_obs); }
+GameEngine::GameEngine() : currentState(nullptr), deck(new Deck()), cmd_currentState(nullptr), map(nullptr) {}
+GameEngine::GameEngine(Observer* _obs) : currentState(nullptr), deck(new Deck()), _observer(_obs), cmd_currentState(nullptr), map(nullptr) { this->Attach(_obs); }
 
 GameEngine::~GameEngine()
 {
@@ -367,30 +367,37 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 }
 
 // Main Game Loop
-
 void GameEngine::mainGameLoop() {
 
 	/*This loop shall continue until only one of the players owns all the territories in the map, at which point a winner is
 	announced and the game ends.*/
 
-	bool onePlayerOwnsAllTerritories = true;
-	int numTotalTerritories = map->getTerritories().size(); // GET TERRITORIES CAUSES AN ERROR WHEN THERE IS NO MAP
+	bool onePlayerOwnsAllTerritories = false;
+
+	// Get the total number of territories, 0 if there is no map
+	int numTotalTerritories = 0;
+	if (map != nullptr) {
+		numTotalTerritories = map->getTerritories().size();
+	}
 
 	do {
 
-	    /*
-	    The main game loop also checks for any player that does not control at least one
-	    territory; if so, the player is removed from the game
-	    */
 	    for (Player* p : players) {
+
+			// If player owns no territories, remove from game
 	        if (p->toDefend().empty()) {
 				removePlayer(p);
 	        }
+
+			// If player owns all the territories, they win
 	        if (p->toDefend().size() >= numTotalTerritories) {
+
+				// Used to break the loop
 				onePlayerOwnsAllTerritories = true;
-				cout << "The winner is: " << p->getName() << "!" << endl;
+
 				// Announce this player as winner
-				// announceWinner(p);
+				cout << "The winner is: " << p->getName() << "!" << endl;
+				
 				// CommandProcessor bool gameend = true
 				// break;
 	            // End game
@@ -401,75 +408,30 @@ void GameEngine::mainGameLoop() {
 		changeState("endexecorders");
 	    reinforcementPhase();
 
-	    /*
-	    Issuing Orders Phase � Players issue orders and place them in their order list through a call to the
-	    Player::issueOrder() method. This method is called in round-robin fashion across all players by the
-	    game engine. This must be implemented in a function/method named issueOrdersPhase() in the game
-	    engine.
-	    */
+		// Issue Orders Phase
 		changeState("issueorder");
 	    issueOrdersPhase();
 
-	    /*
-	    Orders Execution Phase � Once all the players have signified in the same turn that they are not issuing
-	    one more order, the game engine proceeds to execute the top order on the list of orders of each player in
-	    a round-robin fashion (i.e. the �Order Execution Phase��see below). Once all the players� orders have
-	    been executed, the main game loop goes back to the reinforcement phase. This must be implemented in
-	    a function/method named executeOrdersPhase() in the game engine.
-	    */
+		// Execute Orders Phase
 		changeState("issueordersend");
 	    executeOrdersPhase();
+
 	} while (!onePlayerOwnsAllTerritories);
 }
 
 void GameEngine::reinforcementPhase() {
-	/*
-	Reinforcement Phase � Players are given a number of armies that depends on the number of territories
-	they own, (# of territories owned divided by 3, rounded down). If the player owns all the territories of an
-	entire continent, the player is given a number of armies corresponding to the continent�s control bonus
-	value. In any case, the minimal number of reinforcement armies per turn for any player is 3. These armies
-	are placed in the player�s reinforcement pool. This must be implemented in a function/method named
-	reinforcementPhase() in the game engine.
-	*/
-
 	for (Player* p : players) {
 	    // Armies = # of territories owned divided by 3, rounded down : or 3 minimum
 	    int armies = floor(p->toDefend().size() / 3);
-
-	    // Bonus for owning all continent's territories, gets added
-		int continentBonus = 0;
-
-		// continentBonus = continent.getArmies();
-		continentBonus = map->calculateContinentBonus(p);
-
+	    // Bonus for owning all of a continent's territories gets added to the armies
 	    // Place armies in player's reinforcement pool
-	    p->setReinforcementPool(max(armies + continentBonus, 3));
+		// Minimum 3 armies, or armies + continent bonus
+	    p->setReinforcementPool(max(p->getReinforcementPool() + armies + map->calculateContinentBonus(p), 3));
 	}
 }
 
 void GameEngine::issueOrdersPhase() {
-	/*
-	The issuing orders phase decision-making is implemented in the player�s issueOrder() method, which
-	implements the following:
-
-	// To attack -> vector<Territory*> getAdjacentTerritories(); what about priority
-	� The player decides which neighboring territories are to be attacked in priority (as a list return by the
-	toAttack() method), and which of their own territories are to be defended in priority (as a list returned by
-	the toDefend() method).
-	� The player issues deploy orders on its own territories that are in the list returned by toDefend(). As long
-	as the player has armies still to deploy (see startup phase and reinforcement phase), it will issue a deploy
-	order and no other order. Once it has deployed all its available armies, it can proceed with other kinds of
-	orders.
-	� The player issues advance orders to either (1) move armies from one of its own territory to the other in
-	order to defend them (using toDefend() to make the decision), and/or (2) move armies from one of its
-	territories to a neighboring enemy territory to attack them (using toAttack() to make the decision).
-	� The player uses one of the cards in their hand to issue an order that corresponds to the card in question.
-	Note that the orders should not be validated as they are issued. Orders are to be validated only when they are
-	executed in the orders execution phase. This must be implemented in a function/method named
-	issueOrdersPhase() in the game engine. The decision-making code must be implemented within the
-	issueOrder() method of the player class in the Player.cpp/Player.h files.
-	*/
-
+	// Issue orders for each player in the players list
 	for (Player* p : players) {
 		p->issueOrder();
 	}
@@ -477,7 +439,6 @@ void GameEngine::issueOrdersPhase() {
 
 void GameEngine::executeOrdersPhase() {
 	for (Player* p : players) {
-		// for each p, get order list, top to bottom, order->execute (validation done by execute)
         //Executing deploys first
         for(Orders* o: p->getOrdersList()->ordersList){
             if(o->getName() == "Deploy"){
@@ -489,11 +450,12 @@ void GameEngine::executeOrdersPhase() {
     for (Player* p : players) {
         //Executing every other order next
         for(Orders* o: p->getOrdersList()->ordersList){
+			cout << o->getName() << endl;
 			o->execute();
 			p->getOrdersList()->removeOrder(o);
         }
     }
-    //Something for the Negotiate order for Orders.cpp -- Abhay
+    //Something for the Negotiate order for Orders.cpp
     for(auto it : players){
         it->cannotAttack.clear();
     }

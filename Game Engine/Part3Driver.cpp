@@ -6,6 +6,10 @@
 
 int main()
 {
+
+    // Random initializer
+    srand((int)time(nullptr));
+
     GameEngine * game = new GameEngine();
     // Create a map from file and assign to this game instance
     string fileName = "COMP-345/Map/Assets/test.map";
@@ -47,6 +51,7 @@ int main()
 
     // Initializing currentState
     game->currentState = players_added;
+    game->cmd_currentState = players_added;
     // Announce current state
     cout << *game->currentState;
 

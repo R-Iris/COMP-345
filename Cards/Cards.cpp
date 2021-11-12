@@ -52,7 +52,6 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player,Player* otherP
 	//Temporary pointer to the card played
 	Card* playedCard = hand->getCardInHand(index);
 	cout << "\nThe " << playedCard->cardTypeName << " card has been played." << '\n';
-
 	//Creates a pointer to an order of the card's type
 	//Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
 	switch (enumToInt(playedCard->getCardTypeName())) {
@@ -112,7 +111,7 @@ string Card::getCardTypeName() {
 
 int Card::enumToInt(string name) {
 	if (name == "Bomb") return 0;
-	if (name == "Reinforement") return 1;
+	if (name == "Reinforcement") return 1;
 	if (name == "Blockade") return 2;
 	if (name == "Airlift") return 3;
 
