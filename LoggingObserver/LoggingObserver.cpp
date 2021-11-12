@@ -1,5 +1,7 @@
 #include "../LoggingObserver/LoggingObserver.h"
 
+// All Methods and Classes have comments in the LoggingObserver header file
+//////////////////////////////////////////////////////////////////////////////
 ILoggable::ILoggable() {}
 ILoggable::ILoggable(const ILoggable& s) {}
 ILoggable& ILoggable::operator=(const ILoggable& s) { return *this; }
