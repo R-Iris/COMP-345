@@ -6,15 +6,11 @@
 
 int main()
 {
-    // Instantiate Observer object
-    //Observer* _game_observer = new LogObserver();
-    // Instantiate GameEngine object
-    //GameEngine* game = new GameEngine(_game_observer);
     GameEngine * game = new GameEngine();
     // Create a map from file and assign to this game instance
     string fileName = "COMP-345/Map/Assets/test.map";
     Map* map = MapLoader::createMapfromFile(fileName);
-    //map->validate();
+    map->validate();
     game->setMap(map);
 
     // Initializing states
@@ -54,6 +50,16 @@ int main()
     // Announce current state
     cout << *game->currentState;
 
+    // Set player's reinforcement pools to 50
+    p1->setReinforcementPool(50);
+    p2->setReinforcementPool(50);
+
+    // Draw 2 cards for each player
+    p1->getHand()->addHand(game->getDeck()->draw());
+    p1->getHand()->addHand(game->getDeck()->draw());
+    p2->getHand()->addHand(game->getDeck()->draw());
+    p2->getHand()->addHand(game->getDeck()->draw());
+
     // Execute start phase
     // game->startupPhase();
     game->changeState("gamestart");
@@ -67,19 +73,12 @@ int main()
     */
 
     p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(2));
-    p2->addOwnedTerritory(territories.at(1));
+    p2->addOwnedTerritory(territories.at(1)); p2->addOwnedTerritory(territories.at(3));
 
     // Execute main game loop
     game->mainGameLoop();
 
-    cout << "P1's territories owned:" << endl;
-    for (Territory* t : p1->toDefend()) {
-        cout << t->getName() << endl;
-    }
-    cout << "P2's territories owned:" << endl;
-    for (Territory* t : p2->toDefend()) {
-        cout << t->getName() << endl;
-    }
+    /*cout << "P1's territories owned:" << endl;
 
     cout << "P1's reinforcement pool:" << p1->getReinforcementPool() << endl;
     cout << "Adding territory C to P1" << endl;
@@ -87,9 +86,7 @@ int main()
     cout << "P1's territories owned:" << endl;
     for (Territory* t : p1->toDefend()) {
         cout << t->getName() << endl;
-    }
-    game->mainGameLoop();
-    cout << "P1's reinforcement pool:" << p1->getReinforcementPool() << endl;
+    }*/
 
     /*
     game->removePlayer(p2);
@@ -104,9 +101,6 @@ int main()
     game->end();
     // fix dangling pointer
     game = nullptr;
-    // deallocate observer object
-    //delete _game_observer;
-    // fix dangling pointer
-    //_game_observer = nullptr;
+
     return 0;
 }

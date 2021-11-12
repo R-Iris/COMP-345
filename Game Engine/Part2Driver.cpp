@@ -83,9 +83,15 @@ int main() {
 	cout << "======================" << endl;
 
 	for (Territory* t : game->map->getTerritories()) {
-		for (Player* p : game->players) {
-			if (p->ownsTerritory(t)) {
-				cout << "Territory " << t->getIndex() << " is owned by player " << p->getName() << endl;
+		if (game->getNeutralPlayer()->ownsTerritory(t)) {
+			cout << "Territory " << t->getIndex() << " is neutral (no player owns it)." << endl;
+		}
+
+		else {
+			for (Player* p : game->players) {
+				if (p->ownsTerritory(t)) {
+					cout << "Territory " << t->getIndex() << " is owned by player " << p->getName() << endl;
+				}
 			}
 		}
 	}

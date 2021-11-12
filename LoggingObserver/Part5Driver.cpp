@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 
 
 #include "../Game Engine/GameEngine.h"
@@ -18,6 +17,7 @@ int main()
     // Create a map from file and assign to this game instance
     string fileName = "COMP-345/Map/Assets/test.map";
 
+    // Instantiating states in the GameEngine
     State* start = game->newState("start");
     State* map_loaded = game->newState("map_loaded");
     State* map_validated = game->newState("map_validated");
@@ -26,7 +26,7 @@ int main()
     State* win = game->newState("win");
     State* end_game = game->newState("end_game");
 
-
+    // Instantiating transitions in the GameEngine
     game->newTransition(start, map_loaded, "loadmap");
     game->newTransition(map_loaded, map_loaded, "loadmap");
     game->newTransition(map_loaded, map_validated, "validatemap");
@@ -37,52 +37,61 @@ int main()
     game->newTransition(win, start, "replay");
     game->newTransition(win, end_game, "quit");
 
-
+    // Initializing currentState and cmd_currentState in gameEngine
     game->currentState = start;
     game->cmd_currentState = start;
 
     string answer;
     string cmd_fileName;
 
-
+    // Testing the CommandProcessor ILoggable/Subject implementation
     cout << "\nTesting CommandProcessor ILoggable/Subject implementation.." << endl << "***************************************************" << endl;
     cout << "Do you wish to accept commands from the console or read them from a file? " << '\n';
 
-    cin >> answer;
+    cin >> answer; // answer for file or console
 
+    // if / else if for user input
     if (answer == "console") {
         cout << "\nPlease enter a command: " << '\n';
 
+        // Testing Notify in commandprocessor
         cout << "Testing command and commandprocessor Notify()..." << endl;
         while (!(commandprocessor->getExitProgram())) {
             commandprocessor->getCommand(game, commandprocessor);
         }
-
+        
+        // getting commandList
         cout << "\n\nAll commands: " << commandprocessor->getCommandList();
         cout << "\nValid commands: " << commandprocessor->getValidCommandList();
 
+        // preventing memory leaks
         delete commandprocessor;
         commandprocessor = NULL;
     }
     else if (answer == "file") {
         cout << "\nWhich file do you wish to open? " << '\n';
 
+        // user in for filename
         cin >> cmd_fileName;
 
-
+        // read from the file
         FileLineReader* fileReader = new FileLineReader();
         fileReader->readLineFromFile(cmd_fileName);
 
+        // command processor now reads from the file
         FileCommandProcessorAdapter* filecmd = new FileCommandProcessorAdapter(fileReader, _obs);
-
+        
+        // Testing command and commandprocessor Notify()
         cout << "Testing command and commandprocessor Notify()..." << endl;
         while (!(commandprocessor->getExitProgram())) {
             commandprocessor->getCommand(game, filecmd);
         }
 
+        // getting commandList
         cout << "\n\nAll commands: " << commandprocessor->getCommandList();
         cout << "\nValid commands: " << commandprocessor->getValidCommandList();
 
+        // preventing memory leaks
         delete filecmd;
         delete fileReader;
         filecmd = NULL;
@@ -90,23 +99,25 @@ int main()
 
     }
 
+    // Testing Orders ILoggable/Subject implementation
     cout << "\nTesting Orders ILoggable/Subject implementation..." << endl << "***************************************************" << endl;
     cout << "Adding new players for testing..." << endl;
     // Add new players
     Player* p1 = new Player("P1", new Hand(), game);
     Player* p2 = new Player("P2", new Hand(), game);
 
+    // Adding territories
     cout << "Adding territory for testing..." << endl;
     auto* territory1 = new Territory();
     auto* territory2 = new Territory();
 
-
+    // Associating territories and armies to players
     p1->addOwnedTerritory(territory1);
     p2->addOwnedTerritory(territory2);
     territory1->setNumberOfArmies(20);
     territory2->setNumberOfArmies(20);
 
-
+    // Testing Order instantiation
     cout << "Testing order instantiation..." << endl;
     auto* deploy = new Deploy(p1, 10, territory1, game);
     auto* advance = new Advance(p1, 20, territory1, territory2, game);
@@ -116,6 +127,7 @@ int main()
     auto* airlift = new Airlift(p1, 20, territory1, territory2, game);
 
 
+    // Testing orderList Notify()
     cout << "Testing orderList Notify()..." << endl;
     p1->getOrdersList()->addOrders(deploy);
     p1->getOrdersList()->addOrders(advance);
@@ -124,7 +136,7 @@ int main()
     p2->getOrdersList()->addOrders(negotiate);
     p2->getOrdersList()->addOrders(airlift);
     
-
+    // Testing order execute() Notify()
     cout << "Testing order execute Notify()..." << endl;
     deploy->execute();    
     advance->execute();
@@ -133,11 +145,13 @@ int main()
     negotiate->execute();
     airlift->execute();    
 
+    // Instantiating game plaers
     cout << "Testing instantiation of game players..." << endl;
     // Add players to game list
     game->players = {p1, p2};
 
 
+    // Testing state changes for GameEngine and Notify()
     cout << "Testing state change for GameEngine...." << endl;
 
     // replaying the game
@@ -153,8 +167,8 @@ int main()
     game->changeState("addplayer");
 
 
-
-
+    // preventing memory leaks
+    // end() delete the GameEngine (game) object
     game->end();
     game = nullptr;
 

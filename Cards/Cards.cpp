@@ -80,54 +80,6 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player,Player* otherP
 	deck->addCard(playedCard);
 }
 
-//Another version of Cards::play()
-/*
-void Card::play(Player* p,Deck* deck,int index) {
-    //Validating that the index the user inputted is correct
-    while (!validateIndex(p->getHand()->getCardsInHand(), index)) {
-        cout << "\nYour hand only contains " << p->getHand()->getCardsInHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
-        cout << "\nInput another index: ";
-        cin >> index;cout << endl;
-    }
-
-    //Temporary pointer to the card played
-    Card* playedCard = p->getHand()->getCardInHand(index);
-    cout << "\nThe " << playedCard->cardTypeName << " card has been played." << '\n';
-
-
-    switch (enumToInt(playedCard->getCardTypeName())) {
-        case 0:
-            cout << "Enter your target "
-            ordersList->addOrders(*new Bomb(player,target));
-            break;
-        case 1:
-            ordersList->addOrders(*new Deploy(player, 10, target)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
-            break;
-        case 2:
-            ordersList->addOrders(*new Blockade(player,target,gameEngine));
-            break;
-        case 3:
-            ordersList->addOrders(*new Airlift(player, 10, start, target));
-            break;
-        case 4:
-            ordersList->addOrders(*new Negotiate(player,otherPlayer));
-            break;
-    }
-
-    //Creates a pointer to an order of the card's type
-    //Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
-
-    //Removes card played from the hand
-    p->getHand()->removeCard(index);
-
-    //Adds the card played to the deck
-    deck->addCard(playedCard);
-
-}
-
-
-
-*/
 //Overloading the output stream operator for vectors containing pointers to card objects
 ostream& operator<< (ostream& out, const vector<Card*> cards) {
 	out << "[ ";
@@ -242,7 +194,6 @@ int Deck::getSize() {
 Card* Deck::draw() {
 	//Random int from 0 to the size of the deck
 	int index{ rand() % (int)cards.size() };
-	cout << "\nYou picked the " << index + 1 << " nth card from the deck." << '\n';
 
 	//Temporary pointer to the drawn card
 	Card* cardDrawn = cards[index];
@@ -281,13 +232,13 @@ ostream& operator<< (ostream& out, const Deck& deck) {
 }
 
 //Default constructor
-Hand::Hand() : sizeHand(3) {}
+Hand::Hand() : maxSizeHand(3) {}
 
 //Constructor accepting an integer
-Hand::Hand(int number) : sizeHand(number) {}
+Hand::Hand(int number) : maxSizeHand(number) {}
 
 //Copy constructor
-Hand::Hand(const Hand& hand) : sizeHand(hand.sizeHand) {
+Hand::Hand(const Hand& hand) : maxSizeHand(hand.maxSizeHand) {
 	//Copying each element from the original hand to the new one
 	for (int i = 0; i < hand.cardsInHand.size(); i++) {
 		cardsInHand.push_back(hand.cardsInHand[i]);
@@ -296,7 +247,7 @@ Hand::Hand(const Hand& hand) : sizeHand(hand.sizeHand) {
 
 //Overloading the assignment operator
 Hand& Hand::operator= (const Hand& hand) {
-	this->sizeHand = hand.sizeHand;
+	this->maxSizeHand = hand.maxSizeHand;
 	this->cardsInHand = hand.cardsInHand;
 
 	return *this;
@@ -307,17 +258,22 @@ void Hand::addHand(Card* ptrCard) {
 	cardsInHand.push_back(ptrCard);
 }
 
-void Hand::setSize(int number) {
-	sizeHand = number;
+void Hand::setMaxSize(int number) {
+	maxSizeHand = number;
 }
 
-int Hand::getSize() {
-	return sizeHand;
+int Hand::getMaxSize() {
+	return maxSizeHand;
 }
 
 //Retrieves the card in the hand at a specified index
 Card* Hand::getCardInHand(int index) {
 	return cardsInHand.at(index);
+}
+
+int Hand::getSize()
+{
+	return cardsInHand.size();
 }
 
 //Retrieves all cards in the hand
@@ -332,7 +288,7 @@ void Hand::removeCard(int index) {
 
 //Verifies if the hand is full or not
 bool Hand::handFull() {
-	if (cardsInHand.size() == sizeHand) {
+	if (cardsInHand.size() == maxSizeHand) {
 		cout << "\nYour hand is full." << '\n';
 		return true;
 	}
@@ -360,49 +316,3 @@ ostream& operator<< (ostream& out, const Hand& hand) {
 
 	return out;
 }
-
-/*
-//--- The following methods are only for the implementation of Assignemnt 1, they'll be removed in the future ---
-Player::Player() : name("Default player") { }
-
-//Adds the order to the player's list of orders
-void Player::issueOrder(Order* order) {
-	orders.push_back(order);
-}
-
-//Retrieves the list of orders
-vector<Order*> Player::getOrders() {
-	return orders;
-}
-
-//Destructor for the player object
-Player::~Player() {
-	//Stopping the orders vector from resizing itself
-	orders.reserve(orders.size());
-
-	//Removing each pointer and pointing them to NULL
-	for (int i = 0; i < orders.size(); i++) {
-		orders[i] = NULL;
-	}
-
-	//Clearing the vector
-	orders.clear();
-}
-
-Order::Order(string name) : name(name) {
-	cout << "The " << name << " order has been initiated.";
-}
-
-//Overloading the output stream for vectors containing pointers to order objects
-ostream& operator<< (ostream& out, const vector<Order*> orders) {
-	out << "[ ";
-	for (int i = 0; i < orders.size(); i++) {
-		out << orders[i]->name;
-		if (i != orders.size() - 1) out << ", ";
-	}
-	out << " ]\n";
-
-	//The output has the form [ Pointer1, Pointer2, Pointer3 ]
-	return out;
-}
-*/
