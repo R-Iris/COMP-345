@@ -168,6 +168,10 @@ int main()
         break;
     }
 
+    // Delete players
+    delete p1; delete p2; delete p3;
+    p1, p2, p3 = nullptr;
+
     // Call end() which deletes game and prints a message
     game->end();
     // Delete dangling pointer
