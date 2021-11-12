@@ -188,6 +188,7 @@ void GameEngine::newTransition(State* current, State* next, string command)
 	transitions.push_back(new Transition(current, next, command));
 }
 
+// Used when the player enters 'quit'
 void GameEngine::end()
 {
 	delete this;
@@ -321,6 +322,20 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			}
 
 			// TODO: Assign unassigned territories to Neutral player (How to get neutral player?).
+			for (Territory* t : map->getTerritories()) {
+				bool owned = false;
+
+				for (Player* p : players) {
+					if (p->ownsTerritory(t)) {
+						owned = true;
+						break;
+					}
+				}
+
+				if (!owned) {
+					getNeutralPlayer()->addOwnedTerritory(t);
+				}
+			}
 
 			// Determine the turn order randomly - Re-arrange the players in the vector
 			std::shuffle(players.begin(), players.end(), std::random_device()); // This is not total randomization, given 'n' players this will produce the same shuffle order of those 'n' players.
@@ -373,6 +388,7 @@ void GameEngine::mainGameLoop() {
 	        }
 	        if (p->toDefend().size() >= numTotalTerritories) {
 				onePlayerOwnsAllTerritories = true;
+				cout << "The winner is: " << p->getName() << "!" << endl;
 				// Announce this player as winner
 				// announceWinner(p);
 				// CommandProcessor bool gameend = true
@@ -466,7 +482,7 @@ void GameEngine::executeOrdersPhase() {
         for(Orders* o: p->getOrdersList()->ordersList){
             if(o->getName() == "Deploy"){
                 o->execute();
-                //p->getOrdersList()->removeOrder(o); // This function does not exist yet
+                p->getOrdersList()->removeOrder(o); // This function does not exist yet
             }
         }
 	}
@@ -474,7 +490,7 @@ void GameEngine::executeOrdersPhase() {
         //Executing every other order next
         for(Orders* o: p->getOrdersList()->ordersList){
 			o->execute();
-			//p->getOrdersList()->removeOrder(o); // This function does not exist yet
+			p->getOrdersList()->removeOrder(o); // This function does not exist yet
         }
     }
     //Something for the Negotiate order for Orders.cpp -- Abhay
@@ -499,7 +515,7 @@ Player* GameEngine::getNeutralPlayer(){
             return it;
         }
     }
-    Player* neutralPlayer = new Player("NEUTRAL", nullptr, this);
+    Player* neutralPlayer = new Player("NEUTRAL", new Hand(), this);
     this->players.push_back(neutralPlayer);
     return neutralPlayer;
 }

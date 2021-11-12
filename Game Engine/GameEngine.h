@@ -105,7 +105,7 @@ public:
 	void addPlayer(Player*);
 	// Remove a player from the player list
 	void removePlayer(Player*);
-	// STRICTLY Checks the states
+	// STRICTLY Checks the states (USED BY COMMAND PROCESSOR)
 	bool checkState(string command);
 	// Checks and Changes the states
 	bool changeState(string command);
