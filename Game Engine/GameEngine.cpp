@@ -391,6 +391,7 @@ void GameEngine::mainGameLoop() {
 
 			// If player owns no territories, remove from game
 	        if (p->toDefend().empty()) {
+				cout << "Player " << p->getName() << " has no more territories! Removing player " << p->getName() << " from the game!" << endl;
 				removePlayer(p);
 	        }
 
@@ -403,6 +404,7 @@ void GameEngine::mainGameLoop() {
 				// Announce this player as winner
 				cout << "The winner is: " << p->getName() << "!" << endl;
 				
+				changeState("win");
 				// CommandProcessor bool gameend = true
 				// break;
 	            // End game
@@ -456,11 +458,34 @@ void GameEngine::executeOrdersPhase() {
             }
         }
 	}
+
+	// Find the longest list length
+	int longestList = 0;
+	for (Player* p : players) {
+		if (p->getName() != "NEUTRAL") {
+			if (p->getOrdersList()->ordersList.size() > longestList) {
+				longestList = p->getOrdersList()->ordersList.size();
+			}
+		}
+	}
+
+	// Round-robin execution of the orders
+	for (int i = 0; i < longestList; i++) {
+		for (Player* p : players) {
+			if (p->getName() != "NEUTRAL") {
+				if (!p->getOrdersList()->ordersList.empty()) {
+					Orders* o = p->getOrdersList()->ordersList.at(0);
+					o->execute();
+					p->getOrdersList()->removeOrder(o);
+				}
+			}
+		}
+	}
+
     for (Player* p : players) {
         //Executing every other order next
         if(p->getName()!="NEUTRAL"){
             for(Orders* o: p->getOrdersList()->ordersList){
-                cout << o->getName() << endl;
                 o->execute();
                 p->getOrdersList()->removeOrder(o);
             }

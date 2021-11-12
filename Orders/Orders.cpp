@@ -297,6 +297,7 @@ void Advance::execute() {
                     cout << "Number of armies on defeated target territory is now " << attackingArmy <<endl;
                     //Attacker captures territory
                     target->setNumberOfArmies(attackingArmy);
+                    target->getOwner()->removeOwnedTerritory(target);
                     orderOwner->addOwnedTerritory(target);
                     //A player receives a card at the end of his turn if
                     //they successfully conquered at least one territory during their turn.

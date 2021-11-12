@@ -59,7 +59,7 @@ void Card::play(Hand* hand, int index, Deck* deck, Player* player,Player* otherP
 		ordersList->addOrders(new Bomb(player,target, gameEngine));
 		break;
 	case 1:
-		ordersList->addOrders(new Deploy(player, 10, target, gameEngine)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
+		ordersList->addOrders(new Deploy(player, 5, target, gameEngine)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
 		break;
 	case 2:
 		ordersList->addOrders(new Blockade(player,target,gameEngine));
