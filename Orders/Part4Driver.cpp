@@ -47,6 +47,7 @@ int main(){
     auto* t3 = new Territory();
     t3->setName("T3");
     p3->addOwnedTerritory(t3);
+    t3->setNumberOfArmies(50);
     auto* t4 = new Territory();
     t4->setName("T4");
     p4->addOwnedTerritory(t4);

@@ -80,7 +80,7 @@ public:
 	~Deploy(); //Destructor
 	void setNoOfArmies(int noOfArmies);
 	int getNoOfArmies() const;
-	string getName() override;
+	string getName();
 	void setTarget(Territory* target);
 	Territory* getTarget();
 	friend ostream& operator << (ostream& strm, Deploy& deploy);
@@ -105,7 +105,7 @@ public:
 	Advance& operator = (const Advance& advance); //Assignment operator
 	~Advance(); //Destructor
 	void setNoOfArmies(int noOfArmies);
-	string getName() override;
+	string getName();
 	int getNoOfArmies() const;
 	void setSource(Territory* source);
 	Territory* getSource();
@@ -131,7 +131,7 @@ public:
 	~Bomb();
 	Bomb& operator = (const Bomb& bomb);
 	void setTarget(Territory* target);
-	string getName() override;
+	string getName();
 	Territory* getTarget();
 	friend ostream& operator << (ostream& strm, Bomb& bomb);
 	bool validate();
@@ -152,7 +152,7 @@ public:
 	Blockade(const Blockade& blockade);
 	~Blockade();
 	Blockade& operator = (const Blockade& blockade);
-	string getName() override;
+	string getName();
 	void setTarget(Territory* target);
 	Territory* getTarget();
 	friend ostream& operator << (ostream& strm, Blockade& blockade);
@@ -182,7 +182,7 @@ public:
 	Territory* getSource();
 	void setTarget(Territory* target);
 	Territory* getTarget();
-	string getName() override;
+	string getName();
 	friend ostream& operator << (ostream& strm, Airlift& airlift);
 	bool validate();
 	void execute();
@@ -202,9 +202,9 @@ public:
 	Negotiate(const Negotiate& negotiate);
 	~Negotiate();
 	Negotiate& operator= (const Negotiate& negotiate);
-	string getName() override;
+	string getName();
 	friend ostream& operator << (ostream& strm, Negotiate& negotiate);
-	bool validate() override;
-	void execute() override;
+	bool validate();
+	void execute();
 };
 //---------------------End-------------------------------

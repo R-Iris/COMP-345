@@ -44,13 +44,13 @@ Card& Card::operator= (const Card& card) {
 //Play method that is inherited by all children of the card class. It takes a card from the player's hand, creates an order and puts the card back into the deck.
 void Card::play(int index,int airLift, Player* player,Player* otherPlayer, Territory* start, Territory* target,GameEngine* gameEngine) {
 	//Validating that the index the user inputted is correct
-	if (!validateIndex(hand->getCardsInHand(), index)) {
-		cout << "\nYour hand only contains " << hand->getCardsInHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
+	if (!validateIndex(player->getHand()->getCardsInHand(), index)) {
+		cout << "\nYour hand only contains " << player->getHand()->getCardsInHand().size() << " cards. The index you entered is invalid. Terminating program." << '\n';
 		exit(1);
 	}
 
 	//Temporary pointer to the card played
-	Card* playedCard = hand->getCardInHand(index);
+	Card* playedCard = player->getHand()->getCardInHand(index);
 	cout << "\nThe " << playedCard->cardTypeName << " card has been played." << '\n';
 	//Creates a pointer to an order of the card's type
 	//Order* order = new Order(hand->getCardInHand(index)->getCardTypeName());
@@ -73,10 +73,10 @@ void Card::play(int index,int airLift, Player* player,Player* otherPlayer, Terri
 	}
 
 	//Removes card played from the hand
-	hand->removeCard(index);
+	player->getHand()->removeCard(index);
 
 	//Adds the card played to the deck
-	deck->addCard(playedCard);
+	gameEngine->getDeck()->addCard(playedCard);
 }
 
 //Overloading the output stream operator for vectors containing pointers to card objects
