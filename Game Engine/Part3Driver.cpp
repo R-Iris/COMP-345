@@ -55,6 +55,7 @@ int main()
     // Add new players
     Player* p1 = new Player("P1", new Hand(), game);
     Player* p2 = new Player("P2", new Hand(), game);
+    Player* p3 = new Player("P3", new Hand(), game);
 
     // Add players to game list
     game->addPlayer(p1); game->addPlayer(p2);
@@ -65,6 +66,7 @@ int main()
     cout << "Scenario 2: P1/P2 have 2 territories, 2 cards each" << endl;
     cout << "Scenario 3: P1 wins with all 4 territories, no cards" << endl;
     cout << "Scenario 4: P1/P2 have 2 territories, no cards" << endl;
+    cout << "Scenario 5: P1 has 2 territories, P2/P3 have 1, no cards" << endl;
     cout << "Pick a scenario:" << endl;
     int scenario = 0;
     cin >> scenario;
@@ -147,7 +149,28 @@ int main()
         // Execute main game loop
         game->mainGameLoop();
         break;
+    case 5:
+        // Add territories to players
+        game->addPlayer(p3);
+        p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(1));
+        p2->addOwnedTerritory(territories.at(2));
+        p3->addOwnedTerritory(territories.at(3));
+
+        // Set player's reinforcement pools to 50
+        p1->setReinforcementPool(50);
+        p2->setReinforcementPool(5);
+        p3->setReinforcementPool(5);
+
+        game->changeState("gamestart");
+
+        // Execute main game loop
+        game->mainGameLoop();
+        break;
     }
+
+    // Delete players
+    delete p1; delete p2; delete p3;
+    p1, p2, p3 = nullptr;
 
     // Call end() which deletes game and prints a message
     game->end();
