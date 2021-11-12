@@ -1,0 +1,9 @@
+loadmap solaris.map
+win
+something
+validatemap
+addplayer p2
+gamestart
+testing
+gameend
+quit
