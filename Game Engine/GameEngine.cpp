@@ -469,7 +469,7 @@ void GameEngine::executeOrdersPhase() {
 		}
 	}
 
-	// Round-robin execution of the orders
+	// Round-robin execution of the other orders
 	for (int i = 0; i < longestList; i++) {
 		for (Player* p : players) {
 			if (p->getName() != "NEUTRAL") {
@@ -482,18 +482,9 @@ void GameEngine::executeOrdersPhase() {
 		}
 	}
 
-    for (Player* p : players) {
-        //Executing every other order next
-        if(p->getName()!="NEUTRAL"){
-            for(Orders* o: p->getOrdersList()->ordersList){
-                o->execute();
-                p->getOrdersList()->removeOrder(o);
-            }
-        }
-    }
-    //Something for the Negotiate order for Orders.cpp
-    for(auto it : players){
-        it->cannotAttack.clear();
+    //Something for the Advance order for Orders.cpp
+    for(auto it:players){
+        it->receivedCardThisTurn = false;
     }
 }
 

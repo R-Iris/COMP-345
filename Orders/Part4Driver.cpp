@@ -54,11 +54,24 @@ int main(){
     auto* t5 = new Territory();
     t5->setName("T5");
     p4->addOwnedTerritory(t5);
+    auto * t6 = new Territory();
+    t6->setName("T6");
+    p1->addOwnedTerritory(t6);
 
     t1->setAdjacentTerritories({t2});
     t2->setAdjacentTerritories({t1});
     t3->setAdjacentTerritories({t4});
     t4->setAdjacentTerritories({t3});
+
+    cout << "\nPrinting the names of the territories owned by each player" << endl;
+
+    for(auto it: gameEngine->players){
+        cout << "Name of territories owned by " << it->getName() << ": ";
+        for(auto it2 : it->toDefend()){
+            cout << it2->getName() << "-->";
+        }
+        cout << "END" << endl;
+    }
 
     auto* deploy = new Deploy(p1,10,t1, gameEngine);
     
@@ -106,13 +119,35 @@ int main(){
         it->execute();
     }
 
+    cout << "Testing if change of ownership was successful\n" << endl;
+
+    cout << "````````````````````````````````````````````````````````````````````````````````````````````````````````" << endl;
+    cout << "Driver clearly demonstrates that ownership of a territory is transferred to the attacking player if a territory is conquered as a result of an advance order" << endl;
+    cout << "````````````````````````````````````````````````````````````````````````````````````````````````````````" << endl;
+    cout << "\nPrinting the names of the territories owned by each player" << endl;
+
+    for(auto it: gameEngine->players){
+        cout << "Name of territories owned by " << it->getName() << ": ";
+        for(auto it2 : it->toDefend()){
+            cout << it2->getName() << "-->";
+        }
+        cout << "END" << endl;
+    }
+
+    cout << "As shown above, T1 no longer belongs to P1 but rather to P2" << endl;
+
+    cout << "````````````````````````````````````````````````````````````````````````````````````````````````````````" << endl;
+    cout << "Driver clearly demonstrates that one card is given to a player if they conquer at least one territory in a turn (not more than one card per turn)" << endl;
+    cout << "````````````````````````````````````````````````````````````````````````````````````````````````````````" << endl;
+
+
     cout << "P2's hand after battle : " << *p2->getHand() << endl;
 
-    cout << "Testing if change of ownership was successful" << endl;
-
-    cout << "t1 now belongs to " << t1->getOwner()->getName() << endl;
-
     cout << "\nExecuting " + p3->getName() + "'s ordersList while at the same time testing if negotiate order works\n" << endl;
+
+    cout << "````````````````````````````````````````````````````````````````````````````````````````````````````````" << endl;
+    cout << "Driver clearly demonstrates that the negotiate order prevents attacks between the two players involved" << endl;
+    cout << "````````````````````````````````````````````````````````````````````````````````````````````````````````" << endl;
 
     for(auto it:p3->getOrdersList()->ordersList){
         it->execute();
@@ -136,6 +171,9 @@ int main(){
         it->execute();
         cout << endl;
     }
+    cout << "````````````````````````````````````````````````````````````````````````````````````````````````````````" << endl;
+    cout << "Driver clearly demonstrates that the blockade order transfers ownership to the Neutral player" << endl;
+    cout << "````````````````````````````````````````````````````````````````````````````````````````````````````````" << endl;
 
     cout << "List of territories owned by p4 after blockade order: ";
 
@@ -156,6 +194,16 @@ int main(){
     }
 
     cout << "END" << endl;
+
+    cout << "\nPrinting the names of the territories owned by each player after every order has been executed" << endl;
+
+    for(auto it: gameEngine->players){
+        cout << "Name of territories owned by " << it->getName() << ": ";
+        for(auto it2 : it->toDefend()){
+            cout << it2->getName() << "-->";
+        }
+        cout << "END" << endl;
+    }
 
     cout << "\nEnd of Part 4 Driver" << endl;
 

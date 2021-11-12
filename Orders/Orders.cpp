@@ -120,11 +120,12 @@ void Deploy::execute() {
     if (validate()) {
         cout << "Executing the deploy order" << endl;
         //Moving armies
+        int oldNoOfArmies = getTarget()->getNumberOfArmies();
         int newNoOfArmies = getTarget()->getNumberOfArmies() + noOfArmies;
         getTarget()->setNumberOfArmies(newNoOfArmies);
         //Printing message
         setEffect(orderOwner->getName() + " has deployed " + to_string(getNoOfArmies()) +
-        " armies to territory " + target->getName() + ". New army count = " + to_string(getTarget()->getNumberOfArmies())
+        " armies to territory " + target->getName() +". Old army count = " + to_string(oldNoOfArmies) + ". New army count = " + to_string(getTarget()->getNumberOfArmies())
          + "\n");
         cout << getEffect();
         setExecuted(true);
@@ -203,6 +204,12 @@ ostream& operator <<(ostream &strm, Advance& advance){
 bool Advance::validate() {
     if(source== nullptr||target==nullptr){
         cout << "Either source or target territory points to NULL" << endl;
+        return false;
+    }
+    //If diplomacy card was used last turn
+    if(cannotBeAttacked){
+        cout << "Advance order invalid. Negotiate order was used last turn"
+        << " between " + orderOwner->getName() + "and " + target->getOwner()->getName() << endl;
         return false;
     }
     if(getExecuted()){
@@ -301,7 +308,10 @@ void Advance::execute() {
                     orderOwner->addOwnedTerritory(target);
                     //A player receives a card at the end of his turn if
                     //they successfully conquered at least one territory during their turn.
-                    orderOwner->getHand()->addHand(game->deck->draw());
+                    if(!orderOwner->receivedCardThisTurn){
+                        orderOwner->getHand()->addHand(game->deck->draw());
+                        orderOwner->receivedCardThisTurn = true;
+                    }
                     setEffect(orderOwner->getName() + " won battle against "
                     + enemy->getName() + "and takes " + target->getName() + " territory\n");
                     setExecuted(true);
@@ -516,7 +526,7 @@ void Blockade::execute() {
         target->setNumberOfArmies(target->getNumberOfArmies() * 2);
         //Ownership of the territory is transferred to the Neutral player, which must be created if it
         //does not already exist.
-        target->setOwner(game->getNeutralPlayer());
+        game->getNeutralPlayer()->addOwnedTerritory(target);
         orderOwner->removeOwnedTerritory(target);
         setEffect("Successfully doubled the number of armies in " + target->getName() + " territory" +
         " and ownership changed to neutral player\n");

@@ -135,7 +135,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 				else {
 					ordersList->addOrders(new Deploy(this, deployNo, gameEngine->getMap()->getTerritoryByIndex(tIndex), gameEngine));
 					setReinforcementPool(getReinforcementPool() - deployNo);
-					cout << deployNo << " armies have been deployed!" << endl;
+					cout << deployNo << " armies will been deployed!" << endl;
 				}
 			}
 			else {
@@ -300,7 +300,14 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 					if (army <= source->getNumberOfArmies()) {
 						cout << "Advancing from " << source->getName() << " to "
 							<< target->getName() << " " << army << " armies!" << endl;
-						ordersList->addOrders(new Advance(this, army, source, target , gameEngine));
+                        //Takes care of what happens if diplomacy was used last turn
+                        Advance* advance = new Advance(this, army, source, target , gameEngine);
+                        for(auto it: cannotAttack){
+                            if(it == target->getOwner()){
+                                advance->cannotBeAttacked = true;
+                            }
+                        }
+						ordersList->addOrders(advance);
 					}
 
 					// Input number of armies to move is bigger than number of armies in source territory
@@ -337,6 +344,9 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 	cout << "/*-------------------------------------------------------------------*/" << endl;
 
 	// All advance orders have been issued at this point!
+
+    //NOW CLEARING CANNOTATTACK VECTOR For Negotiate order
+    this->cannotAttack.clear();
 
 	// Now playing a card, Player plays one card per turn
 
@@ -405,28 +415,8 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 	        cout << "Bomb order will be issued!";
 	    }
 		else if (cardName == "Reinforcement") {
-			cout << "Reinforcement card selected:" << endl;
-
-			cout << "Which territory should receive a reinforcement of 10 armies? Input the index from the list: " << endl;
-
-			// List of territories to defend
-			cout << "\nTerritories to defend: (Index : Name)" << endl;
-			for (auto it : toDefend()) {
-				cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
-			}
-			cout << endl;
-
-			// Input enemy territory index
-			int territoryIndex;
-			cin >> territoryIndex;
-			cout << endl;
-
-			// Convert territory index to territory pointer
-			Territory* ownT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex);
-
-			card->play(cardIndex,0,this, nullptr,nullptr, ownT, game);
-
-			cout << "Reinforcement order will be issued!";
+			cout << "Reinforcement card selected --> Will be played immediately below: " << endl;
+			card->play(cardIndex,0,this, nullptr,nullptr, nullptr, game);
 		}
 		else if (cardName == "Blockade") {
 			cout << "Blockade card selected:" << endl;

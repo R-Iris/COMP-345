@@ -112,6 +112,7 @@ public:
 	void setTarget(Territory* target);
 	Territory* getTarget();
 	friend ostream& operator << (ostream& strm, Advance& advance);
+    bool cannotBeAttacked = false;
 	bool validate();
 	void execute();
 };

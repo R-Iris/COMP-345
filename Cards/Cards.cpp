@@ -59,7 +59,10 @@ void Card::play(int index,int airLift, Player* player,Player* otherPlayer, Terri
 		player->getOrdersList()->addOrders(new Bomb(player,target, gameEngine));
 		break;
 	case 1:
-        player->getOrdersList()->addOrders(new Deploy(player, 10, target, gameEngine)); //None of the orders are reinforcement. From the first PDF "reinforcement: the player receives 5 reinforcement army units."
+        cout << "Reinforcement card played immediately" << endl;
+        cout << "Old reinforcement pool army count : " << player->getReinforcementPool() << endl;
+        player->setReinforcementPool(player->getReinforcementPool()+ 5);
+        cout << "New reinforcement pool army count : " << player->getReinforcementPool() << endl;
 		break;
 	case 2:
         player->getOrdersList()->addOrders(new Blockade(player,target,gameEngine));

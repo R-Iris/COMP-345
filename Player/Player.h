@@ -42,6 +42,7 @@ public:
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
     vector<Player*> cannotAttack; //Vector of players which cannot be attacked
     void setOwnedTerritories(vector<Territory*>&);
+    bool receivedCardThisTurn = false;
 private:
 	string name;
     GameEngine* gameEngine;
