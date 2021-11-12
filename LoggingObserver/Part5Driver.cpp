@@ -15,7 +15,7 @@ int main()
     // Instantiate GameEngine object
     GameEngine* game = new GameEngine(_obs);
     // Create a map from file and assign to this game instance
-    string fileName = "COMP-345/Map/Assets/test.map";
+    string fileName = "Map/Assets/test.map";
 
     // Instantiating states in the GameEngine
     State* start = game->newState("start");

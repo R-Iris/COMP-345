@@ -80,19 +80,12 @@ vector<Territory*> Player::toAttack()
 }
 
 // Create a new order and add to order list
-void Player::issueOrder() // Creates an Order object and puts it in the playerï¿½s list of orders
+void Player::issueOrder()
 {
 	
 	// Intro message for each player
 	cout << "\nIssuing orders for player " << getName() << ":" << endl;
 	cout << "/*-------------------------------------------------------------------*/" << endl;
-
-	/*
-	The player issues deploy orders on its own territories that are in the list returned by toDefend(). As long
-	as the player has armies still to deploy (see startup phase and reinforcement phase), it will issue a deploy
-	order and no other order. Once it has deployed all its available armies, it can proceed with other kinds of
-	orders. 
-	*/
 
 	cout << "#--- Deploying Phase ---#" << endl;
 
@@ -275,7 +268,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 				cin >> targetIndex;
 				cout << endl;
 
-				// Convert source and targer territories from index to a territory pointer
+				// Convert source and targert territories from index to a territory pointer
 				Territory* source = gameEngine->getMap()->getTerritoryByIndex(sourceIndex);
 				Territory* target = gameEngine->getMap()->getTerritoryByIndex(targetIndex);
 

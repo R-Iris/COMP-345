@@ -146,7 +146,6 @@ void GameEngine::addPlayer(Player* player)
 void GameEngine::removePlayer(Player* player)
 {
 	players.erase(remove(players.begin(), players.end(), player), players.end());
-	//delete(player); MEMORY LEAK
 }
 
 bool GameEngine::checkState(string command)
@@ -493,7 +492,7 @@ void GameEngine::executeOrdersPhase() {
 		}
 	}
 
-    //Something for the Advance order for Orders.cpp
+    //used for Advance order in Orders.cpp
     for(auto it:players){
         it->receivedCardThisTurn = false;
     }
@@ -507,7 +506,6 @@ string GameEngine::stringToLog() {
 }
 
 //Neutral Player related stuff for Blockade order in Orders.cpp
-//May need to change for A3
 
 Player* GameEngine::getNeutralPlayer(){
     for(auto it : players){
