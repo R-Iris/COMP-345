@@ -223,7 +223,7 @@ bool Advance::validate() {
         }
     }
     if(!targetAdj){
-        cout << "Deploy order not valid" << endl;
+        cout << "Advance order not valid" << endl;
         cout << "Target territory (" + getTarget()->getName() + ") not adjacent to source territory(" + source->getName() + ")" << endl;
         return false;
     }
@@ -252,15 +252,15 @@ void Advance::execute() {
             + " territory to " + target->getName() + " territory \n");
             cout << getEffect();
         }
-        //If the target territory belongs to another player than the player that issued the advance order, an attack is
-        //simulated when the order is executed. An attack is simulated by the following battle simulation
-        //mechanism:
-        //1.Each attacking army unit involved has 60% chances of killing one defending army. At the same time,
-        //each defending army unit has 70% chances of killing one attacking army unit.
-        //2.If all the defender's armies are eliminated, the attacker captures the territory. The attacking army units
-        //that survived the battle then occupy the conquered territory.
-        //3.A player receives a card at the end of his turn if they successfully conquered at least one territory
-        //during their turn.
+        /*If the target territory belongs to another player than the player that issued the advance order, an attack is
+          simulated when the order is executed. An attack is simulated by the following battle simulation
+          mechanism:
+          1.Each attacking army unit involved has 60% chances of killing one defending army. At the same time,
+          each defending army unit has 70% chances of killing one attacking army unit.
+          2.If all the defender's armies are eliminated, the attacker captures the territory. The attacking army units
+          that survived the battle then occupy the conquered territory.
+          3.A player receives a card at the end of his turn if they successfully conquered at least one territory
+          during their turn.*/
         else{
             Player* enemy = target->getOwner();
             for(auto it: enemy->cannotAttack){
@@ -303,7 +303,8 @@ void Advance::execute() {
                     orderOwner->getHand()->addHand(game->deck->draw());
                     setEffect(orderOwner->getName() + " won battle against "
                     + enemy->getName() + "and takes " + target->getName() + " territory\n");
-                    break;
+                    setExecuted(true);
+                    return;
                 }
                 if(attackingArmy == 0){
                     //Nothing happens-- Battle lost
@@ -311,12 +312,12 @@ void Advance::execute() {
                     cout << "Remaining number of armies on enemy territory is " << target->getNumberOfArmies() << endl;
                     setEffect(orderOwner->getName() + " attacks " + enemy->getName() + " territory " +
                     target->getName() + " and lost.");
-                    break;
+                    setExecuted(true);
+                    return;
                 }
                 randNumber = rand() % 10 + 1;
             }
         }
-        setExecuted(true);
     }
     else{
         setEffect("The advance call was not executed since it was invalid\n");
@@ -429,6 +430,7 @@ void Bomb::execute() {
     }
     Notify(this);
 }
+
 //Assignment operator overload
 //Intentionally shallow copying data members of deploy class since no new members are being created
 Bomb &Bomb::operator=(const Bomb &bomb) {
@@ -484,10 +486,10 @@ ostream& operator <<(ostream &strm, Blockade& blockade){
     else return strm << s1;
 }
 
-//The blockade order can only be created by playing the blockade card
-//A blockade order targets a territory that belongs to the player issuing the order. Its effect is to
-//double the number of armies on the territory and to transfer the ownership of the territory to the Neutral player.
-//The blockade order can only be created by playing the blockade card.
+/*The blockade order can only be created by playing the blockade card
+  A blockade order targets a territory that belongs to the player issuing the order. Its effect is to
+  double the number of armies on the territory and to transfer the ownership of the territory to the Neutral player.
+  The blockade order can only be created by playing the blockade card.*/
 bool Blockade::validate() {
     if(getTarget()== nullptr){
         cout << "Target territory points to NULL" << endl;
@@ -695,9 +697,9 @@ ostream& operator <<(ostream &strm, Negotiate& negotiate){
     else return strm << s1;
 }
 
-//A negotiate order targets an enemy player. It results in the target player and the player issuing
-//the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
-//order can only be created by playing the diplomacy card.
+/*A negotiate order targets an enemy player. It results in the target player and the player issuing
+  the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
+  order can only be created by playing the diplomacy card.*/
 bool Negotiate::validate() {
     if(otherPlayer== nullptr){
         cout << "Target Player points to NULL" << endl;
@@ -715,9 +717,9 @@ bool Negotiate::validate() {
     return true;
 }
 
-//A negotiate order targets an enemy player. It results in the target player and the player issuing
-//the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
-//order can only be created by playing the diplomacy card.
+/*A negotiate order targets an enemy player. It results in the target player and the player issuing
+  the order to not be able to successfully attack each others’ territories for the remainder of the turn. The negotiate
+  order can only be created by playing the diplomacy card.*/
 void Negotiate::execute() {
     //If the target is an enemy player, then the effect is that any attack that may be declared between territories
     //of the player issuing the negotiate order and the target player will result in an invalid order.
@@ -731,7 +733,7 @@ void Negotiate::execute() {
         setExecuted(true);
     }
     else{
-        setEffect("Airlift order has not been executed\n");
+        setEffect("Negotiate order has not been executed\n");
         cout << getEffect() << endl;
     }
     Notify(this);
