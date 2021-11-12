@@ -17,16 +17,18 @@ class Transition;
 class Command : public ILoggable, public Subject {
 public:
 	enum class commandType { loadmap, validatemap, addplayer, gamestart, replay, quit };
-	//If the command is invalid (gibberish), we still need to keep track of it, so let's make a constructor that only takes in the command's name
+
+	// If the command is invalid (gibberish), we still need to keep track of it, so let's make a constructor that only takes in the command's name
 	Command(string, Observer*);
 	Command(commandType, string, Observer*);
+	Command(const Command& command);
+	Command& operator= (const Command&);
 	void saveEffect(Command*);
 	string getCommandStr();
 	void setCommandStr();
 	string getEffect();
 	string getToAdd();
 
-	//******************
 	// stringToLog Implementation for ILoggable
 	string stringToLog();
 private:
@@ -36,10 +38,11 @@ private:
 	int commandNumber{ -1 };
 };
 
-//Adapter
 class CommandProcessor : public ILoggable, public Subject {
 public:
 	CommandProcessor(Observer*);
+	CommandProcessor(const CommandProcessor&);
+	CommandProcessor& operator= (const CommandProcessor&);
 	~CommandProcessor();
 	virtual Command* readCommand();
 	void getCommand(GameEngine*, CommandProcessor*);
@@ -50,12 +53,9 @@ public:
 	vector<Command*> getValidCommandList();
 	int getIndexCmdVector(string);
 	bool getExitProgram();
-	void setGameStart();
-	void setGameEnd();
-	bool getGameStart();
-	bool getGameEnd();
+	void setcmdProPause(bool);
+	bool getcmdProPause();
 
-	//******************
 	// stringToLog Implementation for ILoggable
 	string stringToLog();
 
@@ -66,15 +66,15 @@ private:
 	vector<Command*> commandList;
 	vector<Command*> validCommandList;
 	bool exitProgram = false;
-	bool gameStart = false;
-	bool gameEnd = false;
+	bool cmdProPause = false;
 	vector<string> commandVector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit" };
 };
 
-
-// Adaptee
 class FileLineReader {
 public:
+	FileLineReader();
+	FileLineReader(const FileLineReader&);
+	FileLineReader& operator= (const FileLineReader&);
 	void readLineFromFile(string);
 	vector<string> getFileContent();
 
@@ -84,10 +84,11 @@ private:
 	vector<string> fileContent;
 };
 
-// Adapter
 class FileCommandProcessorAdapter : public CommandProcessor {
 public:
 	FileCommandProcessorAdapter(FileLineReader*, Observer*);
+	FileCommandProcessorAdapter(const FileCommandProcessorAdapter&);
+	FileCommandProcessorAdapter& operator= (const FileCommandProcessorAdapter&);
 	~FileCommandProcessorAdapter();
 	FileLineReader* getFileLineReader();
 	Command* readCommand();
@@ -97,5 +98,6 @@ public:
 private:
 	Observer* logger;
 	FileLineReader* flr;
-	int index{-1};
+	int index{ -1 };
+	vector<string> commands{};
 };

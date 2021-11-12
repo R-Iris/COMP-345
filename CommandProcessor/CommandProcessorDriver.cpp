@@ -9,10 +9,13 @@ int main() {
 	// Instantiate Observer object
 	Observer* _observer = new LogObserver();
 
+	// Create a command processor object
 	CommandProcessor* commandprocessor = new CommandProcessor(_observer);
 
+	// Create a game engine object
 	GameEngine* game = new GameEngine(_observer);
 
+	// Creating the states for the game engine
 	State* start = game->newState("start");
 	State* map_loaded = game->newState("map_loaded");
 	State* map_validated = game->newState("map_validated");
@@ -21,7 +24,7 @@ int main() {
 	State* win = game->newState("win");
 	State* end_game = game->newState("end_game");
 
-
+	// Creating the transitions for the game engine
 	game->newTransition(start, map_loaded, "loadmap");
 	game->newTransition(map_loaded, map_loaded, "loadmap");
 	game->newTransition(map_loaded, map_validated, "validatemap");
@@ -31,6 +34,8 @@ int main() {
 	game->newTransition(assign_reinforcement, win, "gameend");	//For testing purposes
 	game->newTransition(win, start, "replay");
 	game->newTransition(win, end_game, "quit");
+
+	// ######################
 
 	//	// Initializing states
 	//State* start = game->newState("start");
@@ -59,9 +64,11 @@ int main() {
 	//game->newTransition(win, start, "replay");
 	//game->newTransition(win, end_game, "quit");
 
+	// The internal pointer of the command processor is set to start
 	game->cmd_currentState = start;
-	game->currentState = start;
 
+	// The game's pointer is set to start
+	game->currentState = start;
 
 	string answer;
 	string secondAnswer;
@@ -75,18 +82,15 @@ int main() {
 		cout << "\nPlease enter a command" << '\n';
 
 		// While the user has not entered "quit", while the game has not started and while the game is ended
-			//  && !(commandprocessor->getGameStart()) && !(commandprocessor->getGameEnd())
 		while (!(commandprocessor->getExitProgram())) {
-			//if (commandprocessor->getGameStart()) {
+			//while (commandprocessor->getcmdProPause()) {
 			//	cout << "\nFor testing purposes, the game has started but is not shown. Please end the game manually.\n";
 			//	cin >> secondAnswer;
+			//	cout << '\n';
 
 			//	if (secondAnswer == "gameend") {
-			//		commandprocessor->setGameEnd();
-			//	}
-
-			//	while (secondAnswer != "gameend") {
-			//		cin >> secondAnswer;
+			//		game->cmd_currentState = win;
+			//		commandprocessor->setcmdProPause(false);
 			//	}
 			//}
 			commandprocessor->getCommand(game, commandprocessor);
@@ -103,13 +107,18 @@ int main() {
 
 		cin >> fileName;
 
+		cout << '\n';
+
 		FileLineReader* fileReader = new FileLineReader();
 		fileReader->readLineFromFile(fileName);
 
 		FileCommandProcessorAdapter* filecmd = new FileCommandProcessorAdapter(fileReader, _observer);
-		//filecmd->readCommand();
-		
+
 		while (!(commandprocessor->getExitProgram())) {
+			//if (commandprocessor->getcmdProPause()) {
+			//	cout << "Something";
+			//	game->cmd_currentState = win;
+			//}
 			commandprocessor->getCommand(game, filecmd);
 		}
 
@@ -118,19 +127,18 @@ int main() {
 
 		delete filecmd;
 		delete fileReader;
+		delete commandprocessor;
+		commandprocessor = NULL;
 		filecmd = NULL;
 		fileReader = NULL;
-		
 	}
 
-	/// /////////////////
-	// delete game;
+	cout << '\n';
+
+	game->end();
 	delete _observer;
-	// game = NULL;
 	_observer = NULL;
-	/// /////////////////
+	game = NULL;
 
 	return 0;
 }
-
- 
