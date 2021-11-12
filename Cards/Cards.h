@@ -23,7 +23,7 @@ public:
 	Card(cardType);
 	Card(const Card&);
 	Card& operator= (const Card&);
-	virtual void play(class Hand*, int, class Deck*, Player*,Player*, OrdersList*, Territory*, Territory*,GameEngine* gameEngine);
+	virtual void play(int,int,Player*,Player*,Territory*, Territory*,GameEngine* gameEngine);
 	bool validateIndex(vector<Card*>, int);
 	string getCardTypeName();
 	int enumToInt(string);

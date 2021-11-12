@@ -400,7 +400,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 			// Convert territory index to territory pointer
 	        Territory* enemyT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex);
 
-			card->play(hand, cardIndex, deck, this, nullptr, orders, nullptr, enemyT, game);
+			card->play(cardIndex,0,this, nullptr,nullptr, enemyT, game);
 
 	        cout << "Bomb order will be issued!";
 	    }
@@ -424,7 +424,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 			// Convert territory index to territory pointer
 			Territory* ownT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex);
 
-			card->play(hand, cardIndex, deck, this, nullptr, orders, nullptr, ownT, game);
+			card->play(cardIndex,0,this, nullptr,nullptr, ownT, game);
 
 			cout << "Reinforcement order will be issued!";
 		}
@@ -448,7 +448,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 			// Convert territory index to territory pointer
 			Territory* ownT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex);
 
-			card->play(hand, cardIndex, deck, this, nullptr, orders, nullptr, ownT, game);
+			card->play(cardIndex,0, this, nullptr,nullptr, ownT, game);
 
 			cout << "Blockade order will be issued!";
 		}
@@ -484,13 +484,15 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 			// Input enemy territory index
 			int territoryIndex2;
 			cin >> territoryIndex2;
+            cout << "Input no of armies: " << endl;
+            int army;cin >> army;
 			cout << endl;
 
 			// Convert territory index to territory pointer
 			Territory* otherOwnT = gameEngine->getMap()->getTerritoryByIndex(territoryIndex2);
 
 
-			card->play(hand, cardIndex, deck, this, nullptr, orders, ownT, otherOwnT, game);
+			card->play(cardIndex,army,this, nullptr, ownT, otherOwnT, game);
 
 			cout << "Airlift order will be issued!";
 		}
@@ -513,7 +515,7 @@ void Player::issueOrder() // Creates an Order object and puts it in the playerï¿
 
 			Player* otherP = game->players.at(playerIndex);
 
-			card->play(hand, cardIndex, deck, this, otherP, orders, nullptr, nullptr, game);
+			card->play(cardIndex,0,this, otherP,nullptr, nullptr, game);
 
 			cout << "Diplomacy order will be issued!";
 		}
