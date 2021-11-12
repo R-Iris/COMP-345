@@ -101,13 +101,11 @@ int main()
 
     // Testing Orders ILoggable/Subject implementation
     cout << "\nTesting Orders ILoggable/Subject implementation..." << endl << "***************************************************" << endl;
-    cout << "Adding new players for testing..." << endl;
     // Add new players
     Player* p1 = new Player("P1", new Hand(), game);
     Player* p2 = new Player("P2", new Hand(), game);
 
     // Adding territories
-    cout << "Adding territory for testing..." << endl;
     auto* territory1 = new Territory();
     auto* territory2 = new Territory();
 
@@ -137,7 +135,7 @@ int main()
     p2->getOrdersList()->addOrders(airlift);
     
     // Testing order execute() Notify()
-    cout << "Testing order execute Notify()..." << endl;
+    cout << "Testing orders execute Notify()..." << endl;
     deploy->execute();    
     advance->execute();
     bomb->execute();
@@ -145,14 +143,8 @@ int main()
     negotiate->execute();
     airlift->execute();    
 
-    // Instantiating game plaers
-    cout << "Testing instantiation of game players..." << endl;
-    // Add players to game list
-    game->players = {p1, p2};
-
-
-    // Testing state changes for GameEngine and Notify()
-    cout << "Testing state change for GameEngine...." << endl;
+    // GameEngine ILoggable/Subject implementation
+    cout << "\nTesting GameEngine ILoggable/Subject implementation..." << endl << "***************************************************" << endl;
 
     // replaying the game
     game->changeState("replay");
@@ -177,6 +169,10 @@ int main()
 
     delete _obs;
     _obs = nullptr;
+
+    delete p1, p2;
+    delete territory1, territory2;
+    p1, p2, territory1, territory2 = nullptr;
 
     return 0;
 }
