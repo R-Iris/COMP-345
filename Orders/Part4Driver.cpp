@@ -212,4 +212,7 @@ int main(){
 
     delete p1,delete p2,delete p3,delete p4;
     delete t1,delete t2,delete t3,delete t4;
+    p1= nullptr,p2= nullptr,p3= nullptr,p4 = nullptr;
+    t1 = nullptr,t2 = nullptr, t3 =nullptr, t4 = nullptr;
+    gameEngine = nullptr;
 }
