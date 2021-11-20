@@ -13,8 +13,7 @@ class Hand;
 class Territory;
 class Orders;
 class OrdersList;
-
-// TO DO : ToDefend and ToAttack
+class PlayerStrategy;
 
 // The player class contains a Hand (of cards), a list of owned territories, and a list of issued orders
 
@@ -43,6 +42,8 @@ public:
     vector<Player*> cannotAttack; //Vector of players which cannot be attacked
     void setOwnedTerritories(vector<Territory*>&);
     bool receivedCardThisTurn = false;
+	PlayerStrategy* getPlayerStrategy();
+	void setPlayerStrategy(PlayerStrategy*);
 private:
 	string name;
     GameEngine* gameEngine;
@@ -50,4 +51,5 @@ private:
 	vector<Territory*> territoriesOwned; // List of owned territories
 	OrdersList* ordersList;
 	int reinforcementPool; // Number of armies in the reinforcement pool
+	PlayerStrategy* ps;
 };

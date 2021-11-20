@@ -564,3 +564,13 @@ void Player::removeOwnedTerritory(Territory * territory) {
 void Player::setOwnedTerritories(vector<Territory *> & newVector) {
     territoriesOwned = newVector;
 }
+
+PlayerStrategy* Player::getPlayerStrategy()
+{
+	return ps;
+}
+
+void Player::setPlayerStrategy(PlayerStrategy* strategy)
+{
+	ps = strategy;
+}
