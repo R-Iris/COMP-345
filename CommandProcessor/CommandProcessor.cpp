@@ -45,6 +45,10 @@ Command::Command(commandType command, string toAdd, Observer* _obs) {
 		commandstr = "gameend";
 		commandNumber = 6;
 		break;
+    case commandType::tournament:
+        commandstr = "tournament";
+        commandNumber = 7;
+        break;
 	}
 	this->Attach(_obs);
 }
@@ -62,7 +66,7 @@ Command& Command::operator= (const Command& command) {
 	return *this;
 }
 
-// Savesa string effect depending on which type of command it is
+// Saves a string effect depending on which type of command it is
 void Command::saveEffect(Command* command) {
 
 	// Switch chase to save the effect of valid commands
@@ -88,6 +92,9 @@ void Command::saveEffect(Command* command) {
 	case 6:
 		command->effect = "Command for testing purposes that skips the main game loop";
 		break;
+    case 7:
+        command->effect = "Entering tournament mode";
+        break;
 	}
 	Notify(this);
 }
@@ -177,6 +184,21 @@ Command* CommandProcessor::readCommand() {
 		cin >> toAdd;
 		cout << '\n';
 	}
+    else if(commandstr == "tournament"){
+        toAdd = "-M ";
+        cout << "Insert a list of map files you wish to add (separated by a comma): ";
+        cin >> toAdd; toAdd += " -P ";
+        cout << '\n';
+        cout << "Insert a list of player strategies you wish to add (separated by a comma): ";
+        cin >> toAdd; toAdd += " -G ";
+        cout << '\n';
+        cout << "Enter the number of games you wish to play on each map : ";
+        cin >> toAdd; toAdd += " -D ";
+        cout << '\n';
+        cout << "Finally enter the max number of turns for each game: ";
+        cin >> toAdd;
+        cout << '\n';
+    }
 	else if (commandstr == "gamestart") {
 		setcmdProPause(true);
 	}
@@ -197,8 +219,9 @@ Command* CommandProcessor::readCommand() {
 		return new Command(Command::commandType::quit, toAdd, logger);
 	case 6:
 		return new Command(Command::commandType::gameend, toAdd, logger);
+    case 7:
+        return new Command(Command::commandType::tournament,toAdd,logger);
 	default:
-
 		// If none of the valid commands are read then the default constructor with the user's input is called
 		return new Command(commandstr, logger);
 	}
@@ -298,7 +321,7 @@ string CommandProcessor::stringToLog()
 }
 
 // Overloading the output operator
-ostream& operator<< (ostream& out, const vector<Command*> commandList) {
+ostream& operator<< (ostream& out, const vector<Command*>& commandList) {
 	out << "\n[ ";
 	for (int i = 0; i < commandList.size(); i++) {
 		out << "\nCommand: " + commandList[i]->getCommandStr() + " || Effect: " + commandList[i]->getEffect();
@@ -443,6 +466,9 @@ Command* FileCommandProcessorAdapter::readCommand() {
 		else if (firstWord == "addplayer") {
 			return new Command(Command::commandType::addplayer, secondWord, logger);
 		}
+        else if(firstWord == "tournament"){
+            return new Command(Command::commandType::tournament,secondWord,logger);
+        }
 	}
 
 	// If the delimiter is not found then we can read the line normally
