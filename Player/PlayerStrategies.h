@@ -12,8 +12,13 @@ class Territory;
 
 class PlayerStrategy {
 private:
-	Player* p;
+	friend ostream& operator<<(ostream& out, const PlayerStrategy&); // Stream insertion operator
+protected:
+	Player* p;	
 public:
+	PlayerStrategy(Player*); // Default Constructor
+	PlayerStrategy(const PlayerStrategy&); // Copy Constructor
+	PlayerStrategy& operator =(const PlayerStrategy&); // Assignment operator
 	Player* getPlayer();
 	void setPlayer(Player*);
 	virtual void issueOrder() = 0;
@@ -23,7 +28,12 @@ public:
 
 // Human player: requires user interactions to make decisions.
 class HumanPlayerStrategy : public PlayerStrategy {
+private:
+	friend ostream& operator<<(ostream& out, const HumanPlayerStrategy&);
 public:
+	HumanPlayerStrategy(Player*);
+	HumanPlayerStrategy(const HumanPlayerStrategy&);
+	HumanPlayerStrategy& operator =(const HumanPlayerStrategy&);
 	virtual void issueOrder();
 	virtual vector<Territory*> toAttack();
 	virtual vector<Territory*> toDefend();

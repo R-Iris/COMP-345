@@ -5,6 +5,7 @@
 #include "../Cards/Cards.h"
 #include "../Orders/Orders.h"
 #include "../Map/Map.h"
+#include "PlayerStrategies.h"
 
 using namespace std;
 
@@ -21,6 +22,7 @@ class Player {
 public:
 	Player(Hand*, GameEngine*); // Default constructor requires at least a hand
     Player(string name, Hand*, GameEngine*); // Constructor with name, hand, and engine
+	Player(string name, Hand*, GameEngine*, PlayerStrategy*); // Constructor with name, hand, engine, and strategy
 	Player(const Player &player); // Copy constructor
 	~Player(); // Destructor
 	Player& operator =(const Player& player); // Assignment operator
@@ -40,7 +42,8 @@ public:
 	GameEngine* getGameEngine();
 	friend ostream& operator<<(ostream& out, const Player& player); // Stream insertion operator
     vector<Player*> cannotAttack; //Vector of players which cannot be attacked
-    void setOwnedTerritories(vector<Territory*>&);
+	vector<Territory*> getOwnedTerritories();
+	void setOwnedTerritories(vector<Territory*>&);
     bool receivedCardThisTurn = false;
 	PlayerStrategy* getPlayerStrategy();
 	void setPlayerStrategy(PlayerStrategy*);
