@@ -507,3 +507,91 @@ vector<Territory*> HumanPlayerStrategy::toDefend() {
 	return p->getOwnedTerritories();
 }
 
+// Aggressive Player strategy
+// -----------------------------
+
+ostream& operator<<(ostream& out, const AggressivePlayerStrategy&)
+{
+	return out << "Aggressive Player Strategy";
+}
+
+AggressivePlayerStrategy::AggressivePlayerStrategy(Player* player) : PlayerStrategy(player)
+{
+}
+
+AggressivePlayerStrategy::AggressivePlayerStrategy(const AggressivePlayerStrategy& hps) : PlayerStrategy(hps)
+{
+}
+
+AggressivePlayerStrategy& AggressivePlayerStrategy::operator=(const AggressivePlayerStrategy& hps)
+{
+	p = hps.p;
+	return *this;
+}
+
+
+// Benevolent Player strategy
+// -----------------------------
+
+ostream& operator<<(ostream& out, const BenevolentPlayerStrategy&)
+{
+	return out << "Benevolent Player Strategy";
+}
+
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* player) : PlayerStrategy(player)
+{
+}
+
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(const BenevolentPlayerStrategy& hps) : PlayerStrategy(hps)
+{
+}
+
+BenevolentPlayerStrategy& BenevolentPlayerStrategy::operator=(const BenevolentPlayerStrategy& hps)
+{
+	p = hps.p;
+	return *this;
+}
+
+// Neutral Player strategy
+// -----------------------------
+
+ostream& operator<<(ostream& out, const NeutralPlayerStrategy&)
+{
+	return out << "Neutral Player Strategy";
+}
+
+NeutralPlayerStrategy::NeutralPlayerStrategy(Player* player) : PlayerStrategy(player)
+{
+}
+
+NeutralPlayerStrategy::NeutralPlayerStrategy(const NeutralPlayerStrategy& hps) : PlayerStrategy(hps)
+{
+}
+
+NeutralPlayerStrategy& NeutralPlayerStrategy::operator=(const NeutralPlayerStrategy& hps)
+{
+	p = hps.p;
+	return *this;
+}
+
+// Cheater Player strategy
+// -----------------------------
+
+ostream& operator<<(ostream& out, const CheaterPlayerStrategy&)
+{
+	return out << "Cheater Player Strategy";
+}
+
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player* player) : PlayerStrategy(player)
+{
+}
+
+CheaterPlayerStrategy::CheaterPlayerStrategy(const CheaterPlayerStrategy& hps) : PlayerStrategy(hps)
+{
+}
+
+CheaterPlayerStrategy& CheaterPlayerStrategy::operator=(const CheaterPlayerStrategy& hps)
+{
+	p = hps.p;
+	return *this;
+}

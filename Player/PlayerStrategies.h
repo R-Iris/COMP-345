@@ -43,6 +43,9 @@ public:
 country, then always advances to enemy territories until it cannot do so anymore). */
 class AggressivePlayerStrategy : public PlayerStrategy {
 public:
+	AggressivePlayerStrategy(Player*);
+	AggressivePlayerStrategy(const AggressivePlayerStrategy&);
+	AggressivePlayerStrategy& operator =(const AggressivePlayerStrategy&);
 	virtual void issueOrder();
 	virtual vector<Territory*> toAttack();
 	virtual vector<Territory*> toDefend();
@@ -52,6 +55,9 @@ public:
 on its weakest countries, never advances to enemy territories). */
 class BenevolentPlayerStrategy : public PlayerStrategy {
 public:
+	BenevolentPlayerStrategy(Player*);
+	BenevolentPlayerStrategy(const BenevolentPlayerStrategy&);
+	BenevolentPlayerStrategy& operator =(const BenevolentPlayerStrategy&);
 	virtual void issueOrder();
 	virtual vector<Territory*> toAttack();
 	virtual vector<Territory*> toDefend();
@@ -61,6 +67,9 @@ public:
 Aggressive player. */
 class NeutralPlayerStrategy : public PlayerStrategy {
 public:
+	NeutralPlayerStrategy(Player*);
+	NeutralPlayerStrategy(const NeutralPlayerStrategy&);
+	NeutralPlayerStrategy& operator =(const NeutralPlayerStrategy&);
 	virtual void issueOrder();
 	virtual vector<Territory*> toAttack();
 	virtual vector<Territory*> toDefend();
@@ -70,6 +79,9 @@ public:
 territories (only once per turn). */
 class CheaterPlayerStrategy : public PlayerStrategy{
 public:
+	CheaterPlayerStrategy(Player*);
+	CheaterPlayerStrategy(const CheaterPlayerStrategy&);
+	CheaterPlayerStrategy& operator =(const CheaterPlayerStrategy&);
 	virtual void issueOrder();
 	virtual vector<Territory*> toAttack();
 	virtual vector<Territory*> toDefend();
