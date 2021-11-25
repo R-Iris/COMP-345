@@ -143,5 +143,6 @@ PlayerStrategy* Player::getPlayerStrategy()
 
 void Player::setPlayerStrategy(PlayerStrategy* strategy)
 {
+	delete ps;
 	ps = strategy;
 }

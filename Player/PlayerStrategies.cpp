@@ -529,6 +529,17 @@ AggressivePlayerStrategy& AggressivePlayerStrategy::operator=(const AggressivePl
 	return *this;
 }
 
+void AggressivePlayerStrategy::issueOrder() {
+
+}
+
+vector<Territory*> AggressivePlayerStrategy::toAttack() {
+
+}
+
+vector<Territory*> AggressivePlayerStrategy::toDefend() {
+
+}
 
 // Benevolent Player strategy
 // -----------------------------
@@ -550,6 +561,18 @@ BenevolentPlayerStrategy& BenevolentPlayerStrategy::operator=(const BenevolentPl
 {
 	p = hps.p;
 	return *this;
+}
+
+void BenevolentPlayerStrategy::issueOrder() {
+
+}
+
+vector<Territory*> BenevolentPlayerStrategy::toAttack() {
+
+}
+
+vector<Territory*> BenevolentPlayerStrategy::toDefend() {
+
 }
 
 // Neutral Player strategy
@@ -574,6 +597,18 @@ NeutralPlayerStrategy& NeutralPlayerStrategy::operator=(const NeutralPlayerStrat
 	return *this;
 }
 
+void NeutralPlayerStrategy::issueOrder() {
+
+}
+
+vector<Territory*> NeutralPlayerStrategy::toAttack() {
+
+}
+
+vector<Territory*> NeutralPlayerStrategy::toDefend() {
+
+}
+
 // Cheater Player strategy
 // -----------------------------
 
@@ -594,4 +629,16 @@ CheaterPlayerStrategy& CheaterPlayerStrategy::operator=(const CheaterPlayerStrat
 {
 	p = hps.p;
 	return *this;
+}
+
+void CheaterPlayerStrategy::issueOrder() {
+
+}
+
+vector<Territory*> CheaterPlayerStrategy::toAttack() {
+
+}
+
+vector<Territory*> CheaterPlayerStrategy::toDefend() {
+
 }
