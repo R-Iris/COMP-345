@@ -607,6 +607,8 @@ void NeutralPlayerStrategy::issueOrder() {
 }
 
 vector<Territory*> NeutralPlayerStrategy::toAttack() {
+	// If a Neutral player is attacked, it becomes an
+	//Aggressive player
 }
 
 vector<Territory*> NeutralPlayerStrategy::toDefend() {
