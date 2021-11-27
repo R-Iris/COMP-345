@@ -16,7 +16,9 @@ private:
 protected:
 	Player* p;	
 public:
-	PlayerStrategy(Player*); // Default Constructor
+	enum strategyName { Human, Aggressive, Benevolent, Neutral, Cheater};
+	strategyName strN;
+	PlayerStrategy(Player*, strategyName); // Default Constructor
 	PlayerStrategy(const PlayerStrategy&); // Copy Constructor
 	PlayerStrategy& operator =(const PlayerStrategy&); // Assignment operator
 	Player* getPlayer();
@@ -86,3 +88,5 @@ public:
 	virtual vector<Territory*> toAttack();
 	virtual vector<Territory*> toDefend();
 };
+
+bool weakestTerritory(Territory*, Territory*);

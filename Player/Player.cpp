@@ -64,13 +64,13 @@ void Player::addOwnedTerritory(Territory* territory) {
 // Return a list of owned territories (to be defended)
 vector<Territory*> Player::toDefend()
 {
-	ps->toDefend();
+	return ps->toDefend();
 }
 
 // Return a list of territories to attack
 vector<Territory*> Player::toAttack()
 {
-	ps->toAttack();
+	return ps->toAttack();
 }
 
 // Create a new order and add to order list

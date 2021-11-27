@@ -10,17 +10,19 @@ void PlayerStrategy::setPlayer(Player* player)
 	p = player;
 }
 
-PlayerStrategy::PlayerStrategy(Player* player) : p(player)
+PlayerStrategy::PlayerStrategy(Player* player, strategyName strategyName) : p(player), strN(strategyName)
 {
 }
 
-PlayerStrategy::PlayerStrategy(const PlayerStrategy& ps) : p(ps.p)
+
+PlayerStrategy::PlayerStrategy(const PlayerStrategy& ps) : p(ps.p), strN(ps.strN)
 {
 }
 
 PlayerStrategy& PlayerStrategy::operator=(const PlayerStrategy& ps)
 {
 	p = ps.p;
+	strN = ps.strN;
 	return *this;
 }
 
@@ -35,7 +37,7 @@ ostream& operator<<(ostream& out, const HumanPlayerStrategy&)
 	return out << "Human Player Strategy";
 }
 
-HumanPlayerStrategy::HumanPlayerStrategy(Player* player) : PlayerStrategy(player)
+HumanPlayerStrategy::HumanPlayerStrategy(Player* player) : PlayerStrategy(player, Human)
 {
 }
 
@@ -46,6 +48,7 @@ HumanPlayerStrategy::HumanPlayerStrategy(const HumanPlayerStrategy& hps) : Playe
 HumanPlayerStrategy& HumanPlayerStrategy::operator=(const HumanPlayerStrategy& hps)
 {
 	p = hps.p;
+	strN = hps.strN;
 	return *this;
 }
 
@@ -500,7 +503,7 @@ ostream& operator<<(ostream& out, const AggressivePlayerStrategy&)
 	return out << "Aggressive Player Strategy";
 }
 
-AggressivePlayerStrategy::AggressivePlayerStrategy(Player* player) : PlayerStrategy(player)
+AggressivePlayerStrategy::AggressivePlayerStrategy(Player* player) : PlayerStrategy(player, Aggressive)
 {
 }
 
@@ -511,6 +514,7 @@ AggressivePlayerStrategy::AggressivePlayerStrategy(const AggressivePlayerStrateg
 AggressivePlayerStrategy& AggressivePlayerStrategy::operator=(const AggressivePlayerStrategy& hps)
 {
 	p = hps.p;
+	strN = hps.strN;
 	return *this;
 }
 
@@ -545,9 +549,15 @@ void AggressivePlayerStrategy::issueOrder() {
 }
 
 vector<Territory*> AggressivePlayerStrategy::toAttack() {
+	// RETURNING DUMMY VECTORS -- CHANGE IT
+	vector<Territory*> dummy;
+	return dummy;
 }
 
 vector<Territory*> AggressivePlayerStrategy::toDefend() {
+	// RETURNING DUMMY VECTORS -- CHANGE IT
+	vector<Territory*> dummy;
+	return dummy;
 }
 
 // Benevolent Player strategy
@@ -558,7 +568,7 @@ ostream& operator<<(ostream& out, const BenevolentPlayerStrategy&)
 	return out << "Benevolent Player Strategy";
 }
 
-BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* player) : PlayerStrategy(player)
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(Player* player) : PlayerStrategy(player, Benevolent)
 {
 }
 
@@ -569,6 +579,7 @@ BenevolentPlayerStrategy::BenevolentPlayerStrategy(const BenevolentPlayerStrateg
 BenevolentPlayerStrategy& BenevolentPlayerStrategy::operator=(const BenevolentPlayerStrategy& hps)
 {
 	p = hps.p;
+	strN = hps.strN;
 	return *this;
 }
 
@@ -576,9 +587,15 @@ void BenevolentPlayerStrategy::issueOrder() {
 }
 
 vector<Territory*> BenevolentPlayerStrategy::toAttack() {
+	// RETURNING DUMMY VECTORS -- CHANGE IT
+	vector<Territory*> dummy;
+	return dummy;
 }
 
 vector<Territory*> BenevolentPlayerStrategy::toDefend() {
+	// RETURNING DUMMY VECTORS -- CHANGE IT
+	vector<Territory*> dummy;
+	return dummy;
 }
 
 // Neutral Player strategy
@@ -589,7 +606,7 @@ ostream& operator<<(ostream& out, const NeutralPlayerStrategy&)
 	return out << "Neutral Player Strategy";
 }
 
-NeutralPlayerStrategy::NeutralPlayerStrategy(Player* player) : PlayerStrategy(player)
+NeutralPlayerStrategy::NeutralPlayerStrategy(Player* player) : PlayerStrategy(player, Neutral)
 {
 }
 
@@ -600,18 +617,32 @@ NeutralPlayerStrategy::NeutralPlayerStrategy(const NeutralPlayerStrategy& hps) :
 NeutralPlayerStrategy& NeutralPlayerStrategy::operator=(const NeutralPlayerStrategy& hps)
 {
 	p = hps.p;
+	strN = hps.strN;
 	return *this;
 }
 
 void NeutralPlayerStrategy::issueOrder() {
+	//- Neutral player: computer player that never issues any order -//
+	//- If a Neutral player is attacked, it becomes an Aggressive player -//
+	//- Implemented in Advance::execute() and Bomb::execute() -//
 }
 
 vector<Territory*> NeutralPlayerStrategy::toAttack() {
 	// If a Neutral player is attacked, it becomes an
 	//Aggressive player
+	vector<Territory*> empty;
+	return empty;
 }
 
 vector<Territory*> NeutralPlayerStrategy::toDefend() {
+	vector<Territory*> OwnedTerritories = p->getOwnedTerritories();
+	sort(OwnedTerritories.begin(), OwnedTerritories.end(), weakestTerritory);
+	return OwnedTerritories;
+}
+
+bool weakestTerritory(Territory* territory1, Territory* territory2)
+{
+	return (territory1->getNumberOfArmies() < territory2->getNumberOfArmies());
 }
 
 // Cheater Player strategy
@@ -622,7 +653,7 @@ ostream& operator<<(ostream& out, const CheaterPlayerStrategy&)
 	return out << "Cheater Player Strategy";
 }
 
-CheaterPlayerStrategy::CheaterPlayerStrategy(Player* player) : PlayerStrategy(player)
+CheaterPlayerStrategy::CheaterPlayerStrategy(Player* player) : PlayerStrategy(player, Cheater)
 {
 }
 
@@ -633,6 +664,7 @@ CheaterPlayerStrategy::CheaterPlayerStrategy(const CheaterPlayerStrategy& hps) :
 CheaterPlayerStrategy& CheaterPlayerStrategy::operator=(const CheaterPlayerStrategy& hps)
 {
 	p = hps.p;
+	strN = hps.strN;
 	return *this;
 }
 
@@ -640,7 +672,13 @@ void CheaterPlayerStrategy::issueOrder() {
 }
 
 vector<Territory*> CheaterPlayerStrategy::toAttack() {
+	// RETURNING DUMMY VECTORS -- CHANGE IT
+	vector<Territory*> dummy;
+	return dummy;
 }
 
 vector<Territory*> CheaterPlayerStrategy::toDefend() {
+	// RETURNING DUMMY VECTORS -- CHANGE IT
+	vector<Territory*> dummy;
+	return dummy;
 }

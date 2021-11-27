@@ -315,6 +315,12 @@ void Advance::execute() {
                     setEffect(orderOwner->getName() + " won battle against "
                     + enemy->getName() + "and takes " + target->getName() + " territory\n");
                     setExecuted(true);
+                    // If a Neutral player is attacked they become an aggressive player
+                    if (enemy->getPlayerStrategy()->strN == enemy->getPlayerStrategy()->Neutral)
+                    {
+                        enemy->setPlayerStrategy(new AggressivePlayerStrategy(enemy));
+                        cout << "Neutral Player has been attacked! They are now an aggressive player." << endl;
+                    }
                     return;
                 }
                 if(attackingArmy == 0){
@@ -324,6 +330,12 @@ void Advance::execute() {
                     setEffect(orderOwner->getName() + " attacks " + enemy->getName() + " territory " +
                     target->getName() + " and lost.");
                     setExecuted(true);
+                    // If a Neutral player is attacked they become an aggressive player
+                    if (enemy->getPlayerStrategy()->strN == enemy->getPlayerStrategy()->Neutral)
+                    {
+                        enemy->setPlayerStrategy(new AggressivePlayerStrategy(enemy));
+                        cout << "Neutral Player has been attacked! They are now an aggressive player." << endl;
+                    }
                     return;
                 }
                 randNumber = rand() % 10 + 1;
@@ -434,6 +446,12 @@ void Bomb::execute() {
             setEffect("Successfully bombed " + target->getName() + " territory\n");
             cout << getEffect();
             setExecuted(true);
+            if (target->getOwner()->getPlayerStrategy()->strN == target->getOwner()->getPlayerStrategy()->Neutral)
+            {
+                target->getOwner()->setPlayerStrategy(new AggressivePlayerStrategy(target->getOwner()));
+                cout << "Neutral Player has been attacked! They are now an aggressive player." << endl;
+            }
+            
     }
     else{
         setEffect("The bomb order was not executed since it was invalid\n");
