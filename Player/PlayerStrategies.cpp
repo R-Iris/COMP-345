@@ -29,7 +29,6 @@ ostream& operator<<(ostream& out, const PlayerStrategy&)
 	return out << "Abstract Player Strategy";
 }
 
-
 // FROM HERE ONWARDS, EVERY METHOD THAT BELONGS TO HUMAN FOR EXAMPLE, SHOULD BE IMPLEMENTED FOR EACH STRATEGY
 ostream& operator<<(ostream& out, const HumanPlayerStrategy&)
 {
@@ -52,7 +51,6 @@ HumanPlayerStrategy& HumanPlayerStrategy::operator=(const HumanPlayerStrategy& h
 
 void HumanPlayerStrategy::issueOrder()
 {
-
 	// Aliases
 	GameEngine* game = p->getGameEngine();
 	Hand* hand = p->getHand();
@@ -74,7 +72,6 @@ void HumanPlayerStrategy::issueOrder()
 
 	// While the player still has armies to deploy (reinforcement pool is not empty)
 	while (p->getReinforcementPool() > 0) {
-
 		// Announce how big the reinforcement pool is
 		cout << "Player " << p->getName() << "'s number of armies left in the reinforcement pool: " << p->getReinforcementPool() << endl << endl;
 
@@ -86,7 +83,6 @@ void HumanPlayerStrategy::issueOrder()
 
 		// If player owns territory (found by index)
 		if (p->ownsTerritory(tIndex)) {
-
 			// Input number of armies to deploy
 			cout << "Input how many armies you wish to deploy to that territory: ";
 			int deployNo;
@@ -94,7 +90,6 @@ void HumanPlayerStrategy::issueOrder()
 			cout << endl;
 
 			if (deployNo <= p->getReinforcementPool()) {
-
 				// Negative input
 				if (deployNo <= 0) {
 					cout << "Cannot input a negative number!" << endl;
@@ -137,7 +132,6 @@ void HumanPlayerStrategy::issueOrder()
 
 	// "y" as input
 	while (answer == "y") {
-
 		// Two options to choose from
 		cout << "Do you wish to :" << endl;
 		cout << "1. (DEFENSE) : Move armies from their own territories to defend another?" << endl;
@@ -150,7 +144,6 @@ void HumanPlayerStrategy::issueOrder()
 
 		// Option 1 (DEFENSE)
 		if (ans == 1) {
-
 			// List of territories to defend
 			cout << "\nTerritories to defend: (Index : Name)" << endl;
 			for (auto it : toDefend()) {
@@ -166,7 +159,6 @@ void HumanPlayerStrategy::issueOrder()
 
 			// Check if player owns this territory or if it doesn't exist
 			if (p->ownsTerritory(sourceIndex)) {
-
 				// Accept input for target territory's index (where armies go to)
 				cout << "Input the target territory's index: ";
 				int targetIndex;
@@ -175,7 +167,6 @@ void HumanPlayerStrategy::issueOrder()
 
 				// Check if player owns this territory or if it doesn't exist
 				if (p->ownsTerritory(targetIndex)) {
-
 					// Accept input for number of armies to move
 					cout << "Finally, input the number of armies you wish to move: ";
 					int army;
@@ -213,7 +204,6 @@ void HumanPlayerStrategy::issueOrder()
 
 		// Option 2 (ATTACK)
 		else if (ans == 2) {
-
 			// List of territories to defend
 			cout << "\nTerritories to defend: (Index : Name)" << endl;
 			for (auto it : toDefend()) {
@@ -236,8 +226,6 @@ void HumanPlayerStrategy::issueOrder()
 
 			// Check if player owns this territory or if it doesn't exist
 			if (p->ownsTerritory(sourceIndex)) {
-
-
 				// Accept input for target territory's index (where armies go to)
 				cout << "Input the target territory's index: ";
 				int targetIndex;
@@ -258,7 +246,6 @@ void HumanPlayerStrategy::issueOrder()
 
 				// If the target territory can be attacked
 				if (targetCanBeAttacked) {
-
 					// Accept input for number of armies to move
 					cout << "Finally, input the number of armies you wish to move: ";
 					int army;
@@ -323,7 +310,6 @@ void HumanPlayerStrategy::issueOrder()
 
 	// Check if player has any cards in hand
 	if (hand->getSize() > 0) {
-
 		// Print the player's hand
 		cout << "Printing all the cards in player's hand" << endl;
 		if (hand->getSize() > 0) {
@@ -443,7 +429,6 @@ void HumanPlayerStrategy::issueOrder()
 			// Convert territory index to territory pointer
 			Territory* otherOwnT = game->getMap()->getTerritoryByIndex(territoryIndex2);
 
-
 			card->play(cardIndex, army, p, nullptr, ownT, otherOwnT, game);
 
 			cout << "Airlift order will be issued!";
@@ -530,15 +515,39 @@ AggressivePlayerStrategy& AggressivePlayerStrategy::operator=(const AggressivePl
 }
 
 void AggressivePlayerStrategy::issueOrder() {
+	// Aliases
+	GameEngine* game = p->getGameEngine();
+	Hand* hand = p->getHand();
+	Deck* deck = game->getDeck();
+	OrdersList* orders = p->getOrdersList();
+
+	// Intro message for each player
+	cout << "\nIssuing orders for player " << p->getName() << ":" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
+	cout << "\n#--- Advancing Phase ---#" << endl;
+
+	// Finding which is the strongest territory among the owned territories
+	int maxNumberOfArmies{ 0 };
+	int indexOfMaxNumberOfArmies{ 0 };
+
+	for (auto it : p->getOwnedTerritories()) {
+		if (maxNumberOfArmies < it->getNumberOfArmies()) {
+			maxNumberOfArmies = it->getNumberOfArmies();
+			indexOfMaxNumberOfArmies = it->getIndex();
+		}
+	}
+
+	// Convert source and targert territories from index to a territory pointer
+	//Territory* source = game->getMap()->getTerritoryByIndex(sourceIndex);
+	//Territory* target = game->getMap()->getTerritoryByIndex(indexOfMaxNumberOfArmies);
 
 }
 
 vector<Territory*> AggressivePlayerStrategy::toAttack() {
-
 }
 
 vector<Territory*> AggressivePlayerStrategy::toDefend() {
-
 }
 
 // Benevolent Player strategy
@@ -564,15 +573,12 @@ BenevolentPlayerStrategy& BenevolentPlayerStrategy::operator=(const BenevolentPl
 }
 
 void BenevolentPlayerStrategy::issueOrder() {
-
 }
 
 vector<Territory*> BenevolentPlayerStrategy::toAttack() {
-
 }
 
 vector<Territory*> BenevolentPlayerStrategy::toDefend() {
-
 }
 
 // Neutral Player strategy
@@ -598,15 +604,12 @@ NeutralPlayerStrategy& NeutralPlayerStrategy::operator=(const NeutralPlayerStrat
 }
 
 void NeutralPlayerStrategy::issueOrder() {
-
 }
 
 vector<Territory*> NeutralPlayerStrategy::toAttack() {
-
 }
 
 vector<Territory*> NeutralPlayerStrategy::toDefend() {
-
 }
 
 // Cheater Player strategy
@@ -632,13 +635,10 @@ CheaterPlayerStrategy& CheaterPlayerStrategy::operator=(const CheaterPlayerStrat
 }
 
 void CheaterPlayerStrategy::issueOrder() {
-
 }
 
 vector<Territory*> CheaterPlayerStrategy::toAttack() {
-
 }
 
 vector<Territory*> CheaterPlayerStrategy::toDefend() {
-
 }

@@ -9,6 +9,5 @@ players make decisions automatically, which are both implemented using the strat
 */
 
 int main() {
-
 	return 0;
 }
