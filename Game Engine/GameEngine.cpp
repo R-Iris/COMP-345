@@ -372,8 +372,75 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 		}
 
 		else if (command == "tournament") {
-			cout << "Current command: " << command << endl; // TODO: None of the arguments of the 'tournament' command are being saved to the command itself, need these in order to automate gameplay
-			cout << "Current effect: " << c->getEffect() << endl;
+			//cout << "Current command: " << command << endl;
+			//cout << "Current effect: " << c->getEffect() << endl;
+
+			vector<string> mapFiles;
+			vector<string> playerStrats;
+			int numGames = 0;
+			int maxRounds = 0;
+
+			string effect = c->getEffect();
+
+			// Parse command string
+			char* effectStr = new char[effect.length() + 1];
+			strcpy(effectStr, effect.c_str());
+			
+			char* fields = strtok(effectStr, " ,");
+
+			while (fields != NULL) {
+				string toCompare(fields);
+
+				if (toCompare == "-M") {
+					// Get map files
+					cout << "Reading maps..." << endl;
+
+					do {
+						fields = strtok(NULL, " ,");
+						toCompare = string(fields);
+
+						if (toCompare != "-P")
+							mapFiles.push_back(toCompare); // Save the map file that was passed in for later use.
+					} while (toCompare != "-P");
+				}
+
+				if (toCompare == "-P") {
+					// Get player strategies
+					cout << "Reading strategies..." << endl;
+
+					do {
+						fields = strtok(NULL, " ,");
+						toCompare = string(fields);
+
+						if (toCompare != "-G")
+							playerStrats.push_back(toCompare); // Save the player strategy that was passed in for later use.
+					} while (toCompare != "-G");
+				}
+
+				if (toCompare == "-G") {
+					// Get number of games to be played on each map
+					cout << "Reading number of games..." << endl;
+					
+					fields = strtok(NULL, " ,");
+					toCompare = string(fields);
+					numGames = stoi(toCompare);
+
+					fields = strtok(NULL, " ,");
+					toCompare = string(fields);
+				}
+
+				if (toCompare == "-D") {
+					// Get max number of rounds for each game
+					cout << "Reading number of rounds..." << endl;
+
+					fields = strtok(NULL, " ,");
+					toCompare = string(fields);
+					maxRounds = stoi(toCompare);
+				}
+
+				fields = strtok(NULL, " ,");
+
+			}
 
 			/* PLAN FOR THE TOURNAMENT MODE:
 				* If we enter "tournament mode", we need to automate 'G' games (G is an argument provided to the command)
@@ -386,30 +453,40 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 				* TODO: Once a game terminates, we need to write the result into "the" log file (gamelog.txt)
 			*/
 
-			int games = 0; // The number of games to be played (The integer value of the 'G' argument of the 'tournament' command)
-			vector<string> maps; // The maps that the user provides
-			vector<string> playerStrategies; // The types of players that will be playing the games
-
 			// TODO: Add functionality to 'addplayer' to instantiate and add the different types of players based on a certain name being provided for each one?
 			
-			for (string mapFileName : maps) { // mapFileName is what should be passed to the loadmap command
-				for (int i = 0; i < games; i++) {
+			for (string mapFileName : mapFiles) { // mapFileName is what should be passed to the loadmap command
+				for (int i = 0; i < numGames; i++) {
 					// Populate the command list with the commands necessary to start a new game
 					// Order to properly start a game is: loadmap, validatemap, addplayer, gamestart
 
 					// 1) Add loadmap command
+					Command* loadmap = new Command(Command::commandType::loadmap, mapFileName, this->_observer);
+					loadmap->saveEffect(loadmap);
+					cp->saveValidCommand(loadmap);
 
 					// 2) Add validatemap command
+					Command* validatemap = new Command(Command::commandType::validatemap, "", this->_observer);
+					validatemap->saveEffect(validatemap);
+					cp->saveValidCommand(validatemap);
 
 					// 3) Add addplayer commands
+					for (string strategy : playerStrats) {
+						Command* addplayer = new Command(Command::commandType::addplayer, strategy, this->_observer);
+						addplayer->saveEffect(addplayer);
+						cp->saveValidCommand(addplayer);
+					}
 
 					// 4) Add gamestart command
+					Command* gamestart = new Command(Command::commandType::gamestart, "", this->_observer);
+					gamestart->saveEffect(gamestart);
+					cp->saveValidCommand(gamestart);
 
 					// When game ends, reset the game's context (clear map, players, etc.)
-
-
 				}
 			}
+
+			cout << "Hold line for breakpoint." << endl;
 		}
 	}
 }
