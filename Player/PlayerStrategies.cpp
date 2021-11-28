@@ -625,6 +625,103 @@ void NeutralPlayerStrategy::issueOrder() {
 	//- Neutral player: computer player that never issues any order -//
 	//- If a Neutral player is attacked, it becomes an Aggressive player -//
 	//- Implemented in Advance::execute() and Bomb::execute() -//
+
+
+	// Aliases
+	GameEngine* game = p->getGameEngine();
+	Hand* hand = p->getHand();
+	Deck* deck = game->getDeck();
+	OrdersList* orders = p->getOrdersList();
+
+	// Intro message for each player
+	cout << "\nIssuing orders for player " << p->getName() << ":" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
+	cout << "#--- Deploying Phase ---#" << endl;
+
+	// List of territories to defend
+	cout << "\nTerritories to defend: (Index : Name)" << endl;
+	for (auto it : toDefend()) {
+		cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+	}
+	cout << endl;
+
+	// While the player still has armies to deploy (reinforcement pool is not empty)
+	while (p->getReinforcementPool() > 0) {
+		// Announce how big the reinforcement pool is
+		cout << "Player " << p->getName() << "'s number of armies left in the reinforcement pool: " << p->getReinforcementPool() << endl << endl;
+
+
+		Territory* chosenTerritory = p->toDefend().at(0);
+		// Choose index of territory to defend
+		cout << "Player" << p->getName() << " has chosen a territory to defend." << endl;;
+		
+		int deployNo = p->getReinforcementPool();
+		orders->addOrders(new Deploy(p, deployNo, chosenTerritory, game));
+		p->setReinforcementPool(deployNo);
+
+	}
+
+	cout << "\n#--- Deploying Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
+	// All deploy orders have been issued at this point!
+
+	// Now issuing advance orders
+
+	cout << "\n#--- Advancing Phase ---#" << endl;
+
+	cout << "Player " << p->getName() << " has chosen not to advance." << endl;
+
+	cout << "\n#--- Advancing Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
+	// All advance orders have been issued at this point!
+
+	//NOW CLEARING CANNOTATTACK VECTOR For Negotiate order
+	p->cannotAttack.clear();
+
+	// Now playing a card, Player plays one card per turn
+
+	cout << "\n#--- Card Playing Phase ---#" << endl << endl;
+	
+	if (hand->getSize() > 0)
+	{
+		int handSize = p->getHand()->getSize();
+		for (int i = 0; i < handSize; ++i)
+		{
+			Card* currentCard = p->getHand()->getCardInHand(i);
+			if (currentCard->getCardTypeName() == "Reinforcement")
+			{
+				cout << "Reinforcement card selected --> Will be played immediately below: " << endl;
+				cout << "Reinforcement order will be issued!" << endl;
+				currentCard->play(i, 0, p, nullptr, nullptr, nullptr, game);
+				break;
+			}
+			else if (currentCard->getCardTypeName() == "Diplomacy")
+			{
+				Player* otherP;
+				if (game->players.at(0) == p)
+				{
+					otherP = game->players.at(1);
+				}
+				else
+				{
+					otherP = game->players.at(0);
+				}
+				cout << "Diplomacy card selected. " << endl;
+				cout << "Diplomacy order will be issued!" << endl;
+				currentCard->play(i, 0, p, otherP, nullptr, nullptr, game);
+			}
+		}
+	}
+	else {
+		cout << "This player has no cards in their hand, skipping the card playing phase!" << endl;
+	}
+
+	cout << "\n#--- Card Playing Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
 }
 
 vector<Territory*> NeutralPlayerStrategy::toAttack() {
