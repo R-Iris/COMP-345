@@ -47,6 +47,7 @@ Command::Command(commandType command, string toAdd, Observer* _obs) {
 		break;
     case commandType::tournament:
         commandstr = "tournament";
+		this->toAdd = toAdd;
         commandNumber = 7;
         break;
 	}
@@ -93,7 +94,7 @@ void Command::saveEffect(Command* command) {
 		command->effect = "Command for testing purposes that skips the main game loop";
 		break;
     case 7:
-        command->effect = "Entering tournament mode";
+        command->effect = "Entering tournament mode: " + command->toAdd;
         break;
 	}
 	Notify(this);
@@ -187,17 +188,22 @@ Command* CommandProcessor::readCommand() {
     else if(commandstr == "tournament"){
         toAdd = "-M ";
         cout << "Insert a list of map files you wish to add (separated by a comma): ";
-        cin >> toAdd; toAdd += " -P ";
+		string maps;
+        cin >> maps; toAdd += maps + " -P ";
         cout << '\n';
         cout << "Insert a list of player strategies you wish to add (separated by a comma): ";
-        cin >> toAdd; toAdd += " -G ";
+		string strategies;
+        cin >> strategies; toAdd += strategies + " -G ";
         cout << '\n';
         cout << "Enter the number of games you wish to play on each map : ";
-        cin >> toAdd; toAdd += " -D ";
+		string games;
+        cin >> games; toAdd += games + " -D ";
         cout << '\n';
         cout << "Finally enter the max number of turns for each game: ";
-        cin >> toAdd;
-        cout << '\n';
+		string turns;
+		cin >> turns; toAdd += turns;
+
+		cout << '\n';
     }
 	else if (commandstr == "gamestart") {
 		setcmdProPause(true);

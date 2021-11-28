@@ -370,6 +370,47 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 				cout << "ERROR: Could not transition to 'gamestart' from current state " << currentState->stateName << endl;
 			}
 		}
+
+		else if (command == "tournament") {
+			cout << "Current command: " << command << endl; // TODO: None of the arguments of the 'tournament' command are being saved to the command itself, need these in order to automate gameplay
+			cout << "Current effect: " << c->getEffect() << endl;
+
+			/* PLAN FOR THE TOURNAMENT MODE:
+				* If we enter "tournament mode", we need to automate 'G' games (G is an argument provided to the command)
+				* A game is set up and subsequently played via commands in the CommandProcessor's valid command list
+				* Order to properly start a game is: loadmap, validatemap, addplayer, gamestart
+				* 'gamestart' command should call mainGameLoop() after ensuring that the game's context is valid.
+				* Once mainGameLoop() terminates, flow should return to startupPhase() to start the next game, if necessary.
+				* TODO: mainGameLoop() should also self-terminate once the max number of turns has been reached.
+				  * Add a variable that counts the number of turns that have been taken.
+				* TODO: Once a game terminates, we need to write the result into "the" log file (gamelog.txt)
+			*/
+
+			int games = 0; // The number of games to be played (The integer value of the 'G' argument of the 'tournament' command)
+			vector<string> maps; // The maps that the user provides
+			vector<string> playerStrategies; // The types of players that will be playing the games
+
+			// TODO: Add functionality to 'addplayer' to instantiate and add the different types of players based on a certain name being provided for each one?
+			
+			for (string mapFileName : maps) { // mapFileName is what should be passed to the loadmap command
+				for (int i = 0; i < games; i++) {
+					// Populate the command list with the commands necessary to start a new game
+					// Order to properly start a game is: loadmap, validatemap, addplayer, gamestart
+
+					// 1) Add loadmap command
+
+					// 2) Add validatemap command
+
+					// 3) Add addplayer commands
+
+					// 4) Add gamestart command
+
+					// When game ends, reset the game's context (clear map, players, etc.)
+
+
+				}
+			}
+		}
 	}
 }
 
@@ -408,6 +449,7 @@ void GameEngine::mainGameLoop() {
 				
 				changeState("win");
 
+				// NOTE: In tournament mode, this shouldn't hang for input from the user.
 				cout << "Input \"replay\" to restart the game, or \"quit\" (or anything else) to quit the program:" << endl;
 				string userInput;
 				cin >> userInput;

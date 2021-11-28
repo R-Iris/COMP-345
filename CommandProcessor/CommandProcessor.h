@@ -86,7 +86,7 @@ private:
 	bool cmdProPause = false;
 
 	// Vector of valid commands
-	vector<string> commandVector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit", "gameend"};
+	vector<string> commandVector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit", "gameend", "tournament"};
 };
 
 // FileLineReader class - reads from a file

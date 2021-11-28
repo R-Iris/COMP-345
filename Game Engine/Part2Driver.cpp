@@ -24,6 +24,7 @@ int main() {
 	game->setDeck(new Deck(CARDS_IN_DECK));
 
 	State* start = game->newState("start");
+	State* tournament_mode = game->newState("tournament_mode");
 	State* map_loaded = game->newState("map_loaded");
 	State* map_validated = game->newState("map_validated");
 	State* players_added = game->newState("players_added");
@@ -33,10 +34,12 @@ int main() {
 
 
 	game->newTransition(start, map_loaded, "loadmap");
+	game->newTransition(start, tournament_mode, "tournament");
 	game->newTransition(map_loaded, map_loaded, "loadmap");
 	game->newTransition(map_loaded, map_validated, "validatemap");
 	game->newTransition(map_validated, players_added, "addplayer");
 	game->newTransition(players_added, players_added, "addplayer");
+	game->newTransition(tournament_mode, end_game, "quit");
 	game->newTransition(players_added, assign_reinforcement, "gamestart");
 	game->newTransition(assign_reinforcement, win, "gameend");	//For testing purposes
 	game->newTransition(win, start, "replay");
@@ -70,7 +73,7 @@ int main() {
 
 	// Show effect of 'gamestart' command
 	// Show turn order
-	cout << endl;
+	/*cout << endl;
 	cout << "TURN ORDER (Shows that 'gamestart' command randomizes the turn order of players and the effect of the 'addplayer' command)" << endl;
 	cout << "==========================================================================================================================" << endl;
 
@@ -122,7 +125,7 @@ int main() {
 
 	cout << "At the end of the startup phase, the game switches to first state in the play phase: assign_reinforcements." << endl;
 	cout << "===========================================================================================================" << endl;
-	cout << "Current state: " << game->currentState->stateName << endl;
+	cout << "Current state: " << game->currentState->stateName << endl;*/
 
 	/// /////////////////
 	delete game;
