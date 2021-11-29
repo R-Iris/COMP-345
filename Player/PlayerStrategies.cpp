@@ -701,18 +701,126 @@ BenevolentPlayerStrategy& BenevolentPlayerStrategy::operator=(const BenevolentPl
 }
 
 void BenevolentPlayerStrategy::issueOrder() {
+	// Aliases
+	GameEngine* game = p->getGameEngine();
+	Hand* hand = p->getHand();
+	Deck* deck = game->getDeck();
+	OrdersList* orders = p->getOrdersList();
+
+	// Intro message for each player
+	cout << "\nIssuing orders for player " << p->getName() << ":" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
+	cout << "#--- Deploying Phase ---#" << endl;
+
+	// List of territories to defend
+	cout << "\nTerritories to defend: (Index : Name)" << endl;
+	for (auto it : toDefend()) {
+		cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+	}
+	cout << endl;
+
+	// Deploy all the reinforcement pool to its weakest country
+	while (p->getReinforcementPool() > 0) {
+		// Announce how big the reinforcement pool is
+		cout << "Player " << p->getName() << "'s number of armies left in the reinforcement pool: " << p->getReinforcementPool() << endl << endl;
+		cout << "Player" << p->getName() << " has chosen territory " << p->toDefend().at(0)->getName() << " to defend." << endl;;
+		orders->addOrders(new Deploy(p, p->getReinforcementPool(), p->toDefend().at(0), game));
+		p->setReinforcementPool(0);
+	}
+
+	cout << "\n#--- Deploying Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
+	// All deploy orders have been issued at this point!
+
+	// Now issuing advance orders
+
+	cout << "\n#--- Advancing Phase ---#" << endl;
+
+	cout << "\nThe Benevolent Player has no advances to make." << endl;
+
+	cout << "\n#--- Advancing Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
+	// All advance orders have been issued at this point!
+
+	//NOW CLEARING CANNOTATTACK VECTOR For Negotiate order
+	p->cannotAttack.clear();
+
+	// Now playing a card, Player plays one card per turn
+
+	cout << "\n#--- Card Playing Phase ---#" << endl << endl;
+
+	if (hand->getSize() > 0)
+	{
+		int handSize = p->getHand()->getSize();
+		for (int i = 0; i < handSize; ++i)
+		{
+			Card* currentCard = p->getHand()->getCardInHand(i);
+			string cardName = currentCard->getCardTypeName();
+			// Cases for each type of card that could be played
+
+			// NOT SURE IF WE CAN USE BLOCKADE
+			if (cardName == "Blockade") {
+				cout << "Blockade card selected:" << endl;
+				Territory* target = toDefend().at(0);
+				currentCard->play(i, 0, p, nullptr, nullptr, target, game);
+				cout << "Blockade order will be issued on !" << target->getName() << endl;
+				break;
+			}
+			else if (cardName == "Reinforcement") {
+				cout << "Reinforcement card selected: " << endl;
+				currentCard->play(i, 0, p, nullptr, nullptr, nullptr, game);
+				break;
+			}
+			else if (cardName == "Airlift") {
+				if (toDefend().size() > 1) {
+					cout << "Airlift card selected:" << endl;
+					Territory* ownT = toDefend().at(1);
+					Territory* otherOwnT = toDefend().at(0);
+					currentCard->play(i, ownT->getNumberOfArmies(), p, nullptr, ownT, otherOwnT, game);
+					cout << "Airlift order will be issued!";
+					break;
+				}
+			}
+			else if (cardName == "Diplomacy")
+			{
+				Player* otherP;
+				if (game->players.at(0) == p)
+				{
+					otherP = game->players.at(1);
+				}
+				else
+				{
+					otherP = game->players.at(0);
+				}
+				cout << "Diplomacy card selected. " << endl;
+				cout << "Diplomacy order will be issued!" << endl;
+				currentCard->play(i, 0, p, otherP, nullptr, nullptr, game);
+			}
+			if (i == handSize - 1) {
+				cout << "This player has no cards in their hand they should play, skipping the card playing phase!" << endl;
+			}
+		}
+	}
+	else {
+		cout << "This player has no cards in their hand, skipping the card playing phase!" << endl;
+	}
+
+	cout << "\n#--- Card Playing Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
 }
 
 vector<Territory*> BenevolentPlayerStrategy::toAttack() {
-	// RETURNING DUMMY VECTORS -- CHANGE IT
-	vector<Territory*> dummy;
-	return dummy;
+	vector<Territory*> empty;
+	return empty;
 }
 
 vector<Territory*> BenevolentPlayerStrategy::toDefend() {
-	// RETURNING DUMMY VECTORS -- CHANGE IT
-	vector<Territory*> dummy;
-	return dummy;
+	vector<Territory*> sortedOwnedTerritories = p->getOwnedTerritories();
+	sort(sortedOwnedTerritories.begin(), sortedOwnedTerritories.end(), weakestTerritory);
+	return sortedOwnedTerritories;
 }
 
 // Neutral Player strategy
