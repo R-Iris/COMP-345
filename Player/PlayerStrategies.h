@@ -90,3 +90,4 @@ public:
 };
 
 bool weakestTerritory(Territory*, Territory*);
+bool strongestTerritory(Territory*, Territory*);
