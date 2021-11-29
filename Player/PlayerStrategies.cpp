@@ -529,35 +529,152 @@ void AggressivePlayerStrategy::issueOrder() {
 	cout << "\nIssuing orders for player " << p->getName() << ":" << endl;
 	cout << "/*-------------------------------------------------------------------*/" << endl;
 
-	cout << "\n#--- Advancing Phase ---#" << endl;
+	cout << "#--- Deploying Phase ---#" << endl;
 
-	// Finding which is the strongest territory among the owned territories
-	int maxNumberOfArmies{ 0 };
-	int indexOfMaxNumberOfArmies{ 0 };
+	// List of territories to defend
+	cout << "\nTerritories to defend: (Index : Name)" << endl;
+	for (auto it : toDefend()) {
+		cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+	}
+	cout << endl;
 
-	for (auto it : p->getOwnedTerritories()) {
-		if (maxNumberOfArmies < it->getNumberOfArmies()) {
-			maxNumberOfArmies = it->getNumberOfArmies();
-			indexOfMaxNumberOfArmies = it->getIndex();
-		}
+	// Deploy all to strongest territory
+	while (p->getReinforcementPool() > 0) {
+		// Announce how big the reinforcement pool is
+		cout << "Player " << p->getName() << "'s number of armies left in the reinforcement pool: " << p->getReinforcementPool() << endl << endl;
+		cout << "Player" << p->getName() << " has chosen territory " << p->toDefend().at(0)->getName() << " to defend." << endl;;
+		orders->addOrders(new Deploy(p, p->getReinforcementPool(), p->toDefend().at(0), game));
+		p->setReinforcementPool(0);
 	}
 
-	// Convert source and targert territories from index to a territory pointer
-	//Territory* source = game->getMap()->getTerritoryByIndex(sourceIndex);
-	//Territory* target = game->getMap()->getTerritoryByIndex(indexOfMaxNumberOfArmies);
+	cout << "\n#--- Deploying Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
 
+	// All deploy orders have been issued at this point!
+
+	// Now issuing advance orders
+
+	cout << "\n#--- Advancing Phase ---#" << endl;
+
+	// Attack with strongest country
+
+	// List of territories to attack
+	cout << "\nTerritories to attack: (Index : Name)" << endl;
+	for (auto it : toAttack()) {
+		cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
+	}
+	cout << endl;
+
+	// Check if there are any countries to attack
+	if (toAttack().size() > 0) {
+		Territory* source = toDefend().at(0);
+		Territory* target = toAttack().at(0);
+		int army = source->getNumberOfArmies();
+
+		cout << "Advancing from " << source->getName() << " to "
+			<< target->getName() << " " << army << " armies!" << endl;
+		//Takes care of what happens if diplomacy was used last turn
+		Advance* advance = new Advance(p, army, source, target, game);
+		for (auto it : p->cannotAttack) {
+			if (it == target->getOwner()) {
+				advance->cannotBeAttacked = true;
+			}
+		}
+		orders->addOrders(advance);
+	}
+
+	cout << "Sending all armies from weaker countries to strongest country!" << endl;
+	// Advance all armies from weaker countries to strongest country
+	for (int i = 1; i < toDefend().size() - 1; i++) {
+		Territory* source = toDefend().at(i);
+		Territory* target = toAttack().at(0);
+		int army = source->getNumberOfArmies();
+
+		cout << "Advancing from " << source->getName() << " to "
+			<< target->getName() << " " << army << " armies!" << endl;
+		//Takes care of what happens if diplomacy was used last turn
+		Advance* advance = new Advance(p, army, source, target, game);
+		orders->addOrders(advance);
+	}
+
+	cout << "\n#--- Advancing Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
+
+	// All advance orders have been issued at this point!
+
+	//NOW CLEARING CANNOTATTACK VECTOR For Negotiate order
+	p->cannotAttack.clear();
+
+	// Now playing a card, Player plays one card per turn
+
+	cout << "\n#--- Card Playing Phase ---#" << endl << endl;
+
+	if (hand->getSize() > 0)
+	{
+		int handSize = p->getHand()->getSize();
+		for (int i = 0; i < handSize; ++i)
+		{
+			Card* currentCard = p->getHand()->getCardInHand(i);
+			string cardName = currentCard->getCardTypeName();
+			// Cases for each type of card that could be played
+			if (cardName == "Bomb") {
+				cout << "Bomb card selected:" << endl;
+				Territory* enemyT = toAttack().at(0);
+				currentCard->play(i, 0, p, nullptr, nullptr, enemyT, game);
+				cout << "Bomb order will be issued on !" << enemyT->getName() << endl;
+				break;
+			}
+			else if (cardName == "Reinforcement") {
+				cout << "Reinforcement card selected: " << endl;
+				currentCard->play(i, 0, p, nullptr, nullptr, nullptr, game);
+				break;
+			}
+			else if (cardName == "Airlift") {
+				if (toDefend().size() > 1) {
+					cout << "Airlift card selected:" << endl;
+					Territory* ownT = toDefend().at(1);
+					Territory* otherOwnT = toDefend().at(0);
+					currentCard->play(i, ownT->getNumberOfArmies(), p, nullptr, ownT, otherOwnT, game);
+					cout << "Airlift order will be issued!";
+					break;
+				}
+			}
+			if (i == handSize - 1) {
+				cout << "This player has no cards in their hand they should play, skipping the card playing phase!" << endl;
+			}
+		}
+	}
+	else {
+		cout << "This player has no cards in their hand, skipping the card playing phase!" << endl;
+	}
+
+	cout << "\n#--- Card Playing Phase OVER ---#" << endl;
+	cout << "/*-------------------------------------------------------------------*/" << endl;
 }
 
 vector<Territory*> AggressivePlayerStrategy::toAttack() {
-	// RETURNING DUMMY VECTORS -- CHANGE IT
-	vector<Territory*> dummy;
-	return dummy;
+	vector<Territory*> attackableTerritories;
+	for (Territory* t : p->getOwnedTerritories()) {
+		for (Territory* a : t->getAdjacentTerritories()) {
+			// Excluding owned territories
+			if (p->ownsTerritory(a)) {
+				// Add territory to attack list
+				attackableTerritories.push_back(a);
+			}
+		}
+	}
+	// Remove duplicates
+	for (Territory* t : attackableTerritories) {
+		attackableTerritories.erase(unique(attackableTerritories.begin(), attackableTerritories.end()), attackableTerritories.end());
+	}
+	sort(attackableTerritories.begin(), attackableTerritories.end(), weakestTerritory);
+	return attackableTerritories;
 }
 
 vector<Territory*> AggressivePlayerStrategy::toDefend() {
-	// RETURNING DUMMY VECTORS -- CHANGE IT
-	vector<Territory*> dummy;
-	return dummy;
+	vector<Territory*> OwnedTerritories = p->getOwnedTerritories();
+	sort(OwnedTerritories.begin(), OwnedTerritories.end(), strongestTerritory);
+	return OwnedTerritories;
 }
 
 // Benevolent Player strategy
@@ -740,6 +857,11 @@ vector<Territory*> NeutralPlayerStrategy::toDefend() {
 bool weakestTerritory(Territory* territory1, Territory* territory2)
 {
 	return (territory1->getNumberOfArmies() < territory2->getNumberOfArmies());
+}
+
+bool strongestTerritory(Territory* territory1, Territory* territory2)
+{
+	return (territory1->getNumberOfArmies() > territory2->getNumberOfArmies());
 }
 
 // Cheater Player strategy
