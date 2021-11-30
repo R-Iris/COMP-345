@@ -550,7 +550,7 @@ void AggressivePlayerStrategy::issueOrder() {
 	cout << "\n#--- Deploying Phase OVER ---#" << endl;
 	cout << "/*-------------------------------------------------------------------*/" << endl;
 
-	// All deploy orders have been issued at this point!
+	// All deploy orders have been issued at this point
 
 	// Now issuing advance orders
 
