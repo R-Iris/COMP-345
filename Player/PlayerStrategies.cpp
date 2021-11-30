@@ -496,7 +496,7 @@ vector<Territory*> HumanPlayerStrategy::toDefend() {
 }
 
 // Aggressive Player strategy
-// -----------------------------
+// ----------------------------
 
 ostream& operator<<(ostream& out, const AggressivePlayerStrategy&)
 {
