@@ -259,6 +259,7 @@ void Advance::execute() {
             + " territory to " + target->getName() + " territory \n");
             cout << getEffect();
         }
+        // Check if the player is a cheater, if they are, they are granted immediate ownership
         else if (orderOwner->getPlayerStrategy()->strN == orderOwner->getPlayerStrategy()->Cheater)
         {
             target->getOwner()->removeOwnedTerritory(target);

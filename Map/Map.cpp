@@ -233,6 +233,7 @@ void Territory::addAdjacentCountry(Territory* territory)
 	this->adjacentCountries.push_back(territory);
 }
 
+// checks adjacency with passed territory
 bool Territory::isAdjacent(Territory* territory)
 {
 	for (auto t : getAdjacentTerritories())
