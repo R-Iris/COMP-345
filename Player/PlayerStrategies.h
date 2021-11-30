@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Player.h"; // Include player to overload its methods
-#include <vector>;
+#include "Player.h" // Include player to overload its methods
+#include <vector>
+#include <algorithm>
 
 // Forward declarations
 class Territory;

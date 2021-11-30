@@ -463,7 +463,7 @@ void HumanPlayerStrategy::issueOrder()
 
 	// Player has no cards in their hand
 	else {
-		cout << "This player has no cards in their hand, skipping the card playing phase!" << endl;
+		cout << "Player " << p->getName() << " has no cards in their hand, skipping the card playing phase!" << endl;
 	}
 
 	cout << "\n#--- Card Playing Phase OVER ---#" << endl;
@@ -477,7 +477,7 @@ vector<Territory*> HumanPlayerStrategy::toAttack()
 	for (Territory* t : p->getOwnedTerritories()) {
 		for (Territory* a : t->getAdjacentTerritories()) {
 			// Excluding owned territories
-			if (p->ownsTerritory(a)) {
+			if (!p->ownsTerritory(a)) {
 				// Add territory to attack list
 				attackableTerritories.push_back(a);
 			}
@@ -542,7 +542,7 @@ void AggressivePlayerStrategy::issueOrder() {
 	while (p->getReinforcementPool() > 0) {
 		// Announce how big the reinforcement pool is
 		cout << "Player " << p->getName() << "'s number of armies left in the reinforcement pool: " << p->getReinforcementPool() << endl << endl;
-		cout << "Player" << p->getName() << " has chosen territory " << p->toDefend().at(0)->getName() << " to defend." << endl;;
+		cout << "Player " << p->getName() << " has chosen territory " << p->toDefend().at(0)->getName() << " to defend with " << p->getReinforcementPool() << " armies." << endl;;
 		orders->addOrders(new Deploy(p, p->getReinforcementPool(), p->toDefend().at(0), game));
 		p->setReinforcementPool(0);
 	}
@@ -640,12 +640,12 @@ void AggressivePlayerStrategy::issueOrder() {
 				}
 			}
 			if (i == handSize - 1) {
-				cout << "This player has no cards in their hand they should play, skipping the card playing phase!" << endl;
+				cout << "Player " << p->getName() << " has no cards in their hand they should play, skipping the card playing phase!" << endl;
 			}
 		}
 	}
 	else {
-		cout << "This player has no cards in their hand, skipping the card playing phase!" << endl;
+		cout << "Player " << p->getName() << " has no cards in their hand, skipping the card playing phase!" << endl;
 	}
 
 	cout << "\n#--- Card Playing Phase OVER ---#" << endl;
@@ -657,7 +657,7 @@ vector<Territory*> AggressivePlayerStrategy::toAttack() {
 	for (Territory* t : p->getOwnedTerritories()) {
 		for (Territory* a : t->getAdjacentTerritories()) {
 			// Excluding owned territories
-			if (p->ownsTerritory(a)) {
+			if (!p->ownsTerritory(a)) {
 				// Add territory to attack list
 				attackableTerritories.push_back(a);
 			}
@@ -724,7 +724,7 @@ void BenevolentPlayerStrategy::issueOrder() {
 	while (p->getReinforcementPool() > 0) {
 		// Announce how big the reinforcement pool is
 		cout << "Player " << p->getName() << "'s number of armies left in the reinforcement pool: " << p->getReinforcementPool() << endl << endl;
-		cout << "Player" << p->getName() << " has chosen territory " << p->toDefend().at(0)->getName() << " to defend." << endl;;
+		cout << "Player " << p->getName() << " has chosen territory " << p->toDefend().at(0)->getName() << " to defend with " << p->getReinforcementPool() << " armies." << endl;
 		orders->addOrders(new Deploy(p, p->getReinforcementPool(), p->toDefend().at(0), game));
 		p->setReinforcementPool(0);
 	}
@@ -800,12 +800,12 @@ void BenevolentPlayerStrategy::issueOrder() {
 				currentCard->play(i, 0, p, otherP, nullptr, nullptr, game);
 			}
 			if (i == handSize - 1) {
-				cout << "This player has no cards in their hand they should play, skipping the card playing phase!" << endl;
+				cout << "Player " << p->getName() << " has no cards in their hand they should play, skipping the card playing phase!" << endl;
 			}
 		}
 	}
 	else {
-		cout << "This player has no cards in their hand, skipping the card playing phase!" << endl;
+		cout << "Player " << p->getName() << " has no cards in their hand, skipping the card playing phase!" << endl;
 	}
 
 	cout << "\n#--- Card Playing Phase OVER ---#" << endl;
@@ -875,7 +875,7 @@ void NeutralPlayerStrategy::issueOrder() {
 	while (p->getReinforcementPool() > 0) {
 		// Announce how big the reinforcement pool is
 		cout << "Player " << p->getName() << "'s number of armies left in the reinforcement pool: " << p->getReinforcementPool() << endl << endl;
-		cout << "Player" << p->getName() << " has chosen territory " << p->toDefend().at(0)->getName() << " to defend." << endl;;
+		cout << "Player " << p->getName() << " has chosen territory " << p->toDefend().at(0)->getName() << " to defend with " << p->getReinforcementPool() << " armies." << endl;;
 		orders->addOrders(new Deploy(p, p->getReinforcementPool(), p->toDefend().at(0), game));
 		p->setReinforcementPool(0);
 	}
@@ -889,7 +889,7 @@ void NeutralPlayerStrategy::issueOrder() {
 
 	cout << "\n#--- Advancing Phase ---#" << endl;
 
-	cout << "Player " << p->getName() << " has chosen not to advance." << endl;
+	cout << "\nPlayer " << p->getName() << " has chosen not to advance." << endl;
 
 	cout << "\n#--- Advancing Phase OVER ---#" << endl;
 	cout << "/*-------------------------------------------------------------------*/" << endl;
@@ -909,14 +909,15 @@ void NeutralPlayerStrategy::issueOrder() {
 		for (int i = 0; i < handSize; ++i)
 		{
 			Card* currentCard = p->getHand()->getCardInHand(i);
-			if (currentCard->getCardTypeName() == "Reinforcement")
+			string cardName = currentCard->getCardTypeName();
+			if (cardName == "Reinforcement")
 			{
 				cout << "Reinforcement card selected --> Will be played immediately below: " << endl;
 				cout << "Reinforcement order will be issued!" << endl;
 				currentCard->play(i, 0, p, nullptr, nullptr, nullptr, game);
 				break;
 			}
-			else if (currentCard->getCardTypeName() == "Diplomacy")
+			else if (cardName == "Diplomacy")
 			{
 				Player* otherP;
 				if (game->players.at(0) == p)
@@ -931,10 +932,30 @@ void NeutralPlayerStrategy::issueOrder() {
 				cout << "Diplomacy order will be issued!" << endl;
 				currentCard->play(i, 0, p, otherP, nullptr, nullptr, game);
 			}
+			else if (cardName == "Airlift") {
+				if (toDefend().size() > 1) {
+					cout << "Airlift card selected:" << endl;
+					Territory* ownT = toDefend().at(1);
+					Territory* otherOwnT = toDefend().at(0);
+					currentCard->play(i, ownT->getNumberOfArmies(), p, nullptr, ownT, otherOwnT, game);
+					cout << "Airlift order will be issued!";
+					break;
+				}
+			}
+			else if (cardName == "Blockade") {
+				cout << "Blockade card selected:" << endl;
+				Territory* target = toDefend().at(0);
+				currentCard->play(i, 0, p, nullptr, nullptr, target, game);
+				cout << "Blockade order will be issued on !" << target->getName() << endl;
+				break;
+			}
+			if (i == handSize - 1) {
+				cout << "Player " << p->getName() << " has no cards in their hand they should play, skipping the card playing phase!" << endl;
+			}
 		}
 	}
 	else {
-		cout << "This player has no cards in their hand, skipping the card playing phase!" << endl;
+		cout << "Player " << p->getName() << " has no cards in their hand, skipping the card playing phase!" << endl;
 	}
 
 	cout << "\n#--- Card Playing Phase OVER ---#" << endl;
@@ -979,11 +1000,6 @@ CheaterPlayerStrategy& CheaterPlayerStrategy::operator=(const CheaterPlayerStrat
 }
 
 void CheaterPlayerStrategy::issueOrder() {
-	//- Neutral player: computer player that never issues any order -//
-	//- If a Neutral player is attacked, it becomes an Aggressive player -//
-	//- Implemented in Advance::execute() and Bomb::execute() -//
-
-
 	// Aliases
 	GameEngine* game = p->getGameEngine();
 	Hand* hand = p->getHand();
@@ -1011,7 +1027,7 @@ void CheaterPlayerStrategy::issueOrder() {
 
 		Territory* chosenTerritory = p->toDefend().at(0);
 		// Choose index of territory to defend
-		cout << "Player" << p->getName() << " has chosen to defend territory " << p->toDefend().at(0)->getName() << endl;
+		cout << "Player " << p->getName() << " has chosen to defend territory " << p->toDefend().at(0)->getName() << " with " << p->getReinforcementPool() << " armies." << endl;
 
 		int deployNo = p->getReinforcementPool();
 		orders->addOrders(new Deploy(p, deployNo, chosenTerritory, game));
@@ -1028,20 +1044,26 @@ void CheaterPlayerStrategy::issueOrder() {
 
 	cout << "\n#--- Advancing Phase ---#" << endl;
 
-	// Attack with strongest country
-
-	// List of territories to attack
-	cout << "\nTerritories to attack: (Index : Name)" << endl;
-	for (auto it : toAttack()) {
-		cout << it->getIndex() << " : " + it->getName() << " , Armies: " << it->getNumberOfArmies() << endl;
-	}
-	cout << endl;
-
-	cout << "Player " << p->getName() << " has somehow conquered all their ajacent territories!";
+	vector<int> territoryPositions;
 	for (auto t : toAttack())
 	{
-		t->getOwner()->removeOwnedTerritory(t);
-		p->addOwnedTerritory(t);
+		territoryPositions.push_back(t->getIndex());
+	}
+
+	cout << "\nCheater issuing advance orders on adjacent territories." << endl;
+
+	// Cheater conquers all ajacent territories.
+
+	for (auto d : toDefend())
+	{
+		for (auto t : toAttack())
+		{
+			if (find(territoryPositions.begin(), territoryPositions.end(), t->getIndex()) != territoryPositions.end())
+			{
+				orders->addOrders(new Advance(p, 1, d, t, game));
+				territoryPositions.erase(remove(territoryPositions.begin(), territoryPositions.end(), t->getIndex()), territoryPositions.end());
+			}
+		}
 	}
 
 	cout << "\n#--- Advancing Phase OVER ---#" << endl;
@@ -1055,64 +1077,7 @@ void CheaterPlayerStrategy::issueOrder() {
 	// Now playing a card, Player plays one card per turn
 
 	cout << "\n#--- Card Playing Phase ---#" << endl << endl;
-
-	if (hand->getSize() > 0)
-	{
-		int handSize = p->getHand()->getSize();
-		for (int i = 0; i < handSize; ++i)
-		{
-			Card* currentCard = p->getHand()->getCardInHand(i);
-			string cardName = currentCard->getCardTypeName();
-			// Cases for each type of card that could be played
-			if (cardName == "Bomb") {
-				cout << "Bomb card selected:" << endl;
-				Territory* enemyT = toAttack().at(0);
-				currentCard->play(i, 0, p, nullptr, nullptr, enemyT, game);
-				cout << "Bomb order will be issued on !" << enemyT->getName() << endl;
-				break;
-			}
-			else if (cardName == "Reinforcement") {
-				cout << "Reinforcement card selected: " << endl;
-				currentCard->play(i, 0, p, nullptr, nullptr, nullptr, game);
-				break;
-			}
-			else if (cardName == "Airlift") {
-				if (toDefend().size() > 1) {
-					cout << "Airlift card selected:" << endl;
-					Territory* ownT = toDefend().at(1);
-					Territory* otherOwnT = toDefend().at(0);
-					currentCard->play(i, ownT->getNumberOfArmies(), p, nullptr, ownT, otherOwnT, game);
-					cout << "Airlift order will be issued!";
-					break;
-				}
-			}
-			else if (cardName == "Blockade") {
-				cout << "Blockade card selected:" << endl;
-				// Convert territory index to territory pointer
-				Territory* ownT = p->getOwnedTerritories().at(0);
-				currentCard->play(i, 0, p, nullptr, nullptr, ownT, game);
-				cout << "Blockade order will be issued!";
-			}
-			else if (cardName == "Diplomacy") {
-				Player* otherP;
-				if (game->players.at(0) == p)
-				{
-					otherP = game->players.at(1);
-				}
-				else
-				{
-					otherP = game->players.at(0);
-				}
-				cout << "Diplomacy card selected. " << endl;
-				cout << "Diplomacy order will be issued!" << endl;
-				currentCard->play(i, 0, p, otherP, nullptr, nullptr, game);
-			}
-		}
-	}
-	else {
-		cout << "This player has no cards in their hand, skipping the card playing phase!" << endl;
-	}
-
+	cout << "The cheater doesn't want to follow the rules, they don't play any cards." << endl;
 	cout << "\n#--- Card Playing Phase OVER ---#" << endl;
 	cout << "/*-------------------------------------------------------------------*/" << endl;
 
@@ -1123,7 +1088,7 @@ vector<Territory*> CheaterPlayerStrategy::toAttack() {
 	for (Territory* t : p->getOwnedTerritories()) {
 		for (Territory* a : t->getAdjacentTerritories()) {
 			// Excluding owned territories
-			if (p->ownsTerritory(a)) {
+			if (!p->ownsTerritory(a)) {
 				// Add territory to attack list
 				attackableTerritories.push_back(a);
 			}

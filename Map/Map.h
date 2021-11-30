@@ -128,6 +128,7 @@ public:
 	void setY(int newY);
 
 	void addAdjacentCountry(Territory* territory);
+	bool isAdjacent(Territory* territory);
 
 	// DESTRUCTOR
 	~Territory();

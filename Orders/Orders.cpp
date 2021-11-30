@@ -259,6 +259,11 @@ void Advance::execute() {
             + " territory to " + target->getName() + " territory \n");
             cout << getEffect();
         }
+        else if (orderOwner->getPlayerStrategy()->strN == orderOwner->getPlayerStrategy()->Cheater)
+        {
+            target->getOwner()->removeOwnedTerritory(target);
+            orderOwner->addOwnedTerritory(target);
+        }
         /*If the target territory belongs to another player than the player that issued the advance order, an attack is
           simulated when the order is executed. An attack is simulated by the following battle simulation
           mechanism:
