@@ -48,7 +48,7 @@ int main()
     cout << *game->currentState;
 
     // Create a map from file and assign to this game instance
-    string fileName = "Map/Assets/test.map";
+    string fileName = "test.map";
     Map* map = MapLoader::createMapfromFile(fileName);
     map->validate();
     game->setMap(map);
@@ -60,6 +60,11 @@ int main()
     Player* p2 = new Player("P2", new Hand(), game);
     Player* p3 = new Player("P3", new Hand(), game);
     Player* p4 = new Player("P4", new Hand(), game);
+
+    /// To test:
+    /// 
+    /// 
+    /// 
 
     p2->setPlayerStrategy(new NeutralPlayerStrategy(p2));
     p3->setPlayerStrategy(new CheaterPlayerStrategy(p3));

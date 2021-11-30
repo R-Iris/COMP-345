@@ -54,5 +54,5 @@ private:
 	vector<Territory*> territoriesOwned; // List of owned territories
 	OrdersList* ordersList;
 	int reinforcementPool; // Number of armies in the reinforcement pool
-	PlayerStrategy* ps;
+	PlayerStrategy* ps; // Pointer to a player strategy
 };
