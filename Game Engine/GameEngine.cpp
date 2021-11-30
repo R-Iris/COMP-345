@@ -499,14 +499,33 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			this->max_rounds = maxRounds; // Set the maximum number of rounds
 
 			// TODO: Add functionality to 'addplayer' to instantiate and add the different types of players based on a certain name being provided for each one?
-			
+
+            //Modifying Tournament Result
+            tournamentResult = "Tournament Mode: \nM: ";
+            for(string mapFileName : mapFiles){
+                tournamentResult += mapFileName + ", ";
+            }
+            tournamentResult += "\nP: ";
+            for(string playerStrat : playerStrats){
+                tournamentResult += playerStrat + ", ";
+            }
+            tournamentResult += "\nG: " + numGames;
+            tournamentResult += "\nD: " + maxRounds;
+
+            tournamentResult += "\n\nResults: \n\n";
+
 			for (string mapFileName : mapFiles) { // mapFileName is what should be passed to the loadmap command
+
+                tournamentResult += mapFileName + " : \n";
+
 				CommandProcessor* cp2 = new CommandProcessor(this->_observer);
 
 				for (int i = 0; i < numGames; i++) {
+                    tournamentResult += "Game " + (numGames + 1);
+                    tournamentResult += ": \n";
+
 					// Populate the command list with the commands necessary to start a new game
 					// Order to properly start a game is: loadmap, validatemap, addplayer, gamestart
-
 					// 1) Add loadmap command
 					Command* loadmap = new Command(Command::commandType::loadmap, mapFileName, this->_observer);
 					loadmap->saveEffect(loadmap);
@@ -529,10 +548,10 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 					gamestart->saveEffect(gamestart);
 					cp2->saveValidCommand(gamestart);
 				}
-
 				// Start a new game
 				startupPhase(cp2);
 			}
+            Notify(this);
 		}
 	}
 }
@@ -700,7 +719,12 @@ void GameEngine::executeOrdersPhase() {
 //******************
 // stringToLog Implementation for ILoggable
 string GameEngine::stringToLog() {
-	return "Current GameEngine State: " + currentState->stateName;
+	if(currentState->stateName!="tournament_mode"){
+        return "Current GameEngine State: " + currentState->stateName;
+    }
+    else{
+        return tournamentResult;
+    }
 }
 
 //Neutral Player related stuff for Blockade order in Orders.cpp

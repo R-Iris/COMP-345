@@ -144,4 +144,6 @@ public:
     //and added to the list of players
 
     Player* getNeutralPlayer();
+
+    string tournamentResult;
 };
