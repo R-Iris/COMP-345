@@ -4,13 +4,10 @@
 #include <vector>
 #include <algorithm>
 
-// Forward declarations
+// Forward declaration
 class Territory;
 
-// The issueOrder(), toDefend(), and toAttack() methods of the player do not implement behavior and
-// simply delegate their call to the corresponding methods in the PlayerStrategy member of the Player.
-// All classes must implement a correct copy constructor, assignment operator, and stream insertion operator.
-
+// Abstract parent class, inherited by all children
 class PlayerStrategy {
 private:
 	friend ostream& operator<<(ostream& out, const PlayerStrategy&); // Stream insertion operator
@@ -42,9 +39,10 @@ public:
 	virtual vector<Territory*> toDefend();
 };
 
-/* Aggressive player : computer player that focuses on attack(deploys or advances armies on its strongest
-country, then always advances to enemy territories until it cannot do so anymore). */
+// Aggressive player : computer player that focuses on attack
 class AggressivePlayerStrategy : public PlayerStrategy {
+private:
+	friend ostream& operator<<(ostream& out, const AggressivePlayerStrategy&);
 public:
 	AggressivePlayerStrategy(Player*);
 	AggressivePlayerStrategy(const AggressivePlayerStrategy&);
@@ -54,9 +52,10 @@ public:
 	virtual vector<Territory*> toDefend();
 };
 
-/* Benevolent player: computer player that focuses on protecting its weak countries (deploys or advances armies
-on its weakest countries, never advances to enemy territories). */
+// Benevolent player: computer player that focuses on protecting its weak countries
 class BenevolentPlayerStrategy : public PlayerStrategy {
+private:
+	friend ostream& operator<<(ostream& out, const BenevolentPlayerStrategy&);
 public:
 	BenevolentPlayerStrategy(Player*);
 	BenevolentPlayerStrategy(const BenevolentPlayerStrategy&);
@@ -69,6 +68,8 @@ public:
 /* Neutral player: computer player that never issues any order. If a Neutral player is attacked, it becomes an
 Aggressive player. */
 class NeutralPlayerStrategy : public PlayerStrategy {
+private:
+	friend ostream& operator<<(ostream& out, const NeutralPlayerStrategy&);
 public:
 	NeutralPlayerStrategy(Player*);
 	NeutralPlayerStrategy(const NeutralPlayerStrategy&);
@@ -78,9 +79,10 @@ public:
 	virtual vector<Territory*> toDefend();
 };
 
-/* Cheater player: computer player that automatically conquers all territories that are adjacent to its own
-territories (only once per turn). */
+// Cheater player: computer player that automatically conquers all territories that are adjacent to its own territories
 class CheaterPlayerStrategy : public PlayerStrategy{
+private:
+	friend ostream& operator<<(ostream& out, const CheaterPlayerStrategy&);
 public:
 	CheaterPlayerStrategy(Player*);
 	CheaterPlayerStrategy(const CheaterPlayerStrategy&);
@@ -90,5 +92,5 @@ public:
 	virtual vector<Territory*> toDefend();
 };
 
-bool weakestTerritory(Territory*, Territory*);
-bool strongestTerritory(Territory*, Territory*);
+bool weakestTerritory(Territory*, Territory*); // Compares two territories and returns a boolean signifiying the weakest one
+bool strongestTerritory(Territory*, Territory*); // Compares two territories and returns a boolean signifiying  the strongest one

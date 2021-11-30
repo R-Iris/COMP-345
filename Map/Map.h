@@ -128,7 +128,7 @@ public:
 	void setY(int newY);
 
 	void addAdjacentCountry(Territory* territory);
-	bool isAdjacent(Territory* territory);
+	bool isAdjacent(Territory* territory); // checks adjacency with passed territory
 
 	// DESTRUCTOR
 	~Territory();
