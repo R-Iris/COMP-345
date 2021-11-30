@@ -303,7 +303,7 @@ void Advance::execute() {
                 if(randNumber <=7){
                     attackingArmy--;
                 }
-                if(defendingArmy == 0){
+                if(defendingArmy <= 0){
                     cout << orderOwner->getName() + " won the battle and has captured territory " + target->getName()
                     << " successfully" << endl;
                     cout << "Number of armies on defeated target territory is now " << attackingArmy <<endl;
@@ -328,7 +328,7 @@ void Advance::execute() {
                     }
                     return;
                 }
-                if(attackingArmy == 0){
+                if(attackingArmy <= 0){
                     //Nothing happens-- Battle lost
                     cout << orderOwner->getName() + " lost the battle" << endl;
                     cout << "Remaining number of armies on enemy territory is " << target->getNumberOfArmies() << endl;

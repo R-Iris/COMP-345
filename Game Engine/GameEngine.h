@@ -77,7 +77,8 @@ public:
 	Map* map;
 	// Deck pointer
 	Deck* deck;
-
+	// Max number of rounds that can pass before game is declared a draw.
+	int max_rounds;
 	// Observer pointer
 	Observer* _observer = nullptr;
 
@@ -118,6 +119,9 @@ public:
 
 	// Startup Phase
 	void startupPhase(CommandProcessor* cp);
+
+	// Reset GameEngine's context to start new games
+	void resetContext();
 
 	// Main Game Loop
 	void mainGameLoop();

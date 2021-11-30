@@ -203,6 +203,9 @@ void GameEngine::end()
 
 void GameEngine::startupPhase(CommandProcessor* cp)
 {
+	// Reset the state of the game every time we start a new one.
+	resetContext();
+
 	// Use the command list to get the commands, make sure to change states in between commands
 	for (Command* c : cp->getValidCommandList()) {
 		// Display the current state
@@ -257,7 +260,43 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// Check to see if we have 2-6 players in the game
 			if (players.size() < 6) {
 				if (std::regex_search(effect, match, extractionPattern)) {
-					addPlayer(new Player(match[1], new Hand, this));
+					// TODO: Check if player name corresponds to one of the player strategies, if so, create the corresponding type of player. If not, create a human player.
+					if (match[1] == "Aggressive" || match[1] == "aggressive" || match[1] == "AGGRESSIVE") {
+						// Create and add aggressive player
+						Player* p = nullptr;
+						p = new Player("Aggressive", new Hand, this, new AggressivePlayerStrategy(NULL));
+						p->getPlayerStrategy()->setPlayer(p);
+						addPlayer(p);
+					}
+					
+					else if (match[1] == "Cheater" || match[1] == "cheater" || match[1] == "CHEATER") {
+						// Create and add cheater player
+						Player* p = nullptr;
+						p = new Player("Cheater", new Hand, this, new CheaterPlayerStrategy(NULL));
+						p->getPlayerStrategy()->setPlayer(p);
+						addPlayer(p);
+					}
+					
+					else if (match[1] == "Benevolent" || match[1] == "benevolent" || match[1] == "BENEVOLENT") {
+						// Create and add benevolent player
+						Player* p = nullptr;
+						p = new Player("Benevolent", new Hand, this, new BenevolentPlayerStrategy(NULL));
+						p->getPlayerStrategy()->setPlayer(p);
+						addPlayer(p);
+					}
+
+					else if (match[1] == "Neutral" || match[1] == "neutral" || match[1] == "NEUTRAL") {
+						// Create and add neutral player
+						Player* p = nullptr;
+						p = new Player("Neutral", new Hand, this, new NeutralPlayerStrategy(NULL));
+						p->getPlayerStrategy()->setPlayer(p);
+						addPlayer(p);
+					}
+					
+					else {
+						// Create and add human player
+						addPlayer(new Player(match[1], new Hand, this));
+					}
 				}
 			}
 
@@ -369,6 +408,10 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			if (!changeState("gamestart")) {
 				cout << "ERROR: Could not transition to 'gamestart' from current state " << currentState->stateName << endl;
 			}
+
+			else {
+				mainGameLoop();
+			}
 		}
 
 		else if (command == "tournament") {
@@ -393,7 +436,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 				if (toCompare == "-M") {
 					// Get map files
-					cout << "Reading maps..." << endl;
+					//cout << "Reading maps..." << endl;
 
 					do {
 						fields = strtok(NULL, " ,");
@@ -406,7 +449,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 				if (toCompare == "-P") {
 					// Get player strategies
-					cout << "Reading strategies..." << endl;
+					//cout << "Reading strategies..." << endl;
 
 					do {
 						fields = strtok(NULL, " ,");
@@ -419,7 +462,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 				if (toCompare == "-G") {
 					// Get number of games to be played on each map
-					cout << "Reading number of games..." << endl;
+					//cout << "Reading number of games..." << endl;
 					
 					fields = strtok(NULL, " ,");
 					toCompare = string(fields);
@@ -431,7 +474,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 				if (toCompare == "-D") {
 					// Get max number of rounds for each game
-					cout << "Reading number of rounds..." << endl;
+					//cout << "Reading number of rounds..." << endl;
 
 					fields = strtok(NULL, " ,");
 					toCompare = string(fields);
@@ -453,9 +496,13 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 				* TODO: Once a game terminates, we need to write the result into "the" log file (gamelog.txt)
 			*/
 
+			this->max_rounds = maxRounds; // Set the maximum number of rounds
+
 			// TODO: Add functionality to 'addplayer' to instantiate and add the different types of players based on a certain name being provided for each one?
 			
 			for (string mapFileName : mapFiles) { // mapFileName is what should be passed to the loadmap command
+				CommandProcessor* cp2 = new CommandProcessor(this->_observer);
+
 				for (int i = 0; i < numGames; i++) {
 					// Populate the command list with the commands necessary to start a new game
 					// Order to properly start a game is: loadmap, validatemap, addplayer, gamestart
@@ -463,37 +510,59 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 					// 1) Add loadmap command
 					Command* loadmap = new Command(Command::commandType::loadmap, mapFileName, this->_observer);
 					loadmap->saveEffect(loadmap);
-					cp->saveValidCommand(loadmap);
+					cp2->saveValidCommand(loadmap);
 
 					// 2) Add validatemap command
 					Command* validatemap = new Command(Command::commandType::validatemap, "", this->_observer);
 					validatemap->saveEffect(validatemap);
-					cp->saveValidCommand(validatemap);
+					cp2->saveValidCommand(validatemap);
 
 					// 3) Add addplayer commands
 					for (string strategy : playerStrats) {
 						Command* addplayer = new Command(Command::commandType::addplayer, strategy, this->_observer);
 						addplayer->saveEffect(addplayer);
-						cp->saveValidCommand(addplayer);
+						cp2->saveValidCommand(addplayer);
 					}
 
 					// 4) Add gamestart command
 					Command* gamestart = new Command(Command::commandType::gamestart, "", this->_observer);
 					gamestart->saveEffect(gamestart);
-					cp->saveValidCommand(gamestart);
-
-					// When game ends, reset the game's context (clear map, players, etc.)
+					cp2->saveValidCommand(gamestart);
 				}
-			}
 
-			cout << "Hold line for breakpoint." << endl;
+				// Start a new game
+				startupPhase(cp2);
+			}
 		}
 	}
 }
 
+void GameEngine::resetContext() {
+	// Clear map
+	if (this->map != NULL) {
+		delete this->map;
+		this->map = NULL;
+	}
+
+	// Clear players
+	for (int i = 0; i < this->players.size(); i++) {
+		delete this->players.at(i);
+		this->players.at(i) = NULL;
+	}
+	this->players.clear();
+	getNeutralPlayer();
+
+	// Reset Deck
+	delete this->deck;
+	this->deck = NULL;
+	this->deck = new Deck(52);
+
+	// Go back to start state
+	this->currentState = this->states.at(0);
+}
+
 // Main Game Loop
 void GameEngine::mainGameLoop() {
-
 	/*This loop shall continue until only one of the players owns all the territories in the map, at which point a winner is
 	announced and the game ends.*/
 
@@ -505,7 +574,15 @@ void GameEngine::mainGameLoop() {
 		numTotalTerritories = map->getTerritories().size();
 	}
 
+	// Keep track of how many rounds have passed
+	int roundsPassed = 0;
+
 	do {
+		if (roundsPassed >= this->max_rounds && this->max_rounds > 0) {
+			// TODO: The game should end in a draw.
+			cout << "Game has reached the maximum number of rounds... It's a draw. " << endl;
+			break;
+		}
 
 	    for (Player* p : players) {
 
@@ -552,6 +629,8 @@ void GameEngine::mainGameLoop() {
 			changeState("issueordersend");
 			executeOrdersPhase();
 		}
+
+		roundsPassed++;
 	} while (!onePlayerOwnsAllTerritories);
 }
 
@@ -632,7 +711,8 @@ Player* GameEngine::getNeutralPlayer(){
             return it;
         }
     }
-    Player* neutralPlayer = new Player("NEUTRAL", new Hand(), this);
+    Player* neutralPlayer = new Player("NEUTRAL", new Hand(), this, new NeutralPlayerStrategy(NULL));
+	neutralPlayer->getPlayerStrategy()->setPlayer(neutralPlayer);
     this->players.push_back(neutralPlayer);
     return neutralPlayer;
 }
