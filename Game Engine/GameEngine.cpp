@@ -555,7 +555,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
             for(const string& mapFileName: mapFiles){
                 tournamentResult += "````````````````Map : " + mapFileName + "``````````````````` \n";
                 for(int i = 0;i < numGames;i++){
-                    tournamentResult += "Game number " + to_string(numGames+1)  + " : \n";
+                    tournamentResult += "Game number " + to_string(i+1)  + " : \n";
                     tournamentResult += "Winner : " + results.at(x) + "\n";
                     x++;
                 }
