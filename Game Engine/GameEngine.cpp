@@ -509,8 +509,8 @@ void GameEngine::startupPhase(CommandProcessor* cp)
             for(string playerStrat : playerStrats){
                 tournamentResult += playerStrat + ", ";
             }
-            tournamentResult += "\nG: " + numGames;
-            tournamentResult += "\nD: " + maxRounds;
+            tournamentResult += "\nG: " + to_string(numGames);
+            tournamentResult += "\nD: " + to_string(maxRounds);
 
             tournamentResult += "\n\nResults: \n\n";
 
@@ -719,12 +719,7 @@ void GameEngine::executeOrdersPhase() {
 //******************
 // stringToLog Implementation for ILoggable
 string GameEngine::stringToLog() {
-	if(currentState->stateName!="tournament_mode"){
-        return "Current GameEngine State: " + currentState->stateName;
-    }
-    else{
-        return tournamentResult;
-    }
+    return "Current GameEngine State: " + currentState->stateName;
 }
 
 //Neutral Player related stuff for Blockade order in Orders.cpp
