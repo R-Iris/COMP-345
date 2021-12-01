@@ -415,6 +415,9 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 		}
 
 		else if (command == "tournament") {
+
+            //GameEngine is officially in tournament mode
+            tournamentMode = true;
 			//cout << "Current command: " << command << endl;
 			//cout << "Current effect: " << c->getEffect() << endl;
 
@@ -516,14 +519,9 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			for (string mapFileName : mapFiles) { // mapFileName is what should be passed to the loadmap command
 
-                tournamentResult += mapFileName + " : \n";
-
 				CommandProcessor* cp2 = new CommandProcessor(this->_observer);
 
 				for (int i = 0; i < numGames; i++) {
-                    tournamentResult += "Game " + (numGames + 1);
-                    tournamentResult += ": \n";
-
 					// Populate the command list with the commands necessary to start a new game
 					// Order to properly start a game is: loadmap, validatemap, addplayer, gamestart
 					// 1) Add loadmap command
@@ -551,6 +549,18 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 				// Start a new game
 				startupPhase(cp2);
 			}
+            //Storing results in logFile
+            //TODO: TO Test Log file
+            int x = 0; //Used to navigate throughout vector containing all the winners
+            for(const string& mapFileName: mapFiles){
+                tournamentResult += "````````````````Map : " + mapFileName + "``````````````````` \n";
+                for(int i = 0;i < numGames;i++){
+                    tournamentResult += "Game number " + to_string(numGames+1)  + " : \n";
+                    tournamentResult += "Winner : " + results.at(x) + "\n";
+                    x++;
+                }
+            }
+            tournamentResult += "\nEND";
             Notify(this);
 		}
 	}
@@ -600,6 +610,8 @@ void GameEngine::mainGameLoop() {
 		if (roundsPassed >= this->max_rounds && this->max_rounds > 0) {
 			// TODO: The game should end in a draw.
 			cout << "Game has reached the maximum number of rounds... It's a draw. " << endl;
+            //Storing the results in a vector
+            results.push_back("DRAW");
 			break;
 		}
 
@@ -619,18 +631,23 @@ void GameEngine::mainGameLoop() {
 
 				// Announce this player as winner
 				cout << "The winner is: " << p->getName() << "!" << endl;
+
+                //Storing the results in a vector
+                results.push_back(p->getName());
 				
 				changeState("win");
 
-				// NOTE: In tournament mode, this shouldn't hang for input from the user.
-				cout << "Input \"replay\" to restart the game, or \"quit\" (or anything else) to quit the program:" << endl;
-				string userInput;
-				cin >> userInput;
-				cout << endl;
-				if (userInput == "replay") {
-					changeState("replay");
-					cout << "Restarting the game!" << endl;
-				}
+				// In tournament mode, this doesnt hang for input from the user.
+                if(!tournamentMode){
+                    cout << "Input \"replay\" to restart the game, or \"quit\" (or anything else) to quit the program:" << endl;
+                    string userInput;
+                    cin >> userInput;
+                    cout << endl;
+                    if (userInput == "replay") {
+                        changeState("replay");
+                        cout << "Restarting the game!" << endl;
+                    }
+                }
 				return;
 	        }
 	    }
@@ -719,6 +736,9 @@ void GameEngine::executeOrdersPhase() {
 //******************
 // stringToLog Implementation for ILoggable
 string GameEngine::stringToLog() {
+    if(tournamentMode){
+        return tournamentResult;
+    }
     return "Current GameEngine State: " + currentState->stateName;
 }
 

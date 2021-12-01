@@ -142,8 +142,13 @@ public:
 
     //checking for a neutral player among the list of players and if there isnt one , a pointer to one will be created
     //and added to the list of players
-
     Player* getNeutralPlayer();
+
+    //Boolean which checks if gameEngine is in tournament mode
+    bool tournamentMode = false;
+
+    //String vector storing the results of each game
+    vector<string> results;
 
     string tournamentResult;
 };
