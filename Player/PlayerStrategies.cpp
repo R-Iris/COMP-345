@@ -603,9 +603,9 @@ void AggressivePlayerStrategy::issueOrder() {
 
 	cout << "Sending all armies from weaker countries to strongest country!" << endl;
 	// Advance all armies from weaker countries to strongest country
-	for (int i = 1; i < toDefend().size() - 1; i++) {
+	for (int i = 1; i < toDefend().size(); i++) {
 		Territory* source = toDefend().at(i);
-		Territory* target = toAttack().at(0);
+		Territory* target = toDefend().at(0);
 		int army = source->getNumberOfArmies();
 
 		cout << "Advancing from " << source->getName() << " to "
@@ -1077,11 +1077,13 @@ void CheaterPlayerStrategy::issueOrder() {
 		{
 			if (find(territoryPositions.begin(), territoryPositions.end(), t->getIndex()) != territoryPositions.end())
 			{
-				// Adding the advance order to the player's list of orders
-				orders->addOrders(new Advance(p, 1, d, t, game));
-
-				// Removing the territory conquered from the territoryPositions vector
-				territoryPositions.erase(remove(territoryPositions.begin(), territoryPositions.end(), t->getIndex()), territoryPositions.end());
+				if (d->isAdjacent(t))
+				{
+					// Adding the advance order to the player's list of orders
+					orders->addOrders(new Advance(p, 1, d, t, game));
+					// Removing the territory conquered from the territoryPositions vector
+					territoryPositions.erase(remove(territoryPositions.begin(), territoryPositions.end(), t->getIndex()), territoryPositions.end());
+				}
 			}
 		}
 	}

@@ -60,63 +60,30 @@ int main()
     Player* p2 = new Player("P2", new Hand(), game);
     Player* p3 = new Player("P3", new Hand(), game);
     Player* p4 = new Player("P4", new Hand(), game);
-
-    /// To test:
-    /// 
-    /// 
-    /// 
+    Player* p5 = new Player("P5", new Hand(), game);
 
     p2->setPlayerStrategy(new NeutralPlayerStrategy(p2));
     p3->setPlayerStrategy(new CheaterPlayerStrategy(p3));
     p4->setPlayerStrategy(new BenevolentPlayerStrategy(p4));
-
+    p5->setPlayerStrategy(new AggressivePlayerStrategy(p5));
 
     // Add players to game list
     game->addPlayer(p1); game->addPlayer(p2);
 
     // Accept input for startup scenario
-    cout << "Scenario 0: P1/P2 have 1 territory, no cards" << endl;
-    cout << "Scenario 1: P1 has a continent (+20), P2 has 1 territory, no cards" << endl;
-    cout << "Scenario 2: P1/P2 have 2 territories, 2 cards each" << endl;
-    cout << "Scenario 3: P1 wins with all 4 territories, no cards" << endl;
-    cout << "Scenario 4: P1/P2 have 2 territories, no cards" << endl;
-    cout << "Scenario 5: P1 has 2 territories, P2/P3 have 1, no cards" << endl;
-    cout << "Scenario 6: P1/P2/P3/P4 have 1 territory, no cards" << endl;
-    cout << "Pick a scenario:" << endl;
+    cout << "Scenario 0: P1/P2 have 2 territories, 2 cards each -- Human (1), Neutral (2)" << endl;
+    cout << "\t\t Show neutral player changing to aggressive player when attacked" << endl;
+    cout << "Scenario 1: P3/P4 have 1 territory, no cards -- Cheater (3), Benevolent (4)" << endl;
+    cout << "\t\t Show cheater player absorbing other territories" << endl;
+    cout << "Scenario 2: P1/P5 each have 2 territories, no cards -- Neutral (2), Aggressive (5)" << endl;
+    cout << "\t\t Test toAttack() and toDefend() vectors that have two different sorting strategies" << endl;
+    cout << "\nPick a scenario:" << endl;
     int scenario = 0;
     cin >> scenario;
     cout << endl;
 
     switch (scenario) {
     case 0:
-        // Add territories to players
-        p1->addOwnedTerritory(territories.at(0));
-        p2->addOwnedTerritory(territories.at(1));
-
-        // Set player's reinforcement pools to 50
-        p1->setReinforcementPool(50);
-        p2->setReinforcementPool(50);
-
-        game->changeState("gamestart");
-
-        // Execute main game loop
-        game->mainGameLoop();
-        break;
-    case 1:
-        // Add territories to players
-        p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(1)); p1->addOwnedTerritory(territories.at(2));
-        p2->addOwnedTerritory(territories.at(3));
-
-        // Set player's reinforcement pools to 50
-        p1->setReinforcementPool(50);
-        p2->setReinforcementPool(5);
-
-        game->changeState("gamestart");
-
-        // Execute main game loop
-        game->mainGameLoop();
-        break;
-    case 2:
         // Add territories to players
         p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(2));
         p2->addOwnedTerritory(territories.at(1)); p2->addOwnedTerritory(territories.at(3));
@@ -131,67 +98,23 @@ int main()
         p2->getHand()->addHand(game->getDeck()->draw());
         p2->getHand()->addHand(game->getDeck()->draw());
 
-        game->changeState("gamestart");
-
-        // Execute main game loop
-        game->mainGameLoop();
-        break;
-    case 3:
-        // Add territories to players
-        p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(1));
-        p1->addOwnedTerritory(territories.at(2)); p1->addOwnedTerritory(territories.at(3));
-
-        // Set player's reinforcement pools to 50
-        p1->setReinforcementPool(50);
-        p2->setReinforcementPool(50);
+        
 
         game->changeState("gamestart");
 
         // Execute main game loop
         game->mainGameLoop();
         break;
-    case 4:
-        // Add territories to players
-        p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(2));
-        p2->addOwnedTerritory(territories.at(1)); p2->addOwnedTerritory(territories.at(3));
-
-        // Set player's reinforcement pools to 50
-        p1->setReinforcementPool(50);
-        p2->setReinforcementPool(50);
-
-        game->changeState("gamestart");
-
-        // Execute main game loop
-        game->mainGameLoop();
-        break;
-    case 5:
-        // Add territories to players
-        game->addPlayer(p3);
-        p1->addOwnedTerritory(territories.at(0)); p1->addOwnedTerritory(territories.at(1));
-        p2->addOwnedTerritory(territories.at(2));
-        p3->addOwnedTerritory(territories.at(3));
-
-        // Set player's reinforcement pools to 50
-        p1->setReinforcementPool(50);
-        p2->setReinforcementPool(5);
-        p3->setReinforcementPool(5);
-
-        game->changeState("gamestart");
-
-        // Execute main game loop
-        game->mainGameLoop();
-        break;
-    case 6:
+    case 1:
+        game->removePlayer(p1); game->removePlayer(p2);
         // Add territories to players
         game->addPlayer(p3); game->addPlayer(p4);
-        p1->addOwnedTerritory(territories.at(0)); 
-        p2->addOwnedTerritory(territories.at(1));
+        p3->addOwnedTerritory(territories.at(0)); 
+        p4->addOwnedTerritory(territories.at(1));
         p3->addOwnedTerritory(territories.at(2));
         p4->addOwnedTerritory(territories.at(3));
 
         // Set player's reinforcement pools to 50
-        p1->setReinforcementPool(50);
-        p2->setReinforcementPool(50);
         p3->setReinforcementPool(50);
         p4->setReinforcementPool(50);
 
@@ -200,11 +123,61 @@ int main()
         // Execute main game loop
         game->mainGameLoop();
         break;
+    case 2:
+        p2->addOwnedTerritory(territories.at(0)); p2->addOwnedTerritory(territories.at(2));
+        p5->addOwnedTerritory(territories.at(1)); p5->addOwnedTerritory(territories.at(3));
+        p2->setReinforcementPool(50);
+        p5->setReinforcementPool(50);
+        territories.at(0)->setNumberOfArmies(50);
+        cout << "Territory 1 #armies: " << territories.at(0)->getNumberOfArmies() << endl;
+        territories.at(1)->setNumberOfArmies(25);
+        cout << "Territory 2 #armies: " << territories.at(1)->getNumberOfArmies() << endl;
+        territories.at(2)->setNumberOfArmies(60);
+        cout << "Territory 3 #armies: " << territories.at(2)->getNumberOfArmies() << endl;
+        territories.at(3)->setNumberOfArmies(75);
+        cout << "Territory 4 #armies: " << territories.at(3)->getNumberOfArmies() << endl;
+        cout << endl;
+
+        cout << "Neutral Player:" << endl;
+        cout << "/------------------------/" << endl << endl;
+        // Player 2 (Neutral)
+        cout << "Neutral player sorts by most vulnerable territories (least armies)" << endl;
+        cout << "ownedTerritories: Sorted.." << endl;
+        for (Territory* t : p2->toDefend())
+        {
+            cout << *t << endl;
+        }
+
+        cout << "Neutral player has no toAttack" << endl;
+        cout << "attackableTerritories: Sorted.." << endl;
+        for (Territory* t : p2->toAttack())
+        {
+            cout << *t << endl;
+        }
+        cout << endl;
+        cout << "Aggressive Player:" << endl;
+        cout << "/------------------------/" << endl << endl;
+        // Player 5 (Aggressive)
+        cout << "Aggressive player sorts by most strong territories (most armies)" << endl;
+        cout << "ownedTerritories: Sorted.." << endl;
+        for (Territory* t : p5->toDefend())
+        {
+            cout << *t << endl;
+        }
+
+        cout << "Aggressive player sorts attackable territories by weakest (least armies)" << endl;
+        cout << "attackableTerritories: Sorted.." << endl;
+        for (Territory* t : p5->toAttack())
+        {
+            cout << *t << endl;
+        }
+        break;
     }
+    
 
     // Delete players
-    delete p1; delete p2; delete p3, delete p4;
-    p1, p2, p3, p4 = nullptr;
+    delete p1; delete p2; delete p3, delete p4, delete p5;
+    p1, p2, p3, p4, p5 = nullptr;
 
     // Call end() which deletes game and prints a message
     game->end();

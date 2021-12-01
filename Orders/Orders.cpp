@@ -235,7 +235,7 @@ bool Advance::validate() {
         return false;
     }
     //If source territory does not have enough armies
-    if(source->getNumberOfArmies() < getNoOfArmies()){
+    if(source->getNumberOfArmies() < getNoOfArmies() && source->getOwner()->getPlayerStrategy()->strN != source->getOwner()->getPlayerStrategy()->Cheater){
         cout << "Advance order invalid" << endl;
         cout << "Not enough armies from source to advance to target territory" << endl;
         return false;
@@ -264,6 +264,7 @@ void Advance::execute() {
         {
             target->getOwner()->removeOwnedTerritory(target);
             orderOwner->addOwnedTerritory(target);
+            cout << "\nCheater player " << orderOwner->getName() << " has aquired territory " << target->getName() << endl;
         }
         /*If the target territory belongs to another player than the player that issued the advance order, an attack is
           simulated when the order is executed. An attack is simulated by the following battle simulation
