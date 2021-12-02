@@ -54,18 +54,31 @@ int main() {
             commandprocessor->getCommand(game, commandprocessor);
         }
     } else if (answer == "file") {
-        cout << "Which file do you wish to open? " << '\n';
+        cout << "\nWhich file do you wish to open? " << '\n';
+
         cin >> file;
+
+        cout << '\n';
+
+        auto* fileReader = new FileLineReader();
+        fileReader->readLineFromFile(file);
+
+        auto* filecmd = new FileCommandProcessorAdapter(fileReader, _observer);
+
+        while (!(commandprocessor->getExitProgram())) {
+            commandprocessor->getCommand(game, filecmd);
+        }
+
+        delete filecmd;delete fileReader;delete commandprocessor;
+        commandprocessor = NULL;filecmd = NULL;fileReader = NULL;
     }
 
     game->startupPhase(commandprocessor);
 
-    delete game;
-    delete commandprocessor;
-    delete _observer;
-    game = NULL;
-    commandprocessor = NULL;
-    _observer = NULL;
+    cout << "END OF TOURNAMENT DRIVER" << endl;
+
+    delete game;delete commandprocessor;delete _observer;
+    game = NULL;commandprocessor = NULL;_observer = NULL;
 }
 
 ///home/abhay/Documents/Cpp/COMP-345/Map/Assets/solar.map

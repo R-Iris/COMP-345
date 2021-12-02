@@ -503,19 +503,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			// TODO: Add functionality to 'addplayer' to instantiate and add the different types of players based on a certain name being provided for each one?
 
-            //Modifying Tournament Result
-            tournamentResult = "Tournament Mode: \nM: ";
-            for(string mapFileName : mapFiles){
-                tournamentResult += mapFileName + ", ";
-            }
-            tournamentResult += "\nP: ";
-            for(string playerStrat : playerStrats){
-                tournamentResult += playerStrat + ", ";
-            }
-            tournamentResult += "\nG: " + to_string(numGames);
-            tournamentResult += "\nD: " + to_string(maxRounds);
-
-            tournamentResult += "\n\nResults: \n\n";
+            tournamentResult = "";
 
 			for (string mapFileName : mapFiles) { // mapFileName is what should be passed to the loadmap command
 
@@ -551,6 +539,20 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			}
             //Storing results in logFile
             //TODO: TO Test Log file
+            //Modifying Tournament Result after the games are done
+            tournamentResult = "Tournament Mode: \nM: ";
+            for(string mapFileName : mapFiles){
+                tournamentResult += mapFileName + ", ";
+            }
+            tournamentResult += "\nP: ";
+            for(string playerStrat : playerStrats){
+                tournamentResult += playerStrat + ", ";
+            }
+            tournamentResult += "\nG: " + to_string(numGames);
+            tournamentResult += "\nD: " + to_string(maxRounds);
+
+            tournamentResult += "\n\nResults: \n\n";
+
             int x = 0; //Used to navigate throughout vector containing all the winners
             for(const string& mapFileName: mapFiles){
                 tournamentResult += "````````````````Map : " + mapFileName + "``````````````````` \n";
@@ -560,8 +562,9 @@ void GameEngine::startupPhase(CommandProcessor* cp)
                     x++;
                 }
             }
-            tournamentResult += "\nEND";
+            tournamentResult += "\nEND OF TOURNAMENT - THANK YOU FOR PLAYING!";
             Notify(this);
+            cout << "END OF TOURNAMENT - THANK YOU FOR PLAYING!" << endl;
 		}
 	}
 }
@@ -736,7 +739,7 @@ void GameEngine::executeOrdersPhase() {
 //******************
 // stringToLog Implementation for ILoggable
 string GameEngine::stringToLog() {
-    if(tournamentMode){
+    if(!tournamentResult.empty()){
         return tournamentResult;
     }
     return "Current GameEngine State: " + currentState->stateName;

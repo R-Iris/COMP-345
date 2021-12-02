@@ -1,0 +1,1 @@
+tournament -M solar.map,solar.map,solar.map -P neutral,neutral,neutral -G 3 -D 20
