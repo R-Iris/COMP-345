@@ -442,6 +442,11 @@ void Map::validate() {
 	// This function takes a while to complete, so let the user know that things are moving along.
 	cout << "Validating map..." << endl;
 
+	if (countries.size() < 1 || continents.size() < 1 || borders.size() < 1) {
+		cout << "Map cannot be empty, please ensure that the map file provided actually exists." << endl;
+		return;
+	}
+
 	vector<Territory> checked;
 
 	// Check if the map is a connected graph (invalid if there exists a node that is not connected to anything)
@@ -588,108 +593,118 @@ Map* MapLoader::createMapfromFile(string mapFileName) {
 	vector<tuple<int, int>> tempBorders;
 
 	// Parse the file to create the map, use the headers to jump to different points in the file
-	while (getline(mapFile, currentLine)) {
-		if (currentLine == "[continents]") {
 
-			while (getline(mapFile, currentLine)) {
-				// An empty line marks the end of that section
-				if (currentLine == "") {
-					break;
-				}
+	// TODO: Add try-catch block
+	try {
+		while (getline(mapFile, currentLine)) {
+			if (currentLine == "[continents]") {
 
-				else {
-					// Get continent fields
-					currentContinent++;
-					string name = currentLine.substr(0, currentLine.find(delimiter));
-						
-					int offset = name.length() + delimiter.length();
-
-					string armyValue = currentLine.substr(offset, currentLine.find(delimiter, offset));
-
-					Continent* c = new Continent(currentContinent, name, stoi(armyValue));
-					tempContinents.push_back(c);
-				}
-			}
-
-			//cout << "Continents read!" << endl;
-		}
-
-		else if (currentLine == "[countries]") {
-			// Read every line in the countries section of the text file
-			while (getline(mapFile, currentLine)) {
-				// An empty line marks the end of that section
-				if (currentLine == "") {
-					break;
-				}
-
-				else {
-					// Get country fields
-					int offset = 0;
-
-					string countryNumber = currentLine.substr(0, currentLine.find(delimiter, offset)); // Number
-					offset += countryNumber.length() + delimiter.length();
-
-					string countryName = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // Name
-					offset += countryName.length() + delimiter.length();
-
-					string continent = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // Continent that it's on
-					offset += continent.length() + delimiter.length();
-
-					string x = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // X position
-					offset += x.length() + delimiter.length();
-
-					string y = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // Y position
-
-					Territory* t = new Territory(stoi(countryNumber), countryName, stoi(continent), stoi(x), stoi(y));
-					tempCountries.push_back(t);
-				}
-			}
-
-			//cout << "Countries read!" << endl;
-		}
-
-		else if (currentLine == "[borders]") {
-			while (getline(mapFile, currentLine)) {
-				// An empty line marks the end of that section
-				if (currentLine == "") {
-					break;
-				}
-
-				else {
-					// Get border fields
-					int offset = 0;
-					string countryNumber = currentLine.substr(0, currentLine.find(delimiter) - offset);
-
-					offset += countryNumber.length() + delimiter.length();
-
-					vector<string> adjCountries;
-
-					while (offset < (int) currentLine.length()) {
-						string sharedBorder = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset);
-						adjCountries.push_back(sharedBorder);
-						offset += sharedBorder.length() + delimiter.length();
+				while (getline(mapFile, currentLine)) {
+					// An empty line marks the end of that section
+					if (currentLine == "") {
+						break;
 					}
 
-					for (string s : adjCountries)
-					{
-						// Add edge tuple to the map
-						tuple<int,int> edge = { stoi(countryNumber), stoi(s) };
-						tempBorders.push_back(edge);
+					else {
+						// Get continent fields
+						currentContinent++;
+						string name = currentLine.substr(0, currentLine.find(delimiter));
 
-						// Add territory pointer to the current node
-						tempCountries.at(stoi(countryNumber) - 1)->addAdjacentCountry(tempCountries.at(stoi(s) - 1));
+						int offset = name.length() + delimiter.length();
+
+						string armyValue = currentLine.substr(offset, currentLine.find(delimiter, offset));
+
+						Continent* c = new Continent(currentContinent, name, stoi(armyValue));
+						tempContinents.push_back(c);
 					}
 				}
+
+				//cout << "Continents read!" << endl;
 			}
 
-			//cout << "Borders read!" << endl;
+			else if (currentLine == "[countries]") {
+				// Read every line in the countries section of the text file
+				while (getline(mapFile, currentLine)) {
+					// An empty line marks the end of that section
+					if (currentLine == "") {
+						break;
+					}
+
+					else {
+						// Get country fields
+						int offset = 0;
+
+						string countryNumber = currentLine.substr(0, currentLine.find(delimiter, offset)); // Number
+						offset += countryNumber.length() + delimiter.length();
+
+						string countryName = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // Name
+						offset += countryName.length() + delimiter.length();
+
+						string continent = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // Continent that it's on
+						offset += continent.length() + delimiter.length();
+
+						string x = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // X position
+						offset += x.length() + delimiter.length();
+
+						string y = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset); // Y position
+
+						Territory* t = new Territory(stoi(countryNumber), countryName, stoi(continent), stoi(x), stoi(y));
+						tempCountries.push_back(t);
+					}
+				}
+
+				//cout << "Countries read!" << endl;
+			}
+
+			else if (currentLine == "[borders]") {
+				while (getline(mapFile, currentLine)) {
+					// An empty line marks the end of that section
+					if (currentLine == "") {
+						break;
+					}
+
+					else {
+						// Get border fields
+						int offset = 0;
+						string countryNumber = currentLine.substr(0, currentLine.find(delimiter) - offset);
+
+						offset += countryNumber.length() + delimiter.length();
+
+						vector<string> adjCountries;
+
+						while (offset < (int)currentLine.length()) {
+							string sharedBorder = currentLine.substr(offset, currentLine.find(delimiter, offset) - offset);
+							adjCountries.push_back(sharedBorder);
+							offset += sharedBorder.length() + delimiter.length();
+						}
+
+						for (string s : adjCountries)
+						{
+							// Add edge tuple to the map
+							tuple<int, int> edge = { stoi(countryNumber), stoi(s) };
+							tempBorders.push_back(edge);
+
+							// Add territory pointer to the current node
+							tempCountries.at(stoi(countryNumber) - 1)->addAdjacentCountry(tempCountries.at(stoi(s) - 1));
+						}
+					}
+				}
+
+				//cout << "Borders read!" << endl;
+			}
 		}
+
+		// We've finished reading the file, close it.
+		mapFile.close();
+
+		// Generate and return a map from the data read from the map file
+		Map* m = new Map(tempContinents, tempCountries, tempBorders);
+		return m;
 	}
 
-	// We've finished reading the file, close it.
-	mapFile.close();
-
-	// Generate and return a map from the data read from the map file
-	Map* m = new Map(tempContinents, tempCountries, tempBorders);
-	return m;
+	catch (const exception& e) {
+		cout << e.what() << endl;
+		exit(1);
+		//return NULL;
+	}
 }

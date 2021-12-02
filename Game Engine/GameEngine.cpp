@@ -223,7 +223,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// We found a map file name from the commmand's effect!
 			if (std::regex_search(effect, match, extractionPattern)) {
 				string mapFileName = (string)match[1];
-				setMap(MapLoader::createMapfromFile(mapFileName)); // <-- TODO: Make sure this is an absolute path!
+				setMap(MapLoader::createMapfromFile(mapFileName));
 				
 				// Transition to 'validatemap' state, Handle failure
 				if (!changeState("loadmap")) {
@@ -247,6 +247,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			else {
 				// Does the state go back to loadmap, or do we just fail and exit?
 				cout << "An invalid map has been loaded." << endl;
+				exit(1);
 			}
 		}
 
@@ -260,7 +261,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// Check to see if we have 2-6 players in the game
 			if (players.size() < 6) {
 				if (std::regex_search(effect, match, extractionPattern)) {
-					// TODO: Check if player name corresponds to one of the player strategies, if so, create the corresponding type of player. If not, create a human player.
+					
 					if (match[1] == "Aggressive" || match[1] == "aggressive" || match[1] == "AGGRESSIVE") {
 						// Create and add aggressive player
 						Player* p = nullptr;
@@ -295,7 +296,14 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 					
 					else {
 						// Create and add human player
-						addPlayer(new Player(match[1], new Hand, this));
+						if (!tournamentMode) {
+							addPlayer(new Player(match[1], new Hand, this));
+						}
+
+						else {
+							cout << "Invalid player strategy passed to tournament commands: Human players cannot be added." << endl;
+							exit(1);
+						}
 					}
 				}
 			}
@@ -418,8 +426,6 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
             //GameEngine is officially in tournament mode
             tournamentMode = true;
-			//cout << "Current command: " << command << endl;
-			//cout << "Current effect: " << c->getEffect() << endl;
 
 			vector<string> mapFiles;
 			vector<string> playerStrats;
@@ -427,6 +433,17 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			int maxRounds = 0;
 
 			string effect = c->getEffect();
+
+			// Search for argument headers
+			string mapHeader{ "-M" };
+			string playerHeader{ "-P" };
+			string gameHeader{ "-G" };
+			string roundsHeader{ "-D" };
+
+			if (effect.find(mapHeader) == string::npos || effect.find(playerHeader) == string::npos || effect.find(gameHeader) == string::npos || effect.find(roundsHeader) == string::npos) {
+				cout << "Tournament command is not properly formatted." << endl;
+				exit(1);
+			}
 
 			// Parse command string
 			char* effectStr = new char[effect.length() + 1];
@@ -439,7 +456,6 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 				if (toCompare == "-M") {
 					// Get map files
-					//cout << "Reading maps..." << endl;
 
 					do {
 						fields = strtok(NULL, " ,");
@@ -469,6 +485,12 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 					
 					fields = strtok(NULL, " ,");
 					toCompare = string(fields);
+
+					if (stoi(toCompare) < 1 || stoi(toCompare) > 5) {
+						cout << "Invalid number of games: must be between 1 and 5." << endl;
+						exit(1);
+					}
+
 					numGames = stoi(toCompare);
 
 					fields = strtok(NULL, " ,");
@@ -481,6 +503,11 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 					fields = strtok(NULL, " ,");
 					toCompare = string(fields);
+
+					if (stoi(toCompare) < 10 || stoi(toCompare) > 50) {
+						cout << "Invalid number of rounds: must be between 10 and 50." << endl;
+						exit(1);
+					}
 					maxRounds = stoi(toCompare);
 				}
 
@@ -504,6 +531,16 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// TODO: Add functionality to 'addplayer' to instantiate and add the different types of players based on a certain name being provided for each one?
 
             tournamentResult = "";
+
+			if (mapFiles.size() < 1 || mapFiles.size() > 5) {
+				cout << "Invalid number of maps: must be between 1 and 5." << endl;
+				exit(1);
+			}
+
+			if (playerStrats.size() < 2 || playerStrats.size() > 4) {
+				cout << "Invalid number of player strategies: must be between 2 and 4." << endl;
+				exit(1);
+			}
 
 			for (string mapFileName : mapFiles) { // mapFileName is what should be passed to the loadmap command
 

@@ -69,8 +69,7 @@ int main() {
             commandprocessor->getCommand(game, filecmd);
         }
 
-        delete filecmd;delete fileReader;delete commandprocessor;
-        commandprocessor = NULL;filecmd = NULL;fileReader = NULL;
+        delete filecmd;delete fileReader; filecmd = NULL;fileReader = NULL;
     }
 
     game->startupPhase(commandprocessor);
