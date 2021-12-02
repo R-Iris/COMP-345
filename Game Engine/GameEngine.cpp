@@ -519,9 +519,8 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			for (string mapFileName : mapFiles) { // mapFileName is what should be passed to the loadmap command
 
-				CommandProcessor* cp2 = new CommandProcessor(this->_observer);
-
 				for (int i = 0; i < numGames; i++) {
+					CommandProcessor* cp2 = new CommandProcessor(this->_observer);
 					// Populate the command list with the commands necessary to start a new game
 					// Order to properly start a game is: loadmap, validatemap, addplayer, gamestart
 					// 1) Add loadmap command
@@ -545,9 +544,10 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 					Command* gamestart = new Command(Command::commandType::gamestart, "", this->_observer);
 					gamestart->saveEffect(gamestart);
 					cp2->saveValidCommand(gamestart);
+
+					// Start a new game
+					startupPhase(cp2);
 				}
-				// Start a new game
-				startupPhase(cp2);
 			}
             //Storing results in logFile
             //TODO: TO Test Log file
