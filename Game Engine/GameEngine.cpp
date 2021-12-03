@@ -413,6 +413,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			// Command processor setter for bool
 			//cmd_game pointer points to win state
 
+			// Only start the main game loop if the appropriate state can be changed to.
 			if (!changeState("gamestart")) {
 				cout << "ERROR: Could not transition to 'gamestart' from current state " << currentState->stateName << endl;
 			}
@@ -427,10 +428,11 @@ void GameEngine::startupPhase(CommandProcessor* cp)
             //GameEngine is officially in tournament mode
             tournamentMode = true;
 
-			vector<string> mapFiles;
-			vector<string> playerStrats;
-			int numGames = 0;
-			int maxRounds = 0;
+			// Store the different values passed to each argument
+			vector<string> mapFiles; // File names for each of the maps
+			vector<string> playerStrats; // Player strategies that will be playing the games
+			int numGames = 0; // The number of games to play on each map
+			int maxRounds = 0; // The maximum number of rounds that can be played before the game ends in a draw 
 
 			string effect = c->getEffect();
 
@@ -440,16 +442,17 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 			string gameHeader{ "-G" };
 			string roundsHeader{ "-D" };
 
+			// If one or more of these headers are not found in the command, then it is improperly formatted, so we exit.
 			if (effect.find(mapHeader) == string::npos || effect.find(playerHeader) == string::npos || effect.find(gameHeader) == string::npos || effect.find(roundsHeader) == string::npos) {
 				cout << "Tournament command is not properly formatted." << endl;
 				exit(1);
 			}
 
-			// Parse command string
+			// The command is properly formatted! Parse command string.
 			char* effectStr = new char[effect.length() + 1];
 			strcpy(effectStr, effect.c_str());
 			
-			char* fields = strtok(effectStr, " ,");
+			char* fields = strtok(effectStr, " ,"); // Store each individual token in a comma-separated line (individual map file name, player strategy, etc.)
 
 			while (fields != NULL) {
 				string toCompare(fields);
@@ -468,7 +471,6 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 				if (toCompare == "-P") {
 					// Get player strategies
-					//cout << "Reading strategies..." << endl;
 
 					do {
 						fields = strtok(NULL, " ,");
@@ -481,7 +483,6 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 				if (toCompare == "-G") {
 					// Get number of games to be played on each map
-					//cout << "Reading number of games..." << endl;
 					
 					fields = strtok(NULL, " ,");
 					toCompare = string(fields);
@@ -499,7 +500,6 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 				if (toCompare == "-D") {
 					// Get max number of rounds for each game
-					//cout << "Reading number of rounds..." << endl;
 
 					fields = strtok(NULL, " ,");
 					toCompare = string(fields);
@@ -515,20 +515,7 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 
 			}
 
-			/* PLAN FOR THE TOURNAMENT MODE:
-				* If we enter "tournament mode", we need to automate 'G' games (G is an argument provided to the command)
-				* A game is set up and subsequently played via commands in the CommandProcessor's valid command list
-				* Order to properly start a game is: loadmap, validatemap, addplayer, gamestart
-				* 'gamestart' command should call mainGameLoop() after ensuring that the game's context is valid.
-				* Once mainGameLoop() terminates, flow should return to startupPhase() to start the next game, if necessary.
-				* TODO: mainGameLoop() should also self-terminate once the max number of turns has been reached.
-				  * Add a variable that counts the number of turns that have been taken.
-				* TODO: Once a game terminates, we need to write the result into "the" log file (gamelog.txt)
-			*/
-
 			this->max_rounds = maxRounds; // Set the maximum number of rounds
-
-			// TODO: Add functionality to 'addplayer' to instantiate and add the different types of players based on a certain name being provided for each one?
 
             tournamentResult = "";
 
@@ -542,12 +529,13 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 				exit(1);
 			}
 
-			for (string mapFileName : mapFiles) { // mapFileName is what should be passed to the loadmap command
+			for (string mapFileName : mapFiles) {
 
 				for (int i = 0; i < numGames; i++) {
 					CommandProcessor* cp2 = new CommandProcessor(this->_observer);
 					// Populate the command list with the commands necessary to start a new game
 					// Order to properly start a game is: loadmap, validatemap, addplayer, gamestart
+
 					// 1) Add loadmap command
 					Command* loadmap = new Command(Command::commandType::loadmap, mapFileName, this->_observer);
 					loadmap->saveEffect(loadmap);
@@ -570,13 +558,14 @@ void GameEngine::startupPhase(CommandProcessor* cp)
 					gamestart->saveEffect(gamestart);
 					cp2->saveValidCommand(gamestart);
 
-					// Start a new game
+					// 5) Start a new game
 					startupPhase(cp2);
+					delete cp2;
+					cp2 = NULL;
 				}
 			}
             //Storing results in logFile
-            //TODO: TO Test Log file
-            //Modifying Tournament Result after the games are done
+            // Modifying Tournament Result after the games are done
             tournamentResult = "Tournament Mode: \nM: ";
             for(string mapFileName : mapFiles){
                 tournamentResult += mapFileName + ", ";
@@ -648,7 +637,7 @@ void GameEngine::mainGameLoop() {
 
 	do {
 		if (roundsPassed >= this->max_rounds && this->max_rounds > 0) {
-			// TODO: The game should end in a draw.
+			// The game should end in a draw.
 			cout << "Game has reached the maximum number of rounds... It's a draw. " << endl;
             //Storing the results in a vector
             results.push_back("DRAW");
